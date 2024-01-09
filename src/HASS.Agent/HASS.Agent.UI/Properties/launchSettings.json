@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "HASS.Agent.UI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "HASS.Agent.UI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
