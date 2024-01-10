@@ -45,14 +45,14 @@ public class PageService : IPageService
 
         var footerPages = new Dictionary<IMenuItem, Type?>()
         {
-            { new MenuItem { NavigateTo = typeof(SettingsPageViewModel).FullName!, Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage)}
+            { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage) }
         };
         ConfigureFooterPages(footerPages);
     }
 
     public IMenuItem GetMenuItem(string navigateTo)
     {
-        var menuItem = Pages.FirstOrDefault(item => item.NavigateTo == navigateTo) ?? Pages.FirstOrDefault(item => item.NavigateTo == navigateTo);
+        var menuItem = Pages.FirstOrDefault(item => item.NavigateTo == navigateTo) ?? FooterPages.FirstOrDefault(item => item.NavigateTo == navigateTo);
         return menuItem ?? throw new ArgumentException($"MenuItem with {navigateTo} not found");
     }
     public Type GetPageType(string key)

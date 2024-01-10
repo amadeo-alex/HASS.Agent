@@ -107,7 +107,7 @@ public class NavigationService : INavigationService
                 if(vmBeforeNavigation is IInfoBadgeAware badgeAware)
                 {
                     _pageService.GetMenuItem(pageKey).InfoBadge = badgeAware.InfoBadge;
-                    _pageService.Pages
+                    //_pageService.Pages
                 }
 
                 var vmAfterNavigation = _frame.GetPageViewModel();

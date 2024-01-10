@@ -23,6 +23,11 @@ using HASS.Agent.UI.Services;
 using HASS.Agent.UI.Activation;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages;
+using Newtonsoft.Json;
+using HASS.Agent.Base.Models.Mqtt;
+using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.Base.Contracts.Models.Entity;
+using HASS.Agent.Base.Models;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -63,6 +68,14 @@ public partial class App : Application
     /// </summary>
     public App()
     {
+        var s = new DummySensor(uniqueId: Guid.NewGuid().ToString());
+        var cs = s.ToConfiguredEntity();
+
+        var json = JsonConvert.SerializeObject(cs);
+        var obj = JsonConvert.DeserializeObject<ConfiguredEntity>(json);
+
+        var t = AbstractDiscoverable.FromConfiguredEntity(obj);
+        
 
         InitializeComponent();
 
@@ -91,6 +104,9 @@ public partial class App : Application
 
             services.AddTransient<CommandsPageViewModel>();
             services.AddTransient<CommandsPage>();
+
+            services.AddTransient<SettingsPageViewModel>();
+            services.AddTransient<SettingsPage>();
         }).
         Build();
     }
