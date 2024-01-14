@@ -4,65 +4,106 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Models;
-public class ConfiguredEntity : Dictionary<string, object>
+public class ConfiguredEntity //TODO(Amadeo): interface
 {
-    public Type? Type
+    public Dictionary<string, string> Properties { get; set; } = [];
+
+    [JsonIgnore]
+    public string Type
     {
-        get => GetParameter(new object().GetType()); //TODO(Amadeo): ugly?
-        set => SetParameter(value);
+        get => GetParameter(nameof(Type));
+        set => SetParameter(nameof(Type), value);
     }
 
+    [JsonIgnore]
     public Guid UniqueId
     {
-        get => GetParameter(Guid.Empty);
-        set => SetParameter(value);
+        get => Guid.Parse(GetParameter(nameof(UniqueId)));
+        set => SetParameter(nameof(UniqueId), value.ToString());
     }
 
+    [JsonIgnore]
     public string Name
     {
-        get => GetParameter(string.Empty);
-        set => SetParameter(value);
+        get => GetParameter(nameof(Name));
+        set => SetParameter(nameof(Name), value);
     }
 
+    [JsonIgnore]
     public string EntityIdName
     {
-        get => GetParameter(string.Empty);
-        set => SetParameter(value);
+        get => GetParameter(nameof(EntityIdName));
+        set => SetParameter(nameof(EntityIdName), value);
     }
 
+    [JsonIgnore]
     public int UpdateIntervalSeconds
     {
-        get => GetParameter(30);
-        set => SetParameter(value);
+        get => GetIntParameter(nameof(UpdateIntervalSeconds), 0);
+        set => SetIntParameter(nameof(UpdateIntervalSeconds), value);
     }
 
+    [JsonIgnore]
     public bool IgnoreAvailability
     {
-        get => GetParameter(false);
-        set => SetParameter(value);
+        get => GetBoolParameter(nameof(IgnoreAvailability), false);
+        set => SetBoolParameter(nameof(IgnoreAvailability), value);
     }
 
-    public T GetParameter<T>(T defaultValue, [CallerMemberName] string parameterName = "")
-    {
-        if(defaultValue == null)
-            throw new ArgumentNullException(nameof(defaultValue));
 
+    public void SetParameter(string parameterName, string value)
+    {
         if (string.IsNullOrWhiteSpace(parameterName))
             throw new ArgumentException("parameter name cannot be empty");
 
-        if (!ContainsKey(parameterName))
-            this[parameterName] = defaultValue;
-
-        return (T)this[parameterName];
+        Properties[parameterName] = value;
     }
 
-    public void SetParameter<T>(T value, [CallerMemberName] string parameterName = "")
+    public void SetIntParameter(string parameterName, int value)
     {
-        if(value == null)
-            throw new ArgumentNullException(nameof(value));
+        if (string.IsNullOrWhiteSpace(parameterName))
+            throw new ArgumentException("parameter name cannot be empty");
 
-        this[parameterName] = value;
+        Properties[parameterName] = value.ToString();
+    }
+
+    public void SetBoolParameter(string parameterName, bool value)
+    {
+        if (string.IsNullOrWhiteSpace(parameterName))
+            throw new ArgumentException("parameter name cannot be empty");
+
+        Properties[parameterName] = value.ToString();
+    }
+
+    public string GetParameter(string parameterName, string defaultValue = "")
+    {
+        if (string.IsNullOrWhiteSpace(parameterName))
+            throw new ArgumentException("parameter name cannot be empty");
+
+        if (!Properties.ContainsKey(parameterName))
+            Properties[parameterName] = defaultValue;
+
+        return Properties[parameterName];
+    }
+    
+    public int GetIntParameter(string parameterName, int defaultValue)
+    {
+        if (string.IsNullOrWhiteSpace(parameterName))
+            throw new ArgumentException("parameter name cannot be empty");
+
+        var stringParam = GetParameter(parameterName, defaultValue.ToString());
+        return Convert.ToInt32(stringParam);
+    }
+
+    public bool GetBoolParameter(string parameterName, bool defaultValue)
+    {
+        if (string.IsNullOrWhiteSpace(parameterName))
+            throw new ArgumentException("parameter name cannot be empty");
+
+        var stringParam = GetParameter(parameterName, defaultValue.ToString());
+        return Convert.ToBoolean(stringParam);
     }
 }

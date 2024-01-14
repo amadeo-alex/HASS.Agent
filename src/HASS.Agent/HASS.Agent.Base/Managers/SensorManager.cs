@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Managers;
@@ -9,12 +10,22 @@ using HASS.Agent.Base.Models;
 
 namespace HASS.Agent.Base.Managers;
 
-internal class SensorManager : ISensorManager
+public class SensorManager : ISensorManager
 {
+    private readonly ISettingsManager _settingsManager;
+    private readonly IEntityTypeRegistry _entityTypeRegistry;
+
     public List<AbstractDiscoverable> Sensors { get; set; } = [];
+
+    public SensorManager(ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry)
+    {
+        _settingsManager = settingsManager;
+        _entityTypeRegistry = entityTypeRegistry;
+    }
 
     public void Initialize()
     {
+
     }
 
     public async Task LoadAsync(List<ConfiguredEntity> sensors, List<ConfiguredEntity> toBeDeletedSensors)
@@ -53,7 +64,7 @@ internal class SensorManager : ISensorManager
     }
     public async Task UnpublishAllSensorsAsync()
     {
-        
+
         return;
     }
     public async Task UpdateSensorsStateAsync()
@@ -61,4 +72,5 @@ internal class SensorManager : ISensorManager
 
         return;
     }
+
 }

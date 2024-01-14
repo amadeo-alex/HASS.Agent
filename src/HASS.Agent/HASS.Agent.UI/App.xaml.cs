@@ -28,6 +28,15 @@ using HASS.Agent.Base.Models.Mqtt;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Helpers;
+using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Base.Managers;
+using HASS.Agent.Base;
+using Serilog;
+using Serilog.Events;
+using System.Reflection;
+using System.Xml.Linq;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -38,10 +47,7 @@ namespace HASS.Agent.UI;
 /// </summary>
 public partial class App : Application
 {
-    public IHost Host
-    {
-        get;
-    }
+    public IHost Host { get; private set; }
 
     public static T GetService<T>() where T : class
     {
@@ -68,22 +74,90 @@ public partial class App : Application
     /// </summary>
     public App()
     {
-        var s = new DummySensor(uniqueId: Guid.NewGuid().ToString());
-        var cs = s.ToConfiguredEntity();
+        try
+        {
+            /*        IEntityTypeRegistry repo = new EntityTypeRegistry();
+                    repo.RegisterSensorType(typeof(DummySensor));
 
-        var json = JsonConvert.SerializeObject(cs);
-        var obj = JsonConvert.DeserializeObject<ConfiguredEntity>(json);
+                    var sourceSensor = new DummySensor(uniqueId: Guid.NewGuid().ToString());
+                    var sourceConfiguredEntitiy = sourceSensor.ToConfiguredEntity();
 
-        var t = AbstractDiscoverable.FromConfiguredEntity(obj);
-        
+                    var serializedCE = JsonConvert.SerializeObject(sourceConfiguredEntitiy);
+                    var deserializedCE = JsonConvert.DeserializeObject<ConfiguredEntity>(serializedCE) ?? throw new Exception("bruf");
 
-        InitializeComponent();
+                    var sensor = repo.CreateSensorInstance(deserializedCE);*/
 
+            ConfigureServices();
+            SetupLogger();
+
+            var variableManager = GetService<IVariableManager>();
+            Log.Information("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
+
+            var aa = GetService<ApplicationInfo>();
+            var sm = GetService<ISettingsManager>();
+
+            var ds = new DummySensor(uniqueId: Guid.NewGuid().ToString(), updateIntervalSeconds: 2137);
+            var ce = ds.ToConfiguredEntity();
+
+            sm.ConfiguredSensors.Add(ce);
+            sm.StoreConfiguredEntities();
+
+            InitializeComponent();
+        }
+        catch (Exception ex)
+        {
+            Debugger.Break();
+        }
+    }
+
+    private void SetupLogger()
+    {
+        var launchArguments = Environment.GetCommandLineArgs();
+        var logManager = GetService<ILogManager>();
+        var logger = logManager.GetLogger(launchArguments);
+        Log.Logger = logger;
+
+#if DEBUG
+        logManager.ExtendedLoggingEnabled = true;
+        Log.Information("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
+        Log.Information("[MAIN] Started with arguments: {a}", launchArguments);
+#endif
+
+        if (logManager.ExtendedLoggingEnabled)
+        {
+            logManager.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
+            Log.Information("[MAIN] Extended logging enabled");
+
+            AppDomain.CurrentDomain.FirstChanceException += logManager.OnFirstChanceExceptionHandler;
+        }
+    }
+
+    private void ConfigureServices()
+    {
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
         ConfigureServices((context, services) =>
         {
+            services.AddSingleton(new ApplicationInfo()
+            {
+                Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
+                Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? throw new Exception("cannot obtain application version"),
+                ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
+                Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+            });
+
+            services.AddSingleton<IVariableManager, VariableManager>();
+            services.AddSingleton<ISettingsManager, SettingsManager>();
+
+
+            services.AddSingleton<ILogManager, LogManager>();
+
+            services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
+            services.AddSingleton<ISensorManager, SensorManager>();
+
+            services.AddSingleton<AgentBase>();
+
             services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();

@@ -13,6 +13,12 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
 {
     [GeneratedRegex("[^a-zA-Z0-9_-]")]
     private static partial Regex SanitizeRegex();
+    private static string Sanitize(string inputString)
+    {
+        return SanitizeRegex().Replace(inputString, "_");
+    }
+
+    private IServiceProvider? _serviceProvider;
 
     public string Domain { get; set; } = string.Empty;
     public string EntityIdName { get; set; } = string.Empty;
@@ -33,25 +39,4 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     //public abstract void ClearAutoDiscoveryConfig();
     public abstract void ResetChecks();
     public abstract ConfiguredEntity ToConfiguredEntity();
-
-
-    public static AbstractDiscoverable FromConfiguredEntity(ConfiguredEntity configuredEntity)
-    {
-        //TODO(Amadeo): add proper exception messages
-        var type = configuredEntity.Type ?? throw new ArgumentException("type property is null");
-        if (!type.IsAssignableTo(typeof(AbstractDiscoverable)))
-            throw new ArgumentException("type property is not assignable from abstract discoverable");
-
-        var instanceMethod = type.GetMethod("CreateInstance", BindingFlags.Public | BindingFlags.Static)
-            ?? throw new MethodAccessException("missing CreateInstance method");
-
-        var obj = instanceMethod.Invoke(null, new object[] { configuredEntity }) ?? throw new Exception("no object returned");
-
-        return (AbstractDiscoverable)obj;
-    }
-
-    private static string Sanitize(string inputString)
-    {
-        return SanitizeRegex().Replace(inputString, "_");
-    }
 }

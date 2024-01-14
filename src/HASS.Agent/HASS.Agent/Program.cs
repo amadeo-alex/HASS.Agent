@@ -45,7 +45,7 @@ namespace HASS.Agent
             {
 
                 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncfusionLicense);
-
+                
                 LoggingManager.PrepareLogging(args);
 
                 Variables.ExtendedLogging = SettingsManager.GetExtendedLoggingSetting();
