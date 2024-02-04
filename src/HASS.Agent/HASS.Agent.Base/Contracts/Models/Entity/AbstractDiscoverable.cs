@@ -18,8 +18,6 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
         return SanitizeRegex().Replace(inputString, "_");
     }
 
-    private IServiceProvider? _serviceProvider;
-
     public string Domain { get; set; } = string.Empty;
     public string EntityIdName { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Enums;
+using Newtonsoft.Json.Linq;
 
 namespace HASS.Agent.Base.Models;
-public class ApplicationSettings
+public partial class ApplicationSettings
 {
+    [GeneratedRegex(@"[^a-zA-Z0-9_-]")]
+    private static partial Regex SanitizeRegex();
+
     public OnboardingStatus OnboardingStatus { get; set; } = OnboardingStatus.NaverDone;
-    public string DeviceName { get; set; } = string.Empty;
     public bool SanitizeName { get; set; } = true;
+    public string ConfiguredDeviceName { get; set; } = string.Empty;
+    public string DeviceName => SanitizeName ? SanitizeRegex().Replace(ConfiguredDeviceName, "_") : ConfiguredDeviceName;
     public string InterfaceLanguage { get; set; } = string.Empty;
     public bool EnableStateNotifications { get; set; } = true;
 
@@ -75,4 +81,4 @@ public class ApplicationSettings
     public string MqttRootCertificate { get; set; } = string.Empty;
     public string MqttClientCertificate { get; set; } = string.Empty;
 }
-    
+

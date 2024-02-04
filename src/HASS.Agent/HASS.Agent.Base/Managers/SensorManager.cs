@@ -14,18 +14,23 @@ public class SensorManager : ISensorManager
 {
     private readonly ISettingsManager _settingsManager;
     private readonly IEntityTypeRegistry _entityTypeRegistry;
+    private readonly IGuidManager _guidManager;
 
     public List<AbstractDiscoverable> Sensors { get; set; } = [];
 
-    public SensorManager(ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry)
+    public SensorManager(ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IGuidManager guidManager)
     {
         _settingsManager = settingsManager;
         _entityTypeRegistry = entityTypeRegistry;
+        _guidManager = guidManager;
     }
 
     public void Initialize()
     {
-
+        foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
+        {
+            _guidManager.MarkAsUsed(configuredSensor.UniqueId);
+        }
     }
 
     public async Task LoadAsync(List<ConfiguredEntity> sensors, List<ConfiguredEntity> toBeDeletedSensors)

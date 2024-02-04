@@ -4,29 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Models.Entity;
+using HASS.Agent.Base.Contracts.Models.Mqtt;
+using HASS.Agent.Base.Enums;
 using MQTTnet;
 
 namespace HASS.Agent.Base.Contracts.Managers;
 public interface IMqttManager
 {
-    bool Conncted { get; }
+    string MqttDiscoveryPrefix { get; set; }
+    bool UseRetainFlag { get; set; }
+    MqttStatus Status { get; }
     bool Ready { get; }
+    AbstractMqttDeviceConfigModel DeviceConfigModel { get; }
 
-    void CreateDeviceConfigModel();
-    Task<bool> PublishAsync(MqttApplicationMessage message);
-    Task AnnounceAutoDiscoveryConfigAsync(AbstractDiscoverable discoverable, string domain, bool clearConfig = false);
-    MqttStatus GetStatus();
-    Task AnnounceAvailabilityAsync(bool offline = false);
-    Task ClearDeviceConfigAsync();
-    void Disconnect();
+    Task InitializeAsync();
+    Task PublishAsync(MqttApplicationMessage message);
+    Task AnnounceDeviceConfigModelAsync();
+    Task ClearDeviceConfigModelAsync();
+    Task DisconnectAsync();
     Task SubscribeAsync(AbstractDiscoverable command);
     Task UnsubscribeAsync(AbstractDiscoverable command);
-
-    Task SubscribeNotificationsAsync();
-
-    string MqttDiscoveryPrefix();
-    MqttDe GetDeviceConfigModel();
-    void ReloadConfiguration();
-    bool UseRetainFlag();
-    Task SubscribeMediaCommandsAsync();
+    Task ReinitializeAsync();
 }

@@ -37,6 +37,7 @@ using Serilog.Events;
 using System.Reflection;
 using System.Xml.Linq;
 using System.Diagnostics;
+using HASS.Agent.Base.Contracts;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,7 +46,7 @@ namespace HASS.Agent.UI;
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
 /// </summary>
-public partial class App : Application
+public partial class App : Application, IAgentServiceProvider
 {
     public IHost Host { get; private set; }
 
@@ -62,6 +63,9 @@ public partial class App : Application
         return service ?? throw new ArgumentException($"{type} needs to be registered in ConfigureServices within App.xaml.cs.");
     }
 
+    public T GetAgentService<T>() where T : class => GetService<T>();
+    public object GetAgentService(Type type) => GetService(type);
+
     public static UIElement? AppTitlebar
     {
         get; set;
@@ -76,33 +80,22 @@ public partial class App : Application
     {
         try
         {
-            /*        IEntityTypeRegistry repo = new EntityTypeRegistry();
-                    repo.RegisterSensorType(typeof(DummySensor));
-
-                    var sourceSensor = new DummySensor(uniqueId: Guid.NewGuid().ToString());
-                    var sourceConfiguredEntitiy = sourceSensor.ToConfiguredEntity();
-
-                    var serializedCE = JsonConvert.SerializeObject(sourceConfiguredEntitiy);
-                    var deserializedCE = JsonConvert.DeserializeObject<ConfiguredEntity>(serializedCE) ?? throw new Exception("bruf");
-
-                    var sensor = repo.CreateSensorInstance(deserializedCE);*/
-
             ConfigureServices();
             SetupLogger();
 
             var variableManager = GetService<IVariableManager>();
             Log.Information("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
 
-            var aa = GetService<ApplicationInfo>();
-            var sm = GetService<ISettingsManager>();
-
-            var ds = new DummySensor(uniqueId: Guid.NewGuid().ToString(), updateIntervalSeconds: 2137);
-            var ce = ds.ToConfiguredEntity();
-
-            sm.ConfiguredSensors.Add(ce);
-            sm.StoreConfiguredEntities();
-
             InitializeComponent();
+
+            var settingsManager = GetService<ISettingsManager>();
+            var guidManager = GetService<IGuidManager>();
+            guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
+
+            var sm = GetService<ISensorManager>();
+            sm.Initialize();
+
+            Console.WriteLine("");
         }
         catch (Exception ex)
         {
@@ -139,6 +132,8 @@ public partial class App : Application
         UseContentRoot(AppContext.BaseDirectory).
         ConfigureServices((context, services) =>
         {
+            services.AddSingleton<IGuidManager, GuidManager>();
+
             services.AddSingleton(new ApplicationInfo()
             {
                 Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
@@ -155,8 +150,6 @@ public partial class App : Application
 
             services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
             services.AddSingleton<ISensorManager, SensorManager>();
-
-            services.AddSingleton<AgentBase>();
 
             services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 

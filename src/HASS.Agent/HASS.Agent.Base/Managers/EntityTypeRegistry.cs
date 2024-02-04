@@ -6,40 +6,59 @@ using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.Base.Sensors.SingleValue;
 
 namespace HASS.Agent.Base.Managers;
 
 public class EntityTypeRegistry : IEntityTypeRegistry
 {
-    public Dictionary<string, Type> RegisteredSensorTypes { get; } = [];
+    public Dictionary<string, RegisteredEntity> SensorTypes { get; } = [];
+    public Dictionary<string, RegisteredEntity> CommandTypes { get; } = [];
 
-    public Dictionary<string, Type> RegisteredCommandTypes { get; } = [];
+    public Dictionary<string, RegisteredEntity> ClientSensorTypes => SensorTypes.Where(st => st.Value.ClientCompatible)
+        .ToDictionary(st => st.Key, st => st.Value);
+    public Dictionary<string, RegisteredEntity> SatelliteSensorTypes => SensorTypes.Where(st => st.Value.SatelliteCompatible)
+        .ToDictionary(st => st.Key, st => st.Value);
 
+    public EntityTypeRegistry()
+    {
+        RegisterSensorType(typeof(DummySensor), true, true);
+    }
 
-    public void RegisterSensorType(Type sensorType)
+    public void RegisterSensorType(Type sensorType, bool clientCompatible, bool satelliteCompatible)
     {
         if (!sensorType.IsAssignableTo(typeof(IDiscoverable)))
             throw new ArgumentException($"{sensorType} is not derived from {nameof(IDiscoverable)}");
 
         var typeName = sensorType.Name;
 
-        if (RegisteredSensorTypes.ContainsKey(typeName))
+        if (SensorTypes.ContainsKey(typeName))
             throw new ArgumentException($"sensor {sensorType} already registered");
 
-        RegisteredSensorTypes[typeName] = sensorType;
+        SensorTypes[typeName] = new RegisteredEntity{
+            EntityType = sensorType,
+            ClientCompatible = clientCompatible,
+            SatelliteCompatible = satelliteCompatible
+        };
     }
 
-    public void RegisterCommandType(Type commandType)
+    public void RegisterCommandType(Type commandType, bool clientCompatible, bool satelliteCompatible)
     {
         if (!commandType.IsAssignableTo(typeof(IDiscoverable)))
             throw new ArgumentException($"{commandType} is not derived from {nameof(IDiscoverable)}");
 
         var typeName = commandType.Name;
 
-        if (RegisteredCommandTypes.ContainsKey(typeName))
+        if (CommandTypes.ContainsKey(typeName))
             throw new ArgumentException($"command {commandType} already registered");
 
-        RegisteredCommandTypes[typeName] = commandType;
+        CommandTypes[typeName] = new RegisteredEntity
+        {
+            EntityType = commandType,
+            ClientCompatible = clientCompatible,
+            SatelliteCompatible = satelliteCompatible
+        };
     }
 
     private IDiscoverable CreateDiscoverableInstance(Type discoverableType, ConfiguredEntity configuredEntity)
@@ -55,17 +74,17 @@ public class EntityTypeRegistry : IEntityTypeRegistry
 
     public IDiscoverable CreateSensorInstance(ConfiguredEntity configuredEntity)
     {
-        if (!RegisteredSensorTypes.TryGetValue(configuredEntity.Type, out var type))
+        if (!SensorTypes.TryGetValue(configuredEntity.Type, out var registeredEntity))
             throw new ArgumentException($"sensor type {configuredEntity.Type} is not registered");
 
-        return CreateDiscoverableInstance(type, configuredEntity);
+        return CreateDiscoverableInstance(registeredEntity.EntityType, configuredEntity);
     }
 
     public IDiscoverable CreateCommandInstance(ConfiguredEntity configuredEntity)
     {
-        if (!RegisteredCommandTypes.TryGetValue(configuredEntity.Type, out var type))
+        if (!CommandTypes.TryGetValue(configuredEntity.Type, out var registeredEntity))
             throw new ArgumentException($"command type {configuredEntity.Type} is not registered");
 
-        return CreateDiscoverableInstance(type, configuredEntity);
+        return CreateDiscoverableInstance(registeredEntity.EntityType, configuredEntity);
     }
 }
