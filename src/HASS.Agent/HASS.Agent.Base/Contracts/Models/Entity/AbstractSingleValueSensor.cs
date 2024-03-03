@@ -27,7 +27,7 @@ public abstract class AbstractSingleValueSensor : AbstractDiscoverable
 
     public override void ResetChecks()
     {
-        LastPublished = DateTime.MinValue;
+        LastUpdated = DateTime.MinValue;
 
         PreviousPublishedState = string.Empty;
         PreviousPublishedAttributes = string.Empty;

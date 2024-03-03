@@ -11,8 +11,6 @@ using MQTTnet;
 namespace HASS.Agent.Base.Contracts.Managers;
 public interface IMqttManager
 {
-    string MqttDiscoveryPrefix { get; set; }
-    bool UseRetainFlag { get; set; }
     MqttStatus Status { get; }
     bool Ready { get; }
     AbstractMqttDeviceConfigModel DeviceConfigModel { get; }

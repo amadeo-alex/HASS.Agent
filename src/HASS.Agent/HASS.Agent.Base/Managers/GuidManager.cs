@@ -20,8 +20,20 @@ public class GuidManager : IGuidManager
         if (string.IsNullOrWhiteSpace(guid))
             return;
 
-        Log.Debug("[GUID] {guid} marked as used", guid);
+        Log.Debug("[GUID] {guid} marked as unused", guid);
         _usedGuids.Add(guid);
+    }
+    public void MarkAsUnused(Guid guid)
+    {
+        MarkAsUsed(guid.ToString());
+    }
+    public void MarkAsUnused(string guid)
+    {
+        if (string.IsNullOrWhiteSpace(guid))
+            return;
+
+        Log.Debug("[GUID] {guid} marked as unused", guid);
+        _usedGuids.Remove(guid);
     }
 
     public Guid GenerateGuid()

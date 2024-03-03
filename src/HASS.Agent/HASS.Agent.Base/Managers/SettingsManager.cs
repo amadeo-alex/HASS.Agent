@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,15 +16,17 @@ namespace HASS.Agent.Base.Managers;
 public class SettingsManager : ISettingsManager
 {
     private readonly IVariableManager _variableManager;
+    private readonly IGuidManager _guidManager;
 
     public ApplicationSettings ApplicationSettings { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
 
-    public SettingsManager(IVariableManager variableManager)
+    public SettingsManager(IVariableManager variableManager, IGuidManager guidManager)
     {
         _variableManager = variableManager;
+        _guidManager = guidManager;
 
         if (!Directory.Exists(_variableManager.ConfigPath))
         {
@@ -35,6 +38,58 @@ public class SettingsManager : ISettingsManager
         ConfiguredSensors = GetConfiguredSensors();
         ConfiguredCommands = GetConfiguredCommands();
         ConfiguredQuickActions = GetConfiguredQuickActions();
+
+        foreach (var configuredSensor in ConfiguredSensors)
+            _guidManager.MarkAsUsed(configuredSensor.UniqueId);
+
+        foreach (var configuredCommand in ConfiguredCommands)
+            _guidManager.MarkAsUsed(configuredCommand.UniqueId);
+
+        foreach (var configuredQuickAction in ConfiguredQuickActions)
+            _guidManager.MarkAsUsed(configuredQuickAction.UniqueId);
+
+        ConfiguredSensors.CollectionChanged += Configured_CollectionChanged;
+        ConfiguredCommands.CollectionChanged += Configured_CollectionChanged;
+        ConfiguredQuickActions.CollectionChanged += Configured_CollectionChanged;
+    }
+
+    private void Configured_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                if(e.NewItems == null)
+                    return;
+
+                foreach(var configured in e.NewItems)
+                {
+                    if(configured is ConfiguredEntity configuredEntity)
+                    {
+                        _guidManager.MarkAsUsed(configuredEntity.UniqueId);
+                    }else if(configured is IQuickAction configuredQuickAction)
+                    {
+                        _guidManager.MarkAsUsed(configuredQuickAction.UniqueId);
+                    }
+                }
+                break;
+
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems == null)
+                    return;
+
+                foreach (var configured in e.OldItems)
+                {
+                    if (configured is ConfiguredEntity configuredEntity)
+                    {
+                        _guidManager.MarkAsUnused(configuredEntity.UniqueId);
+                    }
+                    else if (configured is IQuickAction configuredQuickAction)
+                    {
+                        _guidManager.MarkAsUnused(configuredQuickAction.UniqueId);
+                    }
+                }
+                break;
+        }
     }
 
     private ObservableCollection<IQuickAction> GetConfiguredQuickActions()

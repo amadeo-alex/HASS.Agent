@@ -9,6 +9,8 @@ public interface IGuidManager
 {
     void MarkAsUsed(Guid guid);
     void MarkAsUsed(string guid);
+    void MarkAsUnused(Guid guid);
+    void MarkAsUnused(string guid);
     Guid GenerateGuid();
     string GenerateShortGuid();
 }

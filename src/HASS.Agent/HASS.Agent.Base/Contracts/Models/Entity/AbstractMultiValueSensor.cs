@@ -23,4 +23,12 @@ public abstract class AbstractMultiValueSensor : AbstractDiscoverable
         Domain = HassDomain.Sensor.ToString();
         UseAttributes = useAttributes;
     }
+
+    public override void ResetChecks()
+    {
+        foreach(var sensor in Sensors)
+        {
+            sensor.Value.ResetChecks();
+        }
+    }
 }

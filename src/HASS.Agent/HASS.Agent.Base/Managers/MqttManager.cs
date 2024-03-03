@@ -101,6 +101,16 @@ internal class MqttManager : IMqttManager
         Log.Information("[MQTT] Initialized");
     }
 
+    private async Task OnDisconnected(MqttClientDisconnectedEventArgs args)
+    {
+
+    }
+
+    private async Task OnApplicationMessageSkipped(ApplicationMessageSkippedEventArgs args)
+    {
+
+    }
+
     private async Task OnApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs arg)
     {
         var applicationMessage = arg.ApplicationMessage;
@@ -121,7 +131,7 @@ internal class MqttManager : IMqttManager
             }
 
             if (applicationMessage.Topic == $"hass.agent/media_player/{DeviceConfigModel.Name}/cmd")
-            {   
+            {
                 var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment).ToLower();
                 if (payload == null)
                     return;
@@ -129,36 +139,36 @@ internal class MqttManager : IMqttManager
                 var command = JsonConvert.DeserializeObject<MediaPlayerCommand>(payload, jsonSerializerSettings)!;
                 _mediaManager.HandleReceivedCommand(command);
 
-/*                switch (command.Type)
-                {
-                    case MediaPlayerCommandType.PlayMedia:
-                        MediaManager.ProcessMedia(command.Data.GetString());
-                        break;
-                    case MediaPlayerCommandType.Seek:
-                        MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds(command.Data.GetDouble()).Ticks);
-                        break;
-                    case MediaPlayerCommandType.SetVolume:
-                        MediaManagerCommands.SetVolume(command.Data.GetInt32());
-                        break;
-                    default:
-                        MediaManager.ProcessCommand(command.Command);
-                        break;
-                }*/
+                /*                switch (command.Type)
+                                {
+                                    case MediaPlayerCommandType.PlayMedia:
+                                        MediaManager.ProcessMedia(command.Data.GetString());
+                                        break;
+                                    case MediaPlayerCommandType.Seek:
+                                        MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds(command.Data.GetDouble()).Ticks);
+                                        break;
+                                    case MediaPlayerCommandType.SetVolume:
+                                        MediaManagerCommands.SetVolume(command.Data.GetInt32());
+                                        break;
+                                    default:
+                                        MediaManager.ProcessCommand(command.Command);
+                                        break;
+                                }*/
 
                 return;
             }
 
             _commandsManager.HandleReceivedCommand(applicationMessage);
 
-/*            foreach (var command in Variables.Commands)
-            {
-                var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+            /*            foreach (var command in Variables.Commands)
+                        {
+                            var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
 
-                if (commandConfig.Command_topic == applicationMessage.Topic)
-                    HandleCommandReceived(applicationMessage, command);
-                else if (commandConfig.Action_topic == applicationMessage.Topic)
-                    HandleActionReceived(applicationMessage, command);
-            }*/
+                            if (commandConfig.Command_topic == applicationMessage.Topic)
+                                HandleCommandReceived(applicationMessage, command);
+                            else if (commandConfig.Action_topic == applicationMessage.Topic)
+                                HandleActionReceived(applicationMessage, command);
+                        }*/
         }
         catch (Exception ex)
         {

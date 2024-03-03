@@ -20,7 +20,7 @@ public interface IDiscoverable
     public string State { get; }
     public string Attributes { get; }
     public int UpdateIntervalSeconds { get; set; }
-    public DateTime LastPublished { get; }
+    public DateTime LastUpdated { get; }
     public string PreviousPublishedState { get; }
     public string PreviousPublishedAttributes { get; }
     public AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);

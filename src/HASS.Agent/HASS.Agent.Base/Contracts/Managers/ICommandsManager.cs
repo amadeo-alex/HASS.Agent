@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Models.Entity;
+using MQTTnet;
 
 namespace HASS.Agent.Base.Contracts.Managers;
 internal interface ICommandsManager
@@ -18,5 +19,6 @@ internal interface ICommandsManager
     Task UnpublishAllCommandsAsync();
     Task UpdateCommandsStateAsync();
     void Process();
+    void HandleReceivedCommand(MqttApplicationMessage message);
     void ResetAllCommandsChecks();
 }

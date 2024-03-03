@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,15 +10,15 @@ using HASS.Agent.Base.Models;
 namespace HASS.Agent.Base.Contracts.Managers;
 public interface ISensorManager
 {
-    List<AbstractDiscoverable> Sensors { get; }
+    ObservableCollection<AbstractDiscoverable> Sensors { get; }
+
+    bool Pause { get; set; }
+    bool Exit { get; set; }
 
     void Initialize();
-    void Stop();
-    void Pause();
-    void Resume();
-    Task PublishAllSensorsAsync();
-    Task UnpublishAllSensorsAsync();
-    Task UpdateSensorsStateAsync();
+    Task PublishSensorsDiscoveryAsync(bool force);
+    Task UnpublishSensorsDiscoveryAsync();
+    Task PublishSensorsStateAsync();
     void Process();
     void ResetAllSensorChecks();
     //public Task LoadAsync(List<ConfiguredEntity> sensors, List<ConfiguredEntity> toBeDeletedSensors);
