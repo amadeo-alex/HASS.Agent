@@ -42,7 +42,7 @@ public class DummySensor : AbstractSingleValueSensor
             ObjectId = $"{deviceConfigModel.Name}_{EntityIdName}",
             Device = deviceConfigModel,
             StateTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/{EntityIdName}/state",
-            AvailabilityTopic = $"{discoveryPrefix}/{Domain}/{deviceConfigModel.Name}/availability"
+            AvailabilityTopic = $"{discoveryPrefix}/hass.agent/{deviceConfigModel.Name}/availability"
         };
 
         return _discoveryConfigModel;

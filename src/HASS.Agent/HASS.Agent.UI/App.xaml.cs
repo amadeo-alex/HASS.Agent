@@ -38,6 +38,9 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Diagnostics;
 using HASS.Agent.Base.Contracts;
+using System.Threading.Tasks;
+using MQTTnet;
+using Windows.Media.Ocr;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -95,6 +98,26 @@ public partial class App : Application, IAgentServiceProvider
             var sm = GetService<ISensorManager>();
             sm.Initialize();
 
+            var mqtt = GetService<IMqttManager>();
+            Task.Run(async () =>
+            {
+                await mqtt.StartClient();
+            });
+
+            Task.Run(async () =>
+            {
+                while (!mqtt.Ready)
+                    await Task.Delay(1000);
+
+                var testMsg = new MqttApplicationMessageBuilder()
+                    .WithTopic("sumtest/sumimportantmsg")
+                    .WithPayload("much importando")
+                    .WithRetainFlag(false)
+                    .Build();
+
+                await mqtt.PublishAsync(testMsg);
+            });
+
             Console.WriteLine("");
         }
         catch (Exception ex)
@@ -143,13 +166,17 @@ public partial class App : Application, IAgentServiceProvider
             });
 
             services.AddSingleton<IVariableManager, VariableManager>();
+            services.AddSingleton<ILogManager, LogManager>();
+
+            services.AddSingleton<IGuidManager, GuidManager>();
             services.AddSingleton<ISettingsManager, SettingsManager>();
 
-
-            services.AddSingleton<ILogManager, LogManager>();
+            services.AddSingleton<IMqttManager, MqttManager>();
 
             services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
             services.AddSingleton<ISensorManager, SensorManager>();
+
+
 
             services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 

@@ -43,9 +43,9 @@ public class SensorManager : ISensorManager
 
         foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
         {
-            Sensors.Add(
-                (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor)
-            );
+            var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
+            sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+            Sensors.Add(sensor);
         }
 
         _settingsManager.ConfiguredSensors.CollectionChanged += ConfiguredSensors_CollectionChanged;
@@ -63,7 +63,9 @@ public class SensorManager : ISensorManager
 
                 foreach (ConfiguredEntity configuredSensor in e.NewItems)
                 {
-                    Sensors.Add((AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor));
+                    var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
+                    sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+                    Sensors.Add(sensor);
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
