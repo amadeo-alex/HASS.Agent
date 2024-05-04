@@ -5,10 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSCore.CoreAudioAPI;
+using Serilog;
 
 namespace HASS.Agent.Shared.Managers.Audio.Internal;
 internal class InternalAudioSessionManager : IDisposable
 {
+    private bool _disposed;
+
     public AudioSessionManager2 Manager { get; private set; }
     public ConcurrentDictionary<string, InternalAudioSession> Sessions { get; private set; } = new();
     public InternalAudioSessionManager(AudioSessionManager2 sessionManager2)
@@ -49,16 +52,27 @@ internal class InternalAudioSessionManager : IDisposable
 
     public void Dispose()
     {
-        if (Manager != null)
-            Manager.SessionCreated -= Manager_SessionCreated;
+        if (_disposed)
+            return;
 
-        foreach (var session in Sessions.Values)
+        try
         {
-            session?.Dispose();
+            if (Manager != null)
+                Manager.SessionCreated -= Manager_SessionCreated;
+
+            foreach (var session in Sessions.Values)
+            {
+                session?.Dispose();
+            }
+
+            Manager?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "[AUDIOMGR] Exception disposing session manager: {msg}", ex.Message);
         }
 
-        Manager?.Dispose();
-
+        _disposed = true;
         GC.SuppressFinalize(this);
     }
 

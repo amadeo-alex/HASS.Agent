@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSCore.CoreAudioAPI;
+using Serilog;
 
 namespace HASS.Agent.Shared.Managers.Audio.Internal;
 internal class InternalAudioSession : IDisposable, IAudioSessionEvents
 {
+    private bool _disposed;
+
     public AudioSessionControl Control { get; private set; }
     public AudioSessionControl2 Control2 { get; private set; }
     public SimpleAudioVolume Volume { get; private set; }
@@ -32,13 +35,24 @@ internal class InternalAudioSession : IDisposable, IAudioSessionEvents
 
     public void Dispose()
     {
-        Control.UnregisterAudioSessionNotification(this);
+        if (_disposed)
+            return;
 
-        MeterInformation?.Dispose();
-        Volume?.Dispose();
-        Control2?.Dispose();
-        Control?.Dispose();
+        try
+        {
+            Control.UnregisterAudioSessionNotification(this);
 
+            MeterInformation?.Dispose();
+            Volume?.Dispose();
+            Control2?.Dispose();
+            Control?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "[AUDIOMGR] Exception disposing session '{name}': {msg}", DisplayName, ex.Message);
+        }
+
+        _disposed = true;
         GC.SuppressFinalize(this);
     }
 

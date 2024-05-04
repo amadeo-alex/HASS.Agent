@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CSCore.CoreAudioAPI;
+using Serilog;
 
 namespace HASS.Agent.Shared.Managers.Audio.Internal;
 internal class InternalAudioDevice : IDisposable
 {
+    private bool _disposed;
+
     public MMDevice MMDevice { get; private set; }
     public AudioEndpointVolume AudioEndpointVolume { get; private set; }
     public InternalAudioSessionManager Manager { get; private set; }
@@ -35,10 +38,21 @@ internal class InternalAudioDevice : IDisposable
 
     public void Dispose()
     {
-        AudioEndpointVolume?.Dispose();
-        Manager?.Dispose();
-        MMDevice?.Dispose();
+        if (_disposed)
+            return;
 
+        try
+        {
+            AudioEndpointVolume?.Dispose();
+            Manager?.Dispose();
+            MMDevice?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "[AUDIOMGR] Exception disposing device '{name}': {msg}", FriendlyName, ex.Message);
+        }
+
+        _disposed = true;
         GC.SuppressFinalize(this);
     }
 
