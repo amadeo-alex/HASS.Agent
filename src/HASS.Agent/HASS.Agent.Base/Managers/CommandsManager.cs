@@ -164,21 +164,26 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                     }
                 }
 
-                var autodiscoveryConfig = (MqttSensorDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+                var autodiscoveryConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
                 var message = new MqttApplicationMessageBuilder()
                     .WithTopic(autodiscoveryConfig.StateTopic)
                     .WithPayload(state)
                     .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
                     .Build();
 
-                var attributesMessage = new MqttApplicationMessageBuilder()
-                    .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                    .WithPayload(attributes)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                    .Build();
-
                 await _mqttManager.PublishAsync(message);
-                await _mqttManager.PublishAsync(attributesMessage);
+
+                if (command.UseAttributes)
+                {
+                    var attributesMessage = new MqttApplicationMessageBuilder()
+                        .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
+                        .WithPayload(attributes)
+                        .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
+                        .Build();
+
+                    await _mqttManager.PublishAsync(attributesMessage);
+                }
+
 
                 if (!respectChecks)
                     return;
@@ -216,7 +221,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             await PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
     }
 
-    public async void Process()
+    public async Task Process()
     {
         var firstRun = true;
         var firstRunDone = false;
@@ -247,18 +252,18 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
     public Task HandleMqttMessage(MqttApplicationMessage message)
     {
-        foreach(var commandDiscoverable in Commands)
+        foreach (var commandDiscoverable in Commands)
         {
             var command = (AbstractCommand)commandDiscoverable;
             var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
 
-            if(commandConfig.ActionTopic == message.Topic || commandConfig.CommandTopic == message.Topic)
+            if (commandConfig.ActionTopic == message.Topic || commandConfig.CommandTopic == message.Topic)
             {
                 var payload = message.PayloadSegment.Count > 0
                     ? Encoding.UTF8.GetString(message.PayloadSegment)
                     : string.Empty;
 
-                if(!string.IsNullOrWhiteSpace(payload))
+                if (!string.IsNullOrWhiteSpace(payload))
                     command.TurnOn(payload);
                 else
                     command.TurnOn();

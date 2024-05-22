@@ -83,11 +83,22 @@ public partial class App : Application, IAgentServiceProvider
     /// </summary>
     public App()
     {
+        Host = ConfigureServices();
+        SetupLogger();
+
+        InitializeComponent();
+    }
+
+    /// <summary>
+    /// Invoked when the application is launched.
+    /// </summary>
+    /// <param name="args">Details about the launch request and process.</param>
+    protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    {
+        base.OnLaunched(args);
+
         try
         {
-            ConfigureServices();
-            SetupLogger();
-
             var variableManager = GetService<IVariableManager>();
             Log.Information("[MAIN] HASS.Agent version: {version}", variableManager.ClientVersion);
 
@@ -98,18 +109,17 @@ public partial class App : Application, IAgentServiceProvider
             guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
 
             var mqtt = GetService<IMqttManager>();
-            Task.Run(async () =>
-            {
-                await mqtt.StartClient();
-            }).Wait();
+            await mqtt.StartClient();
 
-            var sm = GetService<ISensorManager>();
-            sm.Initialize();
+            var sensorManager = GetService<ISensorManager>();
+            sensorManager.Initialize();
+            _ = Task.Run(sensorManager.Process);
 
-            var cm = GetService<ICommandsManager>();
-            cm.Initialize();
+            var commandsManager = GetService<ICommandsManager>();
+            commandsManager.Initialize();
+            _ = Task.Run(commandsManager.Process);
 
-            Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 while (!mqtt.Ready)
                     await Task.Delay(1000);
@@ -129,6 +139,9 @@ public partial class App : Application, IAgentServiceProvider
         {
             Debugger.Break();
         }
+
+        //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
+        await GetService<IActivationService>().ActivateAsync(args);
     }
 
     private void SetupLogger()
@@ -156,9 +169,9 @@ public partial class App : Application, IAgentServiceProvider
         }
     }
 
-    private void ConfigureServices()
+    private IHost ConfigureServices()
     {
-        Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
+        var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
             {
                 services.AddSingleton<IGuidManager, GuidManager>();
@@ -210,17 +223,7 @@ public partial class App : Application, IAgentServiceProvider
                 services.AddSingleton(sp => sp);
             })
             .Build();
-    }
 
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
-    protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
-    {
-        base.OnLaunched(args);
-
-        //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-        await GetService<IActivationService>().ActivateAsync(args);
+        return host;
     }
 }

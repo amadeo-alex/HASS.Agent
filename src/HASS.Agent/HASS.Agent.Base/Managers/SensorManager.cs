@@ -190,14 +190,19 @@ public class SensorManager : ISensorManager
                     .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
                     .Build();
 
-                var attributesMessage = new MqttApplicationMessageBuilder()
-                    .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                    .WithPayload(attributes)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                    .Build();
-
                 await _mqttManager.PublishAsync(message);
-                await _mqttManager.PublishAsync(attributesMessage);
+
+                if (sensor.UseAttributes)
+                {
+                    var attributesMessage = new MqttApplicationMessageBuilder()
+                        .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
+                        .WithPayload(attributes)
+                        .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
+                        .Build();
+
+                    await _mqttManager.PublishAsync(attributesMessage);
+                }
+
 
                 if (!respectChecks)
                     return;
@@ -235,7 +240,7 @@ public class SensorManager : ISensorManager
             await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
     }
 
-    public async void Process()
+    public async Task Process()
     {
         var firstRun = true;
         var firstRunDone = false;

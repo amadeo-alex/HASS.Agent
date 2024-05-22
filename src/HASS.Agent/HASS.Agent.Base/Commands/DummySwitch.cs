@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Contracts.Models.Mqtt;
+using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HASS.Agent.Base.Commands;
-public class DummyCommand : AbstractCommand
+public class DummySwitch : AbstractCommand
 {
 
     public override string DefaultEntityIdName { get; } = "dummyCommand";
@@ -20,8 +22,9 @@ public class DummyCommand : AbstractCommand
     private MqttCommandDiscoveryConfigModel? _discoveryConfigModel;
     private string _state = StateOff;
 
-    public DummyCommand(IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(serviceProvider, configuredSensor)
+    public DummySwitch(IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(serviceProvider, configuredSensor)
     {
+        Domain = HassDomain.Switch.ToString().ToLower();
         var mqtt = serviceProvider.GetService<IMqttManager>();
     }
 
@@ -48,17 +51,17 @@ public class DummyCommand : AbstractCommand
 
     public override void TurnOn()
     {
-        TurnOn(ConfiguredAction);
+        Log.Debug("[{name}] turned on");
+        _state = StateOn;
     }
     public override void TurnOn(string action)
     {
-        if(_state == StateOff)
-            _state = StateOn;
-        else
-            _state = StateOff;
+        Log.Debug("[{name}] turned with action");
+        _state = action;
     }
     public override void TurnOff()
     {
+        Log.Debug("[{name}] turned off");
         _state = StateOff;
     }
 
@@ -66,7 +69,7 @@ public class DummyCommand : AbstractCommand
     {
         var configuredCommand = new ConfiguredEntity()
         {
-            Type = typeof(DummyCommand).Name,
+            Type = typeof(DummySwitch).Name,
             EntityIdName = EntityIdName,
             Name = Name,
             UpdateIntervalSeconds = UpdateIntervalSeconds,

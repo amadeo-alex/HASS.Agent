@@ -30,7 +30,7 @@ public class EntityTypeRegistry : IEntityTypeRegistry
         _serviceProvider = serviceProvider;
         RegisterSensorType(typeof(DummySensor), true, true);
 
-        RegisterCommandType(typeof(DummyCommand), true, true);
+        RegisterCommandType(typeof(DummySwitch), true, true);
     }
 
     public void RegisterSensorType(Type sensorType, bool clientCompatible, bool satelliteCompatible)

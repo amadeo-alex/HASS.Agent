@@ -19,7 +19,7 @@ public interface ISensorManager
     Task PublishSensorsDiscoveryAsync(bool force);
     Task UnpublishSensorsDiscoveryAsync();
     Task PublishSensorsStateAsync();
-    void Process();
+    Task Process();
     void ResetAllSensorChecks();
     //public Task LoadAsync(List<ConfiguredEntity> sensors, List<ConfiguredEntity> toBeDeletedSensors);
     //public Task<List<ConfiguredEntity>> SaveAsync();

@@ -19,6 +19,6 @@ public interface ICommandsManager
     Task PublishCommandsDiscoveryAsync(bool force);
     Task UnpublishCommandsDiscoveryAsync();
     Task PublishCommandsStateAsync();
-    void Process();
+    Task Process();
     void ResetAllCommandsChecks();
 }
