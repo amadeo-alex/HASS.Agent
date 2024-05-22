@@ -14,7 +14,7 @@ public class MqttSensorDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// (Optional) Defines the number of seconds after the sensor’s state expires, if it’s not updated. After expiry, the sensor’s state becomes unavailable. Defaults to 0 in hass.
     /// </summary>
     /// <value></value>
-    [JsonProperty("Expire_after")]
+    [JsonProperty("expire_after")]
     public int ExpireAfter { get; set; }
 
     /// <summary>
@@ -22,7 +22,7 @@ public class MqttSensorDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Unit_of_measurement")]
+    [JsonProperty("unit_of_measurement")]
     public string UnitOfMeasurement { get; set; } = string.Empty;
 
     /// <summary>
@@ -30,6 +30,6 @@ public class MqttSensorDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Value_template")]
+    [JsonProperty("value_template")]
     public string ValueTemplate { get; set; } = string.Empty;
 }

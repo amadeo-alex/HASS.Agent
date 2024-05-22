@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HASS.Agent.Base.Commands;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.Base.Sensors.SingleValue;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HASS.Agent.Base.Managers;
 
 public class EntityTypeRegistry : IEntityTypeRegistry
 {
+    private readonly IServiceProvider _serviceProvider;
+
     public Dictionary<string, RegisteredEntity> SensorTypes { get; } = [];
     public Dictionary<string, RegisteredEntity> CommandTypes { get; } = [];
 
@@ -21,9 +25,12 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public Dictionary<string, RegisteredEntity> SatelliteSensorTypes => SensorTypes.Where(st => st.Value.SatelliteCompatible)
         .ToDictionary(st => st.Key, st => st.Value);
 
-    public EntityTypeRegistry()
+    public EntityTypeRegistry(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         RegisterSensorType(typeof(DummySensor), true, true);
+
+        RegisterCommandType(typeof(DummyCommand), true, true);
     }
 
     public void RegisterSensorType(Type sensorType, bool clientCompatible, bool satelliteCompatible)
@@ -63,13 +70,15 @@ public class EntityTypeRegistry : IEntityTypeRegistry
 
     private IDiscoverable CreateDiscoverableInstance(Type discoverableType, ConfiguredEntity configuredEntity)
     {
-        var constructorMethod = discoverableType.GetConstructor([typeof(ConfiguredEntity)])
-            ?? throw new MethodAccessException($"type {discoverableType} is missing required constructor accepting ConfiguredEntity");
+        var sensor = ActivatorUtilities.CreateInstance(_serviceProvider, discoverableType, configuredEntity);
 
-        var obj = constructorMethod.Invoke(new object[] { configuredEntity })
-            ?? throw new Exception($"{discoverableType} instance cannot be created");
+        /*        var constructorMethod = discoverableType.GetConstructor([typeof(ConfiguredEntity)])
+                    ?? throw new MethodAccessException($"type {discoverableType} is missing required constructor accepting ConfiguredEntity");
 
-        return (IDiscoverable)obj;
+                var obj = constructorMethod.Invoke(new object[] { configuredEntity })
+                    ?? throw new Exception($"{discoverableType} instance cannot be created");*/
+
+        return (IDiscoverable)sensor;
     }
 
     public IDiscoverable CreateSensorInstance(ConfiguredEntity configuredEntity)

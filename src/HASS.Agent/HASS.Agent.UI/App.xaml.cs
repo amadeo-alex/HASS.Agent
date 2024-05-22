@@ -41,6 +41,8 @@ using HASS.Agent.Base.Contracts;
 using System.Threading.Tasks;
 using MQTTnet;
 using Windows.Media.Ocr;
+using HASS.Agent.Base.Commands;
+using System.Xml;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -95,14 +97,17 @@ public partial class App : Application, IAgentServiceProvider
             var guidManager = GetService<IGuidManager>();
             guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
 
-            var sm = GetService<ISensorManager>();
-            sm.Initialize();
-
             var mqtt = GetService<IMqttManager>();
             Task.Run(async () =>
             {
                 await mqtt.StartClient();
-            });
+            }).Wait();
+
+            var sm = GetService<ISensorManager>();
+            sm.Initialize();
+
+            var cm = GetService<ICommandsManager>();
+            cm.Initialize();
 
             Task.Run(async () =>
             {
@@ -133,16 +138,19 @@ public partial class App : Application, IAgentServiceProvider
         var logger = logManager.GetLogger(launchArguments);
         Log.Logger = logger;
 
+        Log.Information("----------------------------------------------------------------");
+        Log.Information("[MAIN] HASS.Agent started");
+
 #if DEBUG
         logManager.ExtendedLoggingEnabled = true;
         Log.Information("[MAIN] DEBUG BUILD - TESTING PURPOSES ONLY");
-        Log.Information("[MAIN] Started with arguments: {a}", launchArguments);
 #endif
 
         if (logManager.ExtendedLoggingEnabled)
         {
             logManager.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
-            Log.Information("[MAIN] Extended logging enabled");
+            Log.Debug("[MAIN] Extended logging enabled");
+            Log.Debug("[MAIN] Started with arguments: {a}", launchArguments);
 
             AppDomain.CurrentDomain.FirstChanceException += logManager.OnFirstChanceExceptionHandler;
         }
@@ -150,59 +158,58 @@ public partial class App : Application, IAgentServiceProvider
 
     private void ConfigureServices()
     {
-        Host = Microsoft.Extensions.Hosting.Host.
-        CreateDefaultBuilder().
-        UseContentRoot(AppContext.BaseDirectory).
-        ConfigureServices((context, services) =>
-        {
-            services.AddSingleton<IGuidManager, GuidManager>();
-
-            services.AddSingleton(new ApplicationInfo()
+        Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
+            ConfigureServices((context, services) =>
             {
-                Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
-                Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? throw new Exception("cannot obtain application version"),
-                ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
-                Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
-            });
+                services.AddSingleton<IGuidManager, GuidManager>();
 
-            services.AddSingleton<IVariableManager, VariableManager>();
-            services.AddSingleton<ILogManager, LogManager>();
+                services.AddSingleton(new ApplicationInfo()
+                {
+                    Name = Assembly.GetExecutingAssembly().GetName().Name ?? "HASS.Agent",
+                    Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? throw new Exception("cannot obtain application version"),
+                    ExecutablePath = AppDomain.CurrentDomain.BaseDirectory,
+                    Executable = Process.GetCurrentProcess().MainModule?.ModuleName ?? throw new Exception("cannot obtain application executable"),
+                });
 
-            services.AddSingleton<IGuidManager, GuidManager>();
-            services.AddSingleton<ISettingsManager, SettingsManager>();
+                services.AddSingleton<IVariableManager, VariableManager>();
+                services.AddSingleton<ILogManager, LogManager>();
 
-            services.AddSingleton<IMqttManager, MqttManager>();
+                services.AddSingleton<IGuidManager, GuidManager>();
+                services.AddSingleton<ISettingsManager, SettingsManager>();
 
-            services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
-            services.AddSingleton<ISensorManager, SensorManager>();
+                services.AddSingleton<IMqttManager, MqttManager>();
 
+                services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
+                services.AddSingleton<ISensorManager, SensorManager>();
+                services.AddSingleton<ICommandsManager, CommandsManager>();
 
+                services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
-            services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
+                services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
 
-            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<INavigationViewService, NavigationViewService>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<IActivationService, ActivationService>();
 
-            services.AddSingleton<IPageService, PageService>();
-            services.AddSingleton<INavigationViewService, NavigationViewService>();
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IActivationService, ActivationService>();
+                services.AddTransient<ShellPageViewModel>();
+                services.AddTransient<ShellPage>();
 
-            services.AddTransient<ShellPageViewModel>();
-            services.AddTransient<ShellPage>();
+                services.AddTransient<MainPageViewModel>();
+                services.AddTransient<MainPage>();
 
-            services.AddTransient<MainPageViewModel>();
-            services.AddTransient<MainPage>();
+                services.AddTransient<SensorsPageViewModel>();
+                services.AddTransient<SensorsPage>();
 
-            services.AddTransient<SensorsPageViewModel>();
-            services.AddTransient<SensorsPage>();
+                services.AddTransient<CommandsPageViewModel>();
+                services.AddTransient<CommandsPage>();
 
-            services.AddTransient<CommandsPageViewModel>();
-            services.AddTransient<CommandsPage>();
+                services.AddTransient<SettingsPageViewModel>();
+                services.AddTransient<SettingsPage>();
 
-            services.AddTransient<SettingsPageViewModel>();
-            services.AddTransient<SettingsPage>();
-        }).
-        Build();
+                services.AddSingleton(sp => sp);
+            })
+            .Build();
     }
 
     /// <summary>

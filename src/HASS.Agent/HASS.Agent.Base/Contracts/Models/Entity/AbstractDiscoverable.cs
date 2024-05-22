@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Models.Mqtt;
+using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 
 namespace HASS.Agent.Base.Contracts.Models.Entity;
@@ -17,6 +18,8 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     {
         return SanitizeRegex().Replace(inputString, "_");
     }
+    
+    protected readonly ConfiguredEntity _configuration;
 
     public string Domain { get; set; } = string.Empty;
     public string EntityIdName { get; set; } = string.Empty;
@@ -31,6 +34,18 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     public DateTime LastUpdated { get; set; } = DateTime.MinValue;
     public string PreviousPublishedState { get; set; } = string.Empty;
     public string PreviousPublishedAttributes { get; set; } = string.Empty;
+
+    protected AbstractDiscoverable(ConfiguredEntity configuredEntity)
+    {
+        _configuration = configuredEntity;
+
+        UniqueId = configuredEntity.UniqueId.ToString();
+        EntityIdName = configuredEntity.EntityIdName;
+        Name = configuredEntity.Name;
+        UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
+        Domain = HassDomain.Sensor.ToString();
+        UseAttributes = configuredEntity.UseAttributes;
+    }
 
     public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
     public abstract AbstractMqttDiscoveryConfigModel GetAutoDiscoveryConfig();

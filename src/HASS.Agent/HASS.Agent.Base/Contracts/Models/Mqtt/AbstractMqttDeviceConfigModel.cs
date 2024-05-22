@@ -52,7 +52,7 @@ public abstract class AbstractMqttDeviceConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Sw_version")]
+    [JsonProperty("sw_version")]
     public string SoftwareVersion { get; set; } = string.Empty;
 
     /// <summary>
@@ -60,6 +60,6 @@ public abstract class AbstractMqttDeviceConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Via_device")]
+    [JsonProperty("via_device")]
     public string ViaDevice { get; set; } = string.Empty;
 }

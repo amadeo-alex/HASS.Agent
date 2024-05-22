@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,18 +8,17 @@ using HASS.Agent.Base.Contracts.Models.Entity;
 using MQTTnet;
 
 namespace HASS.Agent.Base.Contracts.Managers;
-internal interface ICommandsManager
+public interface ICommandsManager
 {
-    List<AbstractDiscoverable> Commands { get; }
+    ObservableCollection<AbstractDiscoverable> Commands { get; }
+
+    bool Pause { get; set; }
+    bool Exit { get; set; }
 
     void Initialize();
-    void Stop();
-    void Pause();
-    void Resume();
-    Task PublishAllCommandsAsync();
-    Task UnpublishAllCommandsAsync();
-    Task UpdateCommandsStateAsync();
+    Task PublishCommandsDiscoveryAsync(bool force);
+    Task UnpublishCommandsDiscoveryAsync();
+    Task PublishCommandsStateAsync();
     void Process();
-    void HandleReceivedCommand(MqttApplicationMessage message);
     void ResetAllCommandsChecks();
 }

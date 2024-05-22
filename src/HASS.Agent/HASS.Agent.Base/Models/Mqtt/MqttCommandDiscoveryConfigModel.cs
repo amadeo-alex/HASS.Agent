@@ -15,7 +15,7 @@ public class MqttCommandDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Command_topic")]
+    [JsonProperty("command_topic")]
     public string CommandTopic { get; set; } = string.Empty;
 
     /// <summary>
@@ -23,7 +23,7 @@ public class MqttCommandDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Action_topic")]
+    [JsonProperty("action_topic")]
     public string ActionTopic { get; set; } = string.Empty;
 
     /// <summary>
@@ -31,6 +31,6 @@ public class MqttCommandDiscoveryConfigModel : AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Value_template")]
+    [JsonProperty("value_template")]
     public string ValueTemplate { get; set; } = string.Empty;
 }

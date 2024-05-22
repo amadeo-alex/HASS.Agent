@@ -11,31 +11,32 @@ using HASS.Agent.Base.Models;
 namespace HASS.Agent.Base.Contracts.Models.Entity;
 
 /// <summary>
-/// Base for all single-value sensors.
+/// Base for all commands.
 /// </summary>
-public abstract class AbstractSingleValueSensor : AbstractDiscoverable
+public abstract class AbstractCommand : AbstractDiscoverable
 {
+    private const string _configuredActionParam = "configuredAction";
+
+    public const string StateOn = "ON";
+    public const string StateOff = "OFF";
+
     public abstract string DefaultEntityIdName { get; }
 
-    /*    protected AbstractSingleValueSensor(string entityIdName, string name, int updateIntervalSeconds, string uniqueId, bool useAttributes)
-        {
-            UniqueId = uniqueId;
-            EntityIdName = entityIdName;
-            Name = name;
-            UpdateIntervalSeconds = updateIntervalSeconds;
-            Domain = HassDomain.Sensor.ToString();
-            UseAttributes = useAttributes;
-        }*/
+    public string ConfiguredAction => _configuration.GetParameter(_configuredActionParam);
 
-    protected AbstractSingleValueSensor(IServiceProvider serviceProvider, ConfiguredEntity configuredEntity) : base(configuredEntity)
+    protected AbstractCommand(IServiceProvider serviceProvider, ConfiguredEntity configuredEntity) : base(configuredEntity)
     {
         UniqueId = configuredEntity.UniqueId.ToString();
         EntityIdName = configuredEntity.EntityIdName;
         Name = configuredEntity.Name;
         UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
-        Domain = HassDomain.Sensor.ToString().ToLower();
+        Domain = HassDomain.Button.ToString().ToLower();
         UseAttributes = configuredEntity.UseAttributes;
     }
+
+    public abstract void TurnOn();
+    public abstract void TurnOn(string action);
+    public abstract void TurnOff();
 
     public override void ResetChecks()
     {

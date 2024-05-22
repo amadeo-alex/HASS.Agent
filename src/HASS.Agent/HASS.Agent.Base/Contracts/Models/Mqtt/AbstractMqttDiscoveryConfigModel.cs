@@ -19,7 +19,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Device_class")]
+    [JsonProperty("device_class")]
     public string DeviceClass { get; set; } = string.Empty;
 
     /// <summary>
@@ -27,7 +27,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Availability_topic")]
+    [JsonProperty("availability_topic")]
     public string AvailabilityTopic { get; set; } = string.Empty;
 
     /// <summary>
@@ -48,7 +48,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("State_topic")]
+    [JsonProperty("state_topic")]
     public string StateTopic { get; set; } = string.Empty;
 
     /// <summary>
@@ -56,7 +56,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue(false)]
-    [JsonProperty("Force_update")]
+    [JsonProperty("force_update")]
     public bool ForceUpdate { get; set; } = false;
 
     /// <summary>
@@ -71,7 +71,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Json_attributes_template")]
+    [JsonProperty("json_attributes_template")]
     public string JsonAttributesTemplate { get; set; } = string.Empty;
 
     /// <summary>
@@ -79,7 +79,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Json_attributes_topic")]
+    [JsonProperty("json_attributes_topic")]
     public string JsonAttributesTopic { get; set; } = string.Empty;
 
     /// <summary>
@@ -87,7 +87,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Payload_available")]
+    [JsonProperty("payload_available")]
     public string PayloadAvailable { get; set; } = string.Empty;
 
     /// <summary>
@@ -95,7 +95,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Payload_not_available")]
+    [JsonProperty("payload_not_available")]
     public string PayloadNotAvailable { get; set; } = string.Empty;
 
     /// <summary>
@@ -110,7 +110,7 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Unique_id")]
+    [JsonProperty("unique_id")]
     public string UniqueId { get; set; } = string.Empty;
 
     /// <summary>
@@ -120,6 +120,6 @@ public abstract class AbstractMqttDiscoveryConfigModel
     /// </summary>
     /// <value></value>
     [DefaultValue("")]
-    [JsonProperty("Object_id")]
+    [JsonProperty("object_id")]
     public string ObjectId { get; set; } = string.Empty;
 }

@@ -30,8 +30,9 @@ public class MqttManager : IMqttManager
 {
     public const string DefaultMqttDiscoveryPrefix = "homeassistant";
 
-    private readonly JsonSerializerSettings jsonSerializerSettings = new()
+    private readonly JsonSerializerSettings _jsonSerializerSettings = new()
     {
+        Formatting = Formatting.Indented,
         ContractResolver = new DefaultContractResolver()
         {
             NamingStrategy = new CamelCaseNamingStrategy()
@@ -105,10 +106,12 @@ public class MqttManager : IMqttManager
             throw new ArgumentException($"handler for {topic} already registered");
 
         _mqttMessageHandlers[topic] = handler;
+        _mqttClient.SubscribeAsync(topic);
     }
 
     public void UnregisterMessageHandler(string topic)
     {
+        _mqttClient.UnsubscribeAsync(topic);
         _mqttMessageHandlers.Remove(topic);
     }
 
@@ -227,7 +230,7 @@ public class MqttManager : IMqttManager
                 if (payload == null)
                     return;
 
-                var notification = JsonConvert.DeserializeObject<Notification>(payload, jsonSerializerSettings);
+                var notification = JsonConvert.DeserializeObject<Notification>(payload, _jsonSerializerSettings);
                 //_notificationManager.HandleReceivedNotification(notification);
                 //TODO(Amadeo): event/observable to show notification
 
@@ -240,7 +243,7 @@ public class MqttManager : IMqttManager
                 if (payload == null)
                     return;
 
-                var command = JsonConvert.DeserializeObject<MediaPlayerCommand>(payload, jsonSerializerSettings)!;
+                var command = JsonConvert.DeserializeObject<MediaPlayerCommand>(payload, _jsonSerializerSettings)!;
                 //_mediaManager.HandleReceivedCommand(command);
 
                 /*                switch (command.Type)

@@ -12,6 +12,8 @@ using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
 using MQTTnet;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using Windows.AI.MachineLearning;
 
@@ -22,6 +24,17 @@ public class SensorManager : ISensorManager
     private readonly ISettingsManager _settingsManager;
     private readonly IEntityTypeRegistry _entityTypeRegistry;
     private readonly IMqttManager _mqttManager;
+
+    private readonly JsonSerializerSettings _jsonSerializerSettings = new()
+    {
+        Formatting = Formatting.Indented,
+        ContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        },
+        NullValueHandling = NullValueHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+    };
 
     private bool _discoveryPublished = false;
 
@@ -37,16 +50,26 @@ public class SensorManager : ISensorManager
         _mqttManager = mqttManager;
     }
 
+    private void AddSensor(ConfiguredEntity configuredSensor)
+    {
+        var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
+        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        _ = PublishSensorAutoDiscoveryConfigAsync(sensor);
+        Sensors.Add(sensor);
+    }
+
+    private void RemoveSensor(AbstractDiscoverable sensor)
+    {
+        Sensors.Remove(sensor);
+        _ = PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
+    }
+
     public void Initialize()
     {
         _settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
 
         foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
-        {
-            var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-            sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
-            Sensors.Add(sensor);
-        }
+            AddSensor(configuredSensor);
 
         _settingsManager.ConfiguredSensors.CollectionChanged += ConfiguredSensors_CollectionChanged;
     }
@@ -62,12 +85,9 @@ public class SensorManager : ISensorManager
                     return;
 
                 foreach (ConfiguredEntity configuredSensor in e.NewItems)
-                {
-                    var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-                    sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
-                    Sensors.Add(sensor);
-                }
+                    AddSensor(configuredSensor);
                 break;
+
             case NotifyCollectionChangedAction.Remove:
                 if (e.OldItems == null)
                     return;
@@ -76,7 +96,7 @@ public class SensorManager : ISensorManager
                 {
                     var sensor = Sensors.Where(s => s.UniqueId == configuredSensor.UniqueId.ToString()).FirstOrDefault();
                     if (sensor != null)
-                        Sensors.Remove(sensor);
+                        RemoveSensor(sensor);
                 }
                 break;
         }
@@ -88,11 +108,11 @@ public class SensorManager : ISensorManager
         {
             await PublishSingleSensorAutoDiscoveryConfigAsync(sensor, clear);
         }
-        else if (sensor is AbstractMultiValueSensor multiValueSensor)
-        {
-            foreach (var singleSensor in multiValueSensor.Sensors)
-                await PublishSingleSensorAutoDiscoveryConfigAsync(singleSensor.Value, clear);
-        }
+        /*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
+                {
+                    foreach (var singleSensor in multiValueSensor.Sensors)
+                        await PublishSingleSensorAutoDiscoveryConfigAsync(singleSensor.Value, clear);
+                }*/
     }
 
     private async Task PublishSingleSensorAutoDiscoveryConfigAsync(AbstractDiscoverable sensor, bool clear)
@@ -114,6 +134,8 @@ public class SensorManager : ISensorManager
                 var payload = sensor.GetAutoDiscoveryConfig();
                 if (sensor.IgnoreAvailability)
                     payload.AvailabilityTopic = string.Empty;
+
+                messageBuilder.WithPayload(JsonConvert.SerializeObject(payload, _jsonSerializerSettings));
             }
 
             await _mqttManager.PublishAsync(messageBuilder.Build());
@@ -130,11 +152,11 @@ public class SensorManager : ISensorManager
         {
             await PublishSingleSensorStateAsync(sensor);
         }
-        else if (sensor is AbstractMultiValueSensor multiValueSensor)
-        {
-            foreach (var singleSensor in multiValueSensor.Sensors)
-                await PublishSingleSensorStateAsync(singleSensor.Value);
-        }
+        /*        else if (sensor is AbstractMultiValueSensor multiValueSensor)
+                {
+                    foreach (var singleSensor in multiValueSensor.Sensors)
+                        await PublishSingleSensorStateAsync(singleSensor.Value);
+                }*/
     }
 
     private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true)
@@ -210,7 +232,7 @@ public class SensorManager : ISensorManager
     public async Task UnpublishSensorsDiscoveryAsync()
     {
         foreach (var sensor in Sensors)
-            await PublishSensorAutoDiscoveryConfigAsync(sensor, true);
+            await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
     }
 
     public async void Process()
@@ -239,9 +261,7 @@ public class SensorManager : ISensorManager
     public void ResetAllSensorChecks()
     {
         foreach (var sensor in Sensors)
-        {
             sensor.ResetChecks();
-        }
     }
 
 }
