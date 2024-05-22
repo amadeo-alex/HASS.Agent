@@ -5,11 +5,34 @@
     xmlns:local="using:HASS.Agent.UI.Views.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:models="using:HASS.Agent.Base.Contracts.Models.Entity"
     mc:Ignorable="d">
 
-    <Grid>
+	<Page.Resources>
+		<DataTemplate x:Key="SumDataTemplate" x:DataType="models:AbstractDiscoverable">
+			<TextBlock Text="{x:Bind Name}" x:Phase="1" Margin="0,5,0,5"/>
+		</DataTemplate>
+	</Page.Resources>
 
-		<TextBlock Text="Dummy Sensors Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<Grid Padding="32">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<ListView
+			Grid.Row="1"
+            x:Name="BaseExample"
+            ItemTemplate="{StaticResource SumDataTemplate}"
+			ItemsSource="{x:Bind ViewModel.Sensors}"
+            Width="350"
+            Height="400"
+            HorizontalAlignment="Left"
+			Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+			BorderThickness="1"
+			BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+			CornerRadius="{StaticResource ControlCornerRadius}"
+		/>
 
 	</Grid>
 </Page>
