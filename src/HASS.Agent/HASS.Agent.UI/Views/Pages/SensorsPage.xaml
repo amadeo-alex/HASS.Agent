@@ -17,6 +17,12 @@
             TrueValue="&#xE768;"
 		/>
 
+		<converters:BoolToObjectConverter
+			x:Key="BoolToActive"
+            FalseValue="Inactive"
+            TrueValue="Active"
+		/>
+
 		<DataTemplate x:Key="SensorDataTemplate" x:DataType="models:AbstractDiscoverableViewModel">
 			<Grid>
 				<Grid.RowDefinitions>
@@ -31,7 +37,10 @@
 				</Grid.ColumnDefinitions>
 
 				<Border Grid.Column="0">
-					<FontIcon Glyph="{x:Bind Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}" HorizontalAlignment="Center" Margin="15 0"/>
+					<FontIcon Glyph="{x:Bind Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}"
+							  HorizontalAlignment="Center"
+							  Margin="15 0"
+							  ToolTipService.ToolTip="{x:Bind Active, Converter={StaticResource BoolToActive}, Mode=OneWay}"/>
 				</Border>
 				<Border Grid.Column="1">
 					<TextBlock Text="{x:Bind Name}" Margin="10"/>
@@ -47,8 +56,16 @@
 						<Button ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{x:Bind}">
 							<FontIcon Glyph="&#xE7E8;" FontSize="16"/>
 						</Button>
-						<Button ToolTipService.ToolTip="Delete" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}">
+						<Button ToolTipService.ToolTip="Delete">
 							<FontIcon Glyph="&#xE74D;" FontSize="16"/>
+							<Button.Flyout>
+								<Flyout>
+									<StackPanel>
+										<TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Sensor will be removed.&#10;Do you want to continue?" Margin="0,0,0,12" />
+										<Button Content="Yes" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}"/>
+									</StackPanel>
+								</Flyout>
+							</Button.Flyout>
 						</Button>
 					</StackPanel>
 				</Border>

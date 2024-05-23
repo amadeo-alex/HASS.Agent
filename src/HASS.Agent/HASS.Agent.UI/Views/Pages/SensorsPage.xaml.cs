@@ -36,19 +36,4 @@ public sealed partial class SensorsPage : Page
         ViewModel = App.GetService<SensorsPageViewModel>();
         this.InitializeComponent();
     }
-
-    private void EditButton_Click(object sender, RoutedEventArgs e)
-    {
-        ViewModel.EditCommand.Execute(this);
-    }
-
-    private void StartStopButton_Click(object sender, RoutedEventArgs e)
-    {
-        ViewModel.StartStopCommand.Execute(this);
-    }
-
-    private void DeleteButton_Click(object sender, RoutedEventArgs e)
-    {
-        ViewModel.DeleteCommand.Execute(this);
-    }
 }

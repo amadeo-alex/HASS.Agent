@@ -118,6 +118,7 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
 
 
         _badge.Value = Sensors.Count;
+        RaiseOnPropertyChanged(nameof(InfoBadge));
         RaiseOnPropertyChanged(nameof(Sensors));
     }
 
