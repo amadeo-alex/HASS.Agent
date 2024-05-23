@@ -74,6 +74,7 @@ public class DummySwitch : AbstractCommand
             Name = Name,
             UpdateIntervalSeconds = UpdateIntervalSeconds,
             UniqueId = Guid.Parse(UniqueId),
+            Active = Active
         };
 
         configuredCommand.SetParameter("someSecretValueCMD", "secretParameterCMD");

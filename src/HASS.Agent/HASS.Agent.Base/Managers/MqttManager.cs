@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Contracts.Models.MediaPlayer;
@@ -26,7 +27,8 @@ using Serilog;
 using Windows.Globalization;
 
 namespace HASS.Agent.Base.Managers;
-public class MqttManager : IMqttManager
+
+public partial class MqttManager : ObservableObject, IMqttManager
 {
     public const string DefaultMqttDiscoveryPrefix = "homeassistant";
 
@@ -54,7 +56,8 @@ public class MqttManager : IMqttManager
 
     private Dictionary<string, IMqttMessageHandler> _mqttMessageHandlers = [];
 
-    public MqttStatus Status { get; private set; } = MqttStatus.NotInitialized;
+    [ObservableProperty]
+    public MqttStatus status = MqttStatus.NotInitialized;
     public bool Ready { get; private set; } = false;
 
     public AbstractMqttDeviceConfigModel DeviceConfigModel { get; set; }
@@ -406,7 +409,8 @@ public class MqttManager : IMqttManager
 
     public async Task DisconnectAsync()
     {
-
+        Status = MqttStatus.Disconnecting;
+        await _mqttClient.StopAsync();
         return;
     }
 

@@ -74,6 +74,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     private void RemoveCommand(AbstractDiscoverable command)
     {
         Commands.Remove(command);
+        _ = PublishCommandStateAsync(command, respectChecks: false, clear: true);
         _ = PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
 
         var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
@@ -140,58 +141,61 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         }
     }
 
-    private async Task PublishCommandStateAsync(AbstractDiscoverable command, bool respectChecks = true)
+    private async Task PublishCommandStateAsync(AbstractDiscoverable command, bool respectChecks = true, bool clear = false)
     {
         try
         {
-            if (respectChecks)
+            if (respectChecks && command.LastUpdated.AddSeconds(command.UpdateIntervalSeconds) > DateTime.Now)
+                return;
+
+            var state = command.State;
+            if (state == null)
+                return;
+
+            var attributes = command.Attributes;
+
+            if (respectChecks &&
+                command.PreviousPublishedState == state &&
+                command.PreviousPublishedAttributes == attributes)
             {
-                if (command.LastUpdated.AddSeconds(command.UpdateIntervalSeconds) > DateTime.Now)
-                    return;
-
-                var state = command.State;
-                if (state == null)
-                    return;
-
-                var attributes = command.Attributes;
-
-                if (respectChecks)
-                {
-                    if (command.PreviousPublishedState == state && command.PreviousPublishedAttributes == attributes)
-                    {
-                        command.LastUpdated = DateTime.Now;
-                        return;
-                    }
-                }
-
-                var autodiscoveryConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
-                var message = new MqttApplicationMessageBuilder()
-                    .WithTopic(autodiscoveryConfig.StateTopic)
-                    .WithPayload(state)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                    .Build();
-
-                await _mqttManager.PublishAsync(message);
-
-                if (command.UseAttributes)
-                {
-                    var attributesMessage = new MqttApplicationMessageBuilder()
-                        .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                        .WithPayload(attributes)
-                        .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                        .Build();
-
-                    await _mqttManager.PublishAsync(attributesMessage);
-                }
-
-
-                if (!respectChecks)
-                    return;
-
-                command.PreviousPublishedState = state;
-                command.PreviousPublishedAttributes = attributes;
                 command.LastUpdated = DateTime.Now;
+                return;
             }
+
+            var autodiscoveryConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(autodiscoveryConfig.StateTopic)
+                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+
+            if (clear)
+                message.WithPayload(Array.Empty<byte>());
+            else
+                message.WithPayload(state);
+
+            await _mqttManager.PublishAsync(message.Build());
+
+            if (command.UseAttributes)
+            {
+                var attributesMessage = new MqttApplicationMessageBuilder()
+                    .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
+                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+
+                if (clear)
+                    attributesMessage.WithPayload(Array.Empty<byte>());
+                else
+                    attributesMessage.WithPayload(attributes);
+
+                await _mqttManager.PublishAsync(attributesMessage.Build());
+            }
+
+
+            if (!respectChecks || clear)
+                return;
+
+            command.PreviousPublishedState = state;
+            command.PreviousPublishedAttributes = attributes;
+            command.LastUpdated = DateTime.Now;
+
         }
         catch (Exception e)
         {
@@ -212,7 +216,10 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     public async Task PublishCommandsStateAsync()
     {
         foreach (var command in Commands)
-            await PublishCommandStateAsync(command);
+        {
+            if (command.Active)
+                await PublishCommandStateAsync(command);
+        }
     }
 
     public async Task UnpublishCommandsDiscoveryAsync()
@@ -254,6 +261,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     {
         foreach (var commandDiscoverable in Commands)
         {
+            if (!commandDiscoverable.Active)
+                continue;
+
             var command = (AbstractCommand)commandDiscoverable;
             var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
 

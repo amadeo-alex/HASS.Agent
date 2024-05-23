@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using HASS.Agent.UI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -25,8 +26,15 @@ namespace HASS.Agent.UI.Views.Pages;
 /// </summary>
 public sealed partial class SettingsPage : Page
 {
+    public SettingsPageViewModel ViewModel
+    {
+        get;
+    }
+
     public SettingsPage()
     {
+        ViewModel = App.GetService<SettingsPageViewModel>();
         this.InitializeComponent();
+        DataContext = ViewModel;
     }
 }

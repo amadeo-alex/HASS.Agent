@@ -8,8 +8,17 @@
     mc:Ignorable="d">
 
     <Grid>
-
-		<TextBlock Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		
+		<TextBlock Grid.Row="0" Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<TextBlock Grid.Row="1" Text="{x:Bind ViewModel.MqttStatus, Mode=OneWay}"/>
+		<Button Grid.Row="2" Content="plus" Command="{x:Bind ViewModel.ButtonCommand}"/>
+		<Button Grid.Row="3" Content="stop mqtt" Command="{x:Bind ViewModel.ButtonCommand2}"/>
 
 	</Grid>
 </Page>

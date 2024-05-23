@@ -1,48 +1,25 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using HASS.Agent.UI.Contracts.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using HASS.Agent.UI.Services;
 using HASS.Agent.UI.Activation;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages;
-using Newtonsoft.Json;
-using HASS.Agent.Base.Models.Mqtt;
-using HASS.Agent.Base.Sensors.SingleValue;
-using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
-using HASS.Agent.Base.Helpers;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Managers;
-using HASS.Agent.Base;
 using Serilog;
 using Serilog.Events;
 using System.Reflection;
-using System.Xml.Linq;
 using System.Diagnostics;
 using HASS.Agent.Base.Contracts;
 using System.Threading.Tasks;
 using MQTTnet;
-using Windows.Media.Ocr;
-using HASS.Agent.Base.Commands;
-using System.Xml;
+using HASS.Agent.Base.Sensors.SingleValue;
+using System.Globalization;
+using System.Threading;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -171,6 +148,8 @@ public partial class App : Application, IAgentServiceProvider
 
     private IHost ConfigureServices()
     {
+        var uiDispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
         var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
             {
@@ -220,10 +199,12 @@ public partial class App : Application, IAgentServiceProvider
                 services.AddTransient<SettingsPageViewModel>();
                 services.AddTransient<SettingsPage>();
 
+                services.AddSingleton(uiDispatcherQueue);
+
                 services.AddSingleton(sp => sp);
             })
             .Build();
-
+        
         return host;
     }
 }

@@ -60,6 +60,12 @@ public class ConfiguredEntity //TODO(Amadeo): interface
         set => SetBoolParameter(nameof(UseAttributes), value);
     }
 
+    [JsonIgnore]
+    public bool Active
+    {
+        get => GetBoolParameter(nameof(Active), true);
+        set => SetBoolParameter(nameof(Active), value);
+    }
 
     public void SetParameter(string parameterName, string value)
     {

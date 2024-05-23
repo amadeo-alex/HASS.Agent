@@ -5,34 +5,111 @@
     xmlns:local="using:HASS.Agent.UI.Views.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:models="using:HASS.Agent.Base.Contracts.Models.Entity"
-    mc:Ignorable="d">
+	xmlns:models="using:HASS.Agent.UI.ViewModels"
+	xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    mc:Ignorable="d"
+	x:Name="ThisPage">
 
 	<Page.Resources>
-		<DataTemplate x:Key="SumDataTemplate" x:DataType="models:AbstractDiscoverable">
-			<TextBlock Text="{x:Bind Name}" x:Phase="1" Margin="0,5,0,5"/>
+		<converters:BoolToObjectConverter
+			x:Key="BoolToGlyph"
+            FalseValue="&#xE769;"
+            TrueValue="&#xE768;"
+		/>
+
+		<DataTemplate x:Key="SensorDataTemplate" x:DataType="models:AbstractDiscoverableViewModel">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="3*"/>
+					<ColumnDefinition Width="3*"/>
+					<ColumnDefinition Width="3*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Column="0">
+					<FontIcon Glyph="{x:Bind Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}" HorizontalAlignment="Center" Margin="15 0"/>
+				</Border>
+				<Border Grid.Column="1">
+					<TextBlock Text="{x:Bind Name}" Margin="10"/>
+				</Border>
+				<Border Grid.Column="2">
+					<TextBlock Text="{x:Bind Type}" Margin="10"/>
+				</Border>
+				<Border Grid.Column="3">
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+						<Button ToolTipService.ToolTip="Edit" Command="{Binding ElementName=ThisPage, Path=ViewModel.EditCommand}" CommandParameter="{x:Bind}">
+							<FontIcon Glyph="&#xE70F;" FontSize="16"/>
+						</Button>
+						<Button ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{x:Bind}">
+							<FontIcon Glyph="&#xE7E8;" FontSize="16"/>
+						</Button>
+						<Button ToolTipService.ToolTip="Delete" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}">
+							<FontIcon Glyph="&#xE74D;" FontSize="16"/>
+						</Button>
+					</StackPanel>
+				</Border>
+			</Grid>
+		</DataTemplate>
+
+		<DataTemplate x:Key="SensorListHeaderTemplate">
+			<Grid Margin="12 0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="3*"/>
+					<ColumnDefinition Width="3*"/>
+					<ColumnDefinition Width="3*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Column="0">
+					<TextBlock Text="" Margin="10" HorizontalAlignment="Center"/>
+				</Border>
+				<Border Grid.Column="1">
+					<TextBlock Text="Name" Margin="10" />
+				</Border>
+				<Border Grid.Column="2">
+					<TextBlock Text="Type" Margin="10"/>
+				</Border>
+				<Border Grid.Column="3">
+					<TextBlock Text="Options" Margin="10" HorizontalAlignment="Right"/>
+				</Border>
+			</Grid>
 		</DataTemplate>
 	</Page.Resources>
 
-	<Grid Padding="32">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
 		<ListView
+			x:Name="SensorsListView"
 			Grid.Row="1"
-            x:Name="BaseExample"
-            ItemTemplate="{StaticResource SumDataTemplate}"
+			HeaderTemplate="{StaticResource SensorListHeaderTemplate}"
+            ItemTemplate="{StaticResource SensorDataTemplate}"
 			ItemsSource="{x:Bind ViewModel.Sensors}"
-            Width="350"
+            Width="900"
             Height="400"
-            HorizontalAlignment="Left"
+            HorizontalAlignment="Center"
 			Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
 			BorderThickness="1"
 			BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
 			CornerRadius="{StaticResource ControlCornerRadius}"
-		/>
+		>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				</Style>
+			</ListView.ItemContainerStyle>
+		</ListView>
 
 	</Grid>
 </Page>

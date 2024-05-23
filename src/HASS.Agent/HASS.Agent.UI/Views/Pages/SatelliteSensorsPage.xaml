@@ -10,7 +10,7 @@
     <Grid>
 
 		<TextBlock Text="Dummy Sensors Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-		<Button Content="plus" Command="{x:Bind ViewModel.ButtonCommand}"/>
+		<Button Content="plus" Command="{x:Bind ViewModel.EditCommand}"/>
 
 	</Grid>
 </Page>

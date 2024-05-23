@@ -61,6 +61,7 @@ public class SensorManager : ISensorManager
     private void RemoveSensor(AbstractDiscoverable sensor)
     {
         Sensors.Remove(sensor);
+        _ = PublishSingleSensorStateAsync(sensor, respectChecks: false, clear: true);
         _ = PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
     }
 
@@ -159,58 +160,60 @@ public class SensorManager : ISensorManager
                 }*/
     }
 
-    private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true)
+    private async Task PublishSingleSensorStateAsync(AbstractDiscoverable sensor, bool respectChecks = true, bool clear = false)
     {
         try
         {
-            if (respectChecks)
+            if (respectChecks && sensor.LastUpdated.AddSeconds(sensor.UpdateIntervalSeconds) > DateTime.Now)
+                return;
+
+            var state = sensor.State;
+            if (state == null)
+                return;
+
+            var attributes = sensor.Attributes;
+
+
+            if (respectChecks &&
+                sensor.PreviousPublishedState == state &&
+                sensor.PreviousPublishedAttributes == attributes)
             {
-                if (sensor.LastUpdated.AddSeconds(sensor.UpdateIntervalSeconds) > DateTime.Now)
-                    return;
-
-                var state = sensor.State;
-                if (state == null)
-                    return;
-
-                var attributes = sensor.Attributes;
-
-                if (respectChecks)
-                {
-                    if (sensor.PreviousPublishedState == state && sensor.PreviousPublishedAttributes == attributes)
-                    {
-                        sensor.LastUpdated = DateTime.Now;
-                        return;
-                    }
-                }
-
-                var autodiscoveryConfig = (MqttSensorDiscoveryConfigModel)sensor.GetAutoDiscoveryConfig();
-                var message = new MqttApplicationMessageBuilder()
-                    .WithTopic(autodiscoveryConfig.StateTopic)
-                    .WithPayload(state)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                    .Build();
-
-                await _mqttManager.PublishAsync(message);
-
-                if (sensor.UseAttributes)
-                {
-                    var attributesMessage = new MqttApplicationMessageBuilder()
-                        .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                        .WithPayload(attributes)
-                        .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
-                        .Build();
-
-                    await _mqttManager.PublishAsync(attributesMessage);
-                }
-
-
-                if (!respectChecks)
-                    return;
-
-                sensor.PreviousPublishedState = state;
-                sensor.PreviousPublishedAttributes = attributes;
                 sensor.LastUpdated = DateTime.Now;
+                return;
             }
+
+            var autodiscoveryConfig = (MqttSensorDiscoveryConfigModel)sensor.GetAutoDiscoveryConfig();
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(autodiscoveryConfig.StateTopic)
+                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+
+            if (clear)
+                message.WithPayload(Array.Empty<byte>());
+            else
+                message.WithPayload(state);
+
+            await _mqttManager.PublishAsync(message.Build());
+
+            if (sensor.UseAttributes)
+            {
+                var attributesMessage = new MqttApplicationMessageBuilder()
+                    .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
+                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+
+                if (clear)
+                    attributesMessage.WithPayload(Array.Empty<byte>());
+                else
+                    attributesMessage.WithPayload(attributes);
+
+                await _mqttManager.PublishAsync(attributesMessage.Build());
+            }
+
+            if (!respectChecks || clear)
+                return;
+
+            sensor.PreviousPublishedState = state;
+            sensor.PreviousPublishedAttributes = attributes;
+            sensor.LastUpdated = DateTime.Now;
         }
         catch (Exception e)
         {
@@ -231,7 +234,10 @@ public class SensorManager : ISensorManager
     public async Task PublishSensorsStateAsync()
     {
         foreach (var sensor in Sensors)
-            await PublishSensorStateAsync(sensor);
+        {
+            if (sensor.Active)
+                await PublishSensorStateAsync(sensor);
+        }
     }
 
     public async Task UnpublishSensorsDiscoveryAsync()

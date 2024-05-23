@@ -18,7 +18,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     {
         return SanitizeRegex().Replace(inputString, "_");
     }
-    
+
     protected readonly ConfiguredEntity _configuration;
 
     public string Domain { get; set; } = string.Empty;
@@ -29,6 +29,8 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     public bool UseAttributes { get; set; } = false;
     public bool IgnoreAvailability { get; set; } = false;
     public int UpdateIntervalSeconds { get; set; } = 1;
+    public bool Active { get; set; } = true;
+
     public abstract string State { get; }
     public virtual string Attributes { get; } = string.Empty;
     public DateTime LastUpdated { get; set; } = DateTime.MinValue;

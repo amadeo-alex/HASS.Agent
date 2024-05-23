@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ public interface IMqttMessageHandler
 {
     Task HandleMqttMessage(MqttApplicationMessage message);
 }
-public interface IMqttManager
+public interface IMqttManager : INotifyPropertyChanged
 {
 
     MqttStatus Status { get; }
