@@ -36,28 +36,26 @@ public class EntityCategory //TODO(Amadeo): interface?
         var nextLevel = level + 1;
 
         var category = SubCategories.FirstOrDefault(c => c.Name == categoryStrings[level]);
-        if (category == null && categoryStrings[level] != Name)
+        if (category != null)
         {
-
+            if (nextLevel < categoryStrings.Length)
+            {
+                category?.Add(categorySubstrings, entityType, nextLevel);
+            }
+            else if (nextLevel == categoryStrings.Length && entityType != null)
+            {
+                category?.Add(new EntityCategory(entityType));
+            }
+        }
+        else if (category == null && categoryStrings[level] != Name)
+        {
             var nextCategory = new EntityCategory(categoryStrings, entityType, level);
             SubCategories.Add(nextCategory);
-            //nextCategory.Add(categorySubstrings, entityType, nextLevel);
-
-            return;
         }
         else if (category == null && categoryStrings[level] == Name && nextLevel < categoryStrings.Length)
         {
             var nextCategory = new EntityCategory(categoryStrings, entityType, nextLevel);
             SubCategories.Add(nextCategory);
-        }
-
-        if (category != null)
-        {
-            if (nextLevel < categoryStrings.Length)
-                category?.Add(categorySubstrings, entityType, nextLevel);
-
-            if (nextLevel == categoryStrings.Length && entityType != null)
-                category?.Add(new EntityCategory(entityType));
         }
         else if (nextLevel == categoryStrings.Length && entityType != null)
         {
@@ -80,31 +78,4 @@ public class EntityCategory //TODO(Amadeo): interface?
     {
         SubCategories.Add(entityCategory);
     }
-
-    /*    public static EntityCategory? ParseX(string categoryString, Type? entityType = null)
-        {
-            var split = categoryString.Split('/');
-            return ParseInternal(split, 0, entityType);
-        }*/
-
-    /*    private static EntityCategory? ParseInternal(string[] categories, int index, Type? entityType)
-        {
-            if (index >= categories.Length)
-                return null;
-
-            var nextIndex = index + 1;
-            var nextCategory = ParseInternalX(categories, nextIndex, entityType);
-            var category = new EntityCategory
-            {
-                Name = categories[index],
-            };
-
-            if (nextCategory != null && !category.SubCategories.Contains(nextCategory))
-                category.SubCategories.Add(nextCategory);
-
-            if (nextCategory == null && entityType != null)
-                category.EntityTypes.Add(entityType);
-
-            return category;
-        }*/
 }
