@@ -11,6 +11,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
+using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.UI.Contracts.ViewModels;
 using Microsoft.UI.Dispatching;
 using Windows.AI.MachineLearning;
@@ -21,6 +23,8 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
 {
     private ISensorManager _sensorManager;
     private ISettingsManager _settingsManager;
+    private IEntityTypeRegistry _entityTypeRegistry;
+    private IGuidManager _guidManager;
 
     private IInfoBadge _badge = new InfoBadge()
     {
@@ -29,15 +33,21 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
     };
 
     public ObservableCollection<AbstractDiscoverableViewModel> Sensors = [];
+    public List<EntityCategory> SensorsCategories => _entityTypeRegistry.SensorsCategories.SubCategories;
 
     public RelayCommand<AbstractDiscoverableViewModel> EditCommand { get; set; }
     public RelayCommand<AbstractDiscoverableViewModel> StartStopCommand { get; set; }
     public RelayCommand<AbstractDiscoverableViewModel> DeleteCommand { get; set; }
+    public RelayCommand NewCommand { get; set; }
 
-    public SensorsPageViewModel(DispatcherQueue dispatcherQueue, ISensorManager sensorManager, ISettingsManager settingsManager) : base(dispatcherQueue)
+    public event EventHandler<ConfiguredEntity>? SensorEditEventHandler;
+    public event EventHandler<ConfiguredEntity>? NewSensorEventHandler;
+    public SensorsPageViewModel(DispatcherQueue dispatcherQueue, ISensorManager sensorManager, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IGuidManager guidManager) : base(dispatcherQueue)
     {
         _sensorManager = sensorManager;
         _settingsManager = settingsManager;
+        _entityTypeRegistry = entityTypeRegistry;
+        _guidManager = guidManager;
 
         foreach (var sensor in _sensorManager.Sensors)
             Sensors.Add(new AbstractDiscoverableViewModel
@@ -54,7 +64,14 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
 
         EditCommand = new RelayCommand<AbstractDiscoverableViewModel>((sensorViewModel) =>
         {
-            Console.Write("Asd");
+            if (sensorViewModel == null)
+                return;
+
+            var configuredSensor = _settingsManager.ConfiguredSensors.FirstOrDefault(s => s.UniqueId.ToString() == sensorViewModel.UniqueId);
+            if (configuredSensor == null)
+                return;
+
+            SensorEditEventHandler?.Invoke(this, configuredSensor);
         });
 
         StartStopCommand = new RelayCommand<AbstractDiscoverableViewModel>((sensorViewModel) =>
@@ -78,6 +95,15 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
             var configuredEntity = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.UniqueId.ToString() == sensorViewModel.UniqueId);
             if (configuredEntity != null)
                 _settingsManager.ConfiguredSensors.Remove(configuredEntity);
+        });
+
+        NewCommand = new RelayCommand(() =>
+        {
+            var newSensor = new ConfiguredEntity
+            {
+                UniqueId = _guidManager.GenerateGuid(),
+            };
+            NewSensorEventHandler?.Invoke(this, newSensor);
         });
     }
 

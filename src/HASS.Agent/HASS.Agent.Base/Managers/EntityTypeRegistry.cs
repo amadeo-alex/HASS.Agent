@@ -18,7 +18,9 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     private readonly IServiceProvider _serviceProvider;
 
     public Dictionary<string, RegisteredEntity> SensorTypes { get; } = [];
+    public EntityCategory SensorsCategories { get; } = new EntityCategory("sensorRoot", null);
     public Dictionary<string, RegisteredEntity> CommandTypes { get; } = [];
+    public EntityCategory CommandsCategories { get; } = new EntityCategory("commandRoot", null);
 
     public Dictionary<string, RegisteredEntity> ClientSensorTypes => SensorTypes.Where(st => st.Value.ClientCompatible)
         .ToDictionary(st => st.Key, st => st.Value);
@@ -28,12 +30,13 @@ public class EntityTypeRegistry : IEntityTypeRegistry
     public EntityTypeRegistry(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        RegisterSensorType(typeof(DummySensor), true, true);
 
-        RegisterCommandType(typeof(DummySwitch), true, true);
+        RegisterSensorType(typeof(DummySensor), "Other/Debug/Dummy", true, true);
+
+        RegisterCommandType(typeof(DummySwitch), "Other/Debug/Dummy", true, true);
     }
 
-    public void RegisterSensorType(Type sensorType, bool clientCompatible, bool satelliteCompatible)
+    public void RegisterSensorType(Type sensorType, string categoryString, bool clientCompatible, bool satelliteCompatible)
     {
         if (!sensorType.IsAssignableTo(typeof(IDiscoverable)))
             throw new ArgumentException($"{sensorType} is not derived from {nameof(IDiscoverable)}");
@@ -43,14 +46,17 @@ public class EntityTypeRegistry : IEntityTypeRegistry
         if (SensorTypes.ContainsKey(typeName))
             throw new ArgumentException($"sensor {sensorType} already registered");
 
-        SensorTypes[typeName] = new RegisteredEntity{
+        SensorsCategories.Add(categoryString, sensorType);
+
+        SensorTypes[typeName] = new RegisteredEntity
+        {
             EntityType = sensorType,
             ClientCompatible = clientCompatible,
             SatelliteCompatible = satelliteCompatible
         };
     }
 
-    public void RegisterCommandType(Type commandType, bool clientCompatible, bool satelliteCompatible)
+    public void RegisterCommandType(Type commandType, string categoryString, bool clientCompatible, bool satelliteCompatible)
     {
         if (!commandType.IsAssignableTo(typeof(IDiscoverable)))
             throw new ArgumentException($"{commandType} is not derived from {nameof(IDiscoverable)}");
@@ -59,6 +65,8 @@ public class EntityTypeRegistry : IEntityTypeRegistry
 
         if (CommandTypes.ContainsKey(typeName))
             throw new ArgumentException($"command {commandType} already registered");
+
+        CommandsCategories.Add(categoryString, commandType);
 
         CommandTypes[typeName] = new RegisteredEntity
         {

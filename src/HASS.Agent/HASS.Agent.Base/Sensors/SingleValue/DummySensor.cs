@@ -24,15 +24,11 @@ public class DummySensor : AbstractSingleValueSensor
 
     private MqttSensorDiscoveryConfigModel? _discoveryConfigModel;
 
-    /*    public DummySensor(string entityIdName = DummySensor.c_defaultName, string name = DummySensor.c_defaultName, int updateIntervalSeconds = 30, string uniqueId = "")
-            : base(entityIdName ?? c_defaultName, name ?? c_defaultName, updateIntervalSeconds, uniqueId, false)
-        {
-
-        }*/
-
     public DummySensor(IServiceProvider serviceProvider, ConfiguredEntity configuredSensor) : base(serviceProvider, configuredSensor)
     {
         var mqtt = serviceProvider.GetService<IMqttManager>();
+
+        //Category = EntityCategory.Parse("Other/Debug");
     }
 
     public override AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel)

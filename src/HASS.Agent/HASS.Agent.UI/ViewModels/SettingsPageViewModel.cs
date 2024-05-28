@@ -9,7 +9,11 @@ using CommunityToolkit.Mvvm.Input;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.UI.Views.Pages;
+using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace HASS.Agent.UI.ViewModels;
 public partial class SettingsPageViewModel : ViewModelBase
@@ -21,8 +25,15 @@ public partial class SettingsPageViewModel : ViewModelBase
 
     public RelayCommand ButtonCommand { get; set; }
     public RelayCommand ButtonCommand2 { get; set; }
-
+    public RelayCommand ButtonCommand3 { get; set; }
     public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
+
+    public List<SomeItem> SomeItems = new List<SomeItem>()
+    {
+        new() { Name = "a"},
+        new() { Name = "b"},
+        new() { Name = "c"},
+    };
 
     public SettingsPageViewModel(DispatcherQueue dispatcherQueue, ISettingsManager settingsManager, IMqttManager mqttManager) : base(dispatcherQueue)
     {
@@ -46,6 +57,13 @@ public partial class SettingsPageViewModel : ViewModelBase
         ButtonCommand2 = new RelayCommand(() =>
         {
             _mqttManager.DisconnectAsync();
+        });
+
+
+        ButtonCommand3 = new RelayCommand(async () =>
+        {
+
+
         });
 
         _mqttManager.PropertyChanged += OnMqttPropertyChanged;

@@ -20,6 +20,12 @@ using MQTTnet;
 using HASS.Agent.Base.Sensors.SingleValue;
 using System.Globalization;
 using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.UI.Xaml.Controls;
+using System.Xml.Linq;
+using System.Xml;
+using HASS.Agent.Base.Models.Entity;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -60,6 +66,16 @@ public partial class App : Application, IAgentServiceProvider
     /// </summary>
     public App()
     {
+        var catStr = "root";
+        var category = new EntityCategory(catStr, null);
+        category.Add("level1/level2/level3", typeof(Buffer));
+        category.Add("nx1/nx2", typeof(int));
+        category.Add("level1/level2/level3/level4", typeof(string));
+        category.Add("level1/level2a/asdasd", typeof(Byte));
+        category.Add("asd/123/bgk", typeof(Page));
+        category.Add("level1/level2a", typeof(Array));
+        category.Add("asd/123/bkg", typeof(App));
+
         Host = ConfigureServices();
         SetupLogger();
 
@@ -81,36 +97,56 @@ public partial class App : Application, IAgentServiceProvider
 
             InitializeComponent();
 
-            var settingsManager = GetService<ISettingsManager>();
-            var guidManager = GetService<IGuidManager>();
-            guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
-
-            var mqtt = GetService<IMqttManager>();
-            await mqtt.StartClient();
-
-            var sensorManager = GetService<ISensorManager>();
-            sensorManager.Initialize();
-            _ = Task.Run(sensorManager.Process);
-
-            var commandsManager = GetService<ICommandsManager>();
-            commandsManager.Initialize();
-            _ = Task.Run(commandsManager.Process);
-
-            await Task.Run(async () =>
+            var initializationTask = Task.Run(async () =>
             {
-                while (!mqtt.Ready)
-                    await Task.Delay(1000);
+                var settingsManager = GetService<ISettingsManager>();
+                var guidManager = GetService<IGuidManager>();
+                guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
 
-                var testMsg = new MqttApplicationMessageBuilder()
-                    .WithTopic("sumtest/sumimportantmsg")
-                    .WithPayload("much importando")
-                    .WithRetainFlag(false)
-                    .Build();
+                if (settingsManager.ConfiguredSensors.Count == 0)
+                {
+                    var ce = new ConfiguredEntity()
+                    {
+                        Type = typeof(DummySensor).Name,
+                        EntityIdName = "DummySensor1",
+                        Name = "Dummy Sensor 1",
+                        UpdateIntervalSeconds = 5,
+                        UniqueId = Guid.NewGuid(),
+                        Active = true,
+                    };
+                    settingsManager.ConfiguredSensors.Add(ce);
+                }
 
-                await mqtt.PublishAsync(testMsg);
+                var mqtt = GetService<IMqttManager>();
+                await mqtt.StartClient();
+
+                var sensorManager = GetService<ISensorManager>();
+                sensorManager.Initialize();
+                _ = Task.Run(sensorManager.Process);
+
+                var commandsManager = GetService<ICommandsManager>();
+                commandsManager.Initialize();
+                _ = Task.Run(commandsManager.Process);
+
+                await Task.Run(async () =>
+                {
+                    while (!mqtt.Ready)
+                        await Task.Delay(1000);
+
+                    var testMsg = new MqttApplicationMessageBuilder()
+                        .WithTopic("sumtest/sumimportantmsg")
+                        .WithPayload("much importando")
+                        .WithRetainFlag(false)
+                        .Build();
+
+                    await mqtt.PublishAsync(testMsg);
+                });
+
+                Log.Debug("[MAIN] initialization completed");
             });
 
-            Console.WriteLine("");
+
+            Log.Debug("[MAIN] attempting to display main window");
         }
         catch (Exception ex)
         {
@@ -204,7 +240,7 @@ public partial class App : Application, IAgentServiceProvider
                 services.AddSingleton(sp => sp);
             })
             .Build();
-        
+
         return host;
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Models.Mqtt;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Entity;
 
 namespace HASS.Agent.Base.Contracts.Models.Entity;
 public abstract partial class AbstractDiscoverable : IDiscoverable
@@ -21,6 +22,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
 
     protected readonly ConfiguredEntity _configuration;
 
+    public EntityCategory? Category { get; set; }
     public string Domain { get; set; } = string.Empty;
     public string EntityIdName { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

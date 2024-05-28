@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using HASS.Agent.UI.ViewModels;
+using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -37,4 +38,25 @@ public sealed partial class SettingsPage : Page
         this.InitializeComponent();
         DataContext = ViewModel;
     }
+
+    private async void Button_Click(object sender, RoutedEventArgs e)
+    {
+        var d = new ContentDialog();
+        d.XamlRoot = this.XamlRoot;
+        d.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+        d.Title = "Save your work?";
+        d.PrimaryButtonText = "Save";
+        d.SecondaryButtonText = "Don't Save";
+        d.CloseButtonText = "Cancel";
+        d.DefaultButton = ContentDialogButton.Primary;
+        //d.Content = new SensorDetailDialogContent();
+
+        await d.ShowAsync();
+    }
+}
+
+public class SomeItem
+{
+    public string Name { get; set; } = string.Empty;
+    public List<SomeItem> Children { get; set; } = new List<SomeItem>();
 }
