@@ -6,61 +6,80 @@
     xmlns:local="using:HASS.Agent.UI.Views.Pages.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:models="using:HASS.Agent.Base.Models.Entity"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0">
-            <TreeView ItemsSource="{x:Bind SensorsCategories}">
-                <TreeView.ItemTemplate>
-                    <DataTemplate x:DataType="models:EntityCategory">
-                        <TreeViewItem ItemsSource="{x:Bind SubCategories}" Content="{x:Bind Name}"/>
-                    </DataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
-        </StackPanel>
-
-        <StackPanel Grid.Column="1" Orientation="Horizontal">
-            <AppBarSeparator Margin="20"/>
-            <StackPanel Orientation="Vertical" Spacing="4">
-                <TextBox Header="Type" Text="{x:Bind Entity.Type, Mode=OneWay}" IsEnabled="False"/>
-                <TextBox Header="Entity ID Name" PlaceholderText="Entity ID name" Text="{x:Bind Entity.EntityIdName, Mode=TwoWay}" />
-                <TextBox Header="Name" PlaceholderText="Sensor name" Text="{x:Bind Entity.Name, Mode=TwoWay}" />
-                <TextBox Header="Unique ID" Text="{x:Bind Entity.UniqueId, Mode=OneWay}" IsEnabled="False"/>
-                <NumberBox Header="Update interval (seconds)" Value="{x:Bind Entity.UpdateIntervalSeconds, Mode=TwoWay}"
-                    SpinButtonPlacementMode="Inline"
-                    SmallChange="1"
-                    LargeChange="10"
-                />
-                <CheckBox Content="Ignore availability" IsChecked="{x:Bind Entity.IgnoreAvailability, Mode=TwoWay}"/>
-            </StackPanel>
-        </StackPanel>
-
-
-        <Grid Grid.Column="2">
-            <StackPanel Orientation="Horizontal">
-                <AppBarSeparator Margin="20"/>
-                <Grid>
-                    <ContentControl Content="{x:Bind CustomDetails}"/>
-                </Grid>
-            </StackPanel>
-
-        </Grid>
-
-        <Grid Grid.Column="3">
-            <StackPanel Orientation="Horizontal">
-                <AppBarSeparator Margin="20"/>
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Vertical">
                 <Grid>
                     <TextBlock Text="asdasd"/>
                 </Grid>
+                <MenuFlyoutSeparator Margin="20"/>
             </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Visibility="{x:Bind SensorsCategoriesPresent, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid>
+                    <TreeView ItemsSource="{x:Bind SensorsCategories}" Width="256">
+                        <TreeView.ItemTemplate>
+                            <DataTemplate x:DataType="models:EntityCategory">
+                                <TreeViewItem ItemsSource="{x:Bind SubCategories}" Content="{x:Bind Name}"/>
+                            </DataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="True" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </Grid>
+                <AppBarSeparator Margin="20"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBox Header="Type" Text="{x:Bind Entity.Type, Mode=OneWay}" IsEnabled="False"/>
+                    <TextBox Header="Entity ID Name" PlaceholderText="Entity ID name" Text="{x:Bind Entity.EntityIdName, Mode=TwoWay}" />
+                    <TextBox Header="Name" PlaceholderText="Sensor name" Text="{x:Bind Entity.Name, Mode=TwoWay}" />
+                    <TextBox Header="Unique ID" Text="{x:Bind Entity.UniqueId, Mode=OneWay}" IsEnabled="False"/>
+                    <NumberBox Header="Update interval (seconds)" Value="{x:Bind Entity.UpdateIntervalSeconds, Mode=TwoWay}"
+                               SpinButtonPlacementMode="Inline"
+                               SmallChange="1"
+                               LargeChange="10"/>
+                    <CheckBox Content="Ignore availability" IsChecked="{x:Bind Entity.IgnoreAvailability, Mode=TwoWay}"/>
+                </StackPanel>
+            </StackPanel>
+
+
+            <Grid Grid.Column="2"
+                  Visibility="{x:Bind CustomDetailsPresent, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <AppBarSeparator Margin="20"/>
+                    <Grid>
+                        <ContentControl Content="{x:Bind CustomDetails}"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

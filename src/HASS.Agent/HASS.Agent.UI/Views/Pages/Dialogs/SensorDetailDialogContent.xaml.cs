@@ -29,8 +29,10 @@ public sealed partial class SensorDetailDialogContent : Page
 {
     public ConfiguredEntity Entity { get; }
     public ContentControl? CustomDetails { get; set; }
+    public bool CustomDetailsPresent => CustomDetails != null;
 
     public List<EntityCategory>? SensorsCategories { get; set; }
+    public bool SensorsCategoriesPresent => SensorsCategories != null;
 
     public SensorDetailDialogContent(ConfiguredEntity entity)
     {

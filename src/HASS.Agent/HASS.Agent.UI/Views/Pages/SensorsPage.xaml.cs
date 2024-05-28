@@ -65,7 +65,7 @@ public sealed partial class SensorsPage : Page
     private async void ViewModel_SensorEditEventHandler(object? sender, ConfiguredEntity entity)
     {
         var dialogContent = new SensorDetailDialogContent(entity);
-        dialogContent.CustomDetails = new Button { Content = "123123123" };
+        //dialogContent.CustomDetails = new Button { Content = "123123123" };
         var d = new ContentDialog
         {
             XamlRoot = this.XamlRoot,
@@ -76,6 +76,7 @@ public sealed partial class SensorsPage : Page
             DefaultButton = ContentDialogButton.Primary,
             Content = dialogContent
         };
+        d.Resources["ContentDialogMaxWidth"] = 1080;
 
         await d.ShowAsync();
     }
