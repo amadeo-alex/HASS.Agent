@@ -66,16 +66,6 @@ public partial class App : Application, IAgentServiceProvider
     /// </summary>
     public App()
     {
-        var catStr = "root";
-        var category = new EntityCategory(catStr, null);
-        category.Add("level1/level2/level3", typeof(Buffer));
-        category.Add("nx1/nx2", typeof(int));
-        category.Add("level1/level2/level3/level4", typeof(string));
-        category.Add("level1/level2a/asdasd", typeof(Byte));
-        category.Add("asd/123/bgk", typeof(Page));
-        category.Add("level1/level2a", typeof(Array));
-        category.Add("asd/123/bkg", typeof(App));
-
         Host = ConfigureServices();
         SetupLogger();
 

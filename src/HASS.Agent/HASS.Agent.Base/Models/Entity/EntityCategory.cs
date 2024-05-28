@@ -22,7 +22,7 @@ public class EntityCategory //TODO(Amadeo): interface?
     public EntityCategory(string[] categoryStrings, Type? entityType, int level = 0)
     {
         Name = categoryStrings[level];
-        Parse(categoryStrings, categoryStrings[level..],entityType, level);
+        Parse(categoryStrings, categoryStrings[level..], entityType, level);
     }
 
     public EntityCategory(Type entityType)
@@ -44,19 +44,22 @@ public class EntityCategory //TODO(Amadeo): interface?
             //nextCategory.Add(categorySubstrings, entityType, nextLevel);
 
             return;
-        }else if(category == null && categoryStrings[level] == Name && nextLevel < categoryStrings.Length)
+        }
+        else if (category == null && categoryStrings[level] == Name && nextLevel < categoryStrings.Length)
         {
             var nextCategory = new EntityCategory(categoryStrings, entityType, nextLevel);
             SubCategories.Add(nextCategory);
         }
-        
-        if (category != null && nextLevel < categoryStrings.Length)
+
+        if (category != null)
         {
-            //var nextCategory = new EntityCategory(categoryStrings, entityType, nextLevel);
-            category?.Add(categorySubstrings, entityType, nextLevel);
+            if (nextLevel < categoryStrings.Length)
+                category?.Add(categorySubstrings, entityType, nextLevel);
+
+            if (nextLevel == categoryStrings.Length && entityType != null)
+                category?.Add(new EntityCategory(entityType));
         }
-        
-        if (nextLevel == categoryStrings.Length && entityType != null)
+        else if (nextLevel == categoryStrings.Length && entityType != null)
         {
             SubCategories.Add(new EntityCategory(entityType));
         }
@@ -73,6 +76,10 @@ public class EntityCategory //TODO(Amadeo): interface?
         Parse(categoryStrings, categoryStrings, entityType, level);
     }
 
+    private void Add(EntityCategory entityCategory)
+    {
+        SubCategories.Add(entityCategory);
+    }
 
     /*    public static EntityCategory? ParseX(string categoryString, Type? entityType = null)
         {
