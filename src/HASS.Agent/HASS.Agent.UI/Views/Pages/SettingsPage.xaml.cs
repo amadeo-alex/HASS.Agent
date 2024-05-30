@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.ViewModels;
+using HASS.Agent.UI.Views.Dialogs;
 using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -41,17 +43,10 @@ public sealed partial class SettingsPage : Page
 
     private async void Button_Click(object sender, RoutedEventArgs e)
     {
-        var d = new ContentDialog();
-        d.XamlRoot = this.XamlRoot;
-        d.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-        d.Title = "Save your work?";
-        d.PrimaryButtonText = "Save";
-        d.SecondaryButtonText = "Don't Save";
-        d.CloseButtonText = "Cancel";
-        d.DefaultButton = ContentDialogButton.Primary;
-        //d.Content = new SensorDetailDialogContent();
+        var registry = App.GetService<IEntityUiTypeRegistry>();
 
-        await d.ShowAsync();
+        var dialog = registry.CreateSensorUiInstance(this, new Base.Models.ConfiguredEntity());
+        await dialog.ShowAsync();
     }
 }
 

@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.UI.Views.Dialogs;
 using HASS.Agent.UI.Views.Pages;
 using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Dispatching;

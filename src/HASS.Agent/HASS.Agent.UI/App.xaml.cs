@@ -26,6 +26,11 @@ using Microsoft.UI.Xaml.Controls;
 using System.Xml.Linq;
 using System.Xml;
 using HASS.Agent.Base.Models.Entity;
+using Windows.Storage;
+using WinUI3Localizer;
+using System.IO;
+using HASS.Agent.UI.Contracts.Managers;
+using HASS.Agent.UI.Managers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -79,6 +84,8 @@ public partial class App : Application, IAgentServiceProvider
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+        await InitializeLocalizer();
 
         try
         {
@@ -147,6 +154,19 @@ public partial class App : Application, IAgentServiceProvider
         await GetService<IActivationService>().ActivateAsync(args);
     }
 
+    private async Task InitializeLocalizer()
+    {
+        var stringsFolderPath = Path.Combine(AppContext.BaseDirectory, "Strings");
+        var stringsFolder = await StorageFolder.GetFolderFromPathAsync(stringsFolderPath);
+
+        ILocalizer localizer = await new LocalizerBuilder()
+            .AddStringResourcesFolderForLanguageDictionaries(stringsFolderPath)
+            .SetOptions(options =>
+            {
+                options.DefaultLanguage = "en-US";
+            })
+            .Build();
+    }
     private void SetupLogger()
     {
         var launchArguments = Environment.GetCommandLineArgs();
@@ -209,6 +229,8 @@ public partial class App : Application, IAgentServiceProvider
                 services.AddSingleton<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IActivationService, ActivationService>();
+
+                services.AddSingleton<IEntityUiTypeRegistry, EntityUiTypeRegistry>();
 
                 services.AddTransient<ShellPageViewModel>();
                 services.AddTransient<ShellPage>();

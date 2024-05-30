@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using HASS.Agent.Base.Models;
+using HASS.Agent.UI.Contracts.Managers;
+using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Xaml;
@@ -18,6 +20,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using WinUI3Localizer;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +31,9 @@ namespace HASS.Agent.UI.Views.Pages;
 /// </summary>
 public sealed partial class SensorsPage : Page
 {
+    private IEntityUiTypeRegistry _entityUiTypeRegistry;
+
+    private bool _dialogShown = false;
     public SensorsPageViewModel ViewModel
     {
         get;
@@ -35,6 +41,7 @@ public sealed partial class SensorsPage : Page
 
     public SensorsPage()
     {
+        _entityUiTypeRegistry = App.GetService<IEntityUiTypeRegistry>();
         ViewModel = App.GetService<SensorsPageViewModel>();
         ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
         ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
@@ -43,41 +50,27 @@ public sealed partial class SensorsPage : Page
 
     private async void ViewModel_NewSensorEventHandler(object? sender, ConfiguredEntity entity)
     {
-        var dialogContent = new SensorDetailDialogContent(entity);
-        dialogContent.CustomDetails = new Button { Content = "asdasdds123123" };
-        dialogContent.SensorsCategories = ViewModel.SensorsCategories;
+        if (_dialogShown)
+            return;
 
-        var dialog = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "New sensor",
-            PrimaryButtonText = "Add",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            Content = dialogContent
-        };
-        dialog.Resources["ContentDialogMaxWidth"] = 1080;
+        _dialogShown = true;
 
+        var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
         await dialog.ShowAsync();
+
+        _dialogShown = false;
     }
 
     private async void ViewModel_SensorEditEventHandler(object? sender, ConfiguredEntity entity)
     {
-        var dialogContent = new SensorDetailDialogContent(entity);
-        //dialogContent.CustomDetails = new Button { Content = "123123123" };
-        var d = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Edit sensor",
-            PrimaryButtonText = "Save",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            Content = dialogContent
-        };
-        d.Resources["ContentDialogMaxWidth"] = 1080;
+        if (_dialogShown)
+            return;
 
-        await d.ShowAsync();
+        _dialogShown = true;
+
+        var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
+        await dialog.ShowAsync();
+
+        _dialogShown = false;
     }
 }

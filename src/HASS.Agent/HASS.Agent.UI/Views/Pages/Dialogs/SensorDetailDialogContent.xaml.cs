@@ -1,5 +1,6 @@
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.UI.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -28,15 +29,20 @@ namespace HASS.Agent.UI.Views.Pages.Dialogs;
 public sealed partial class SensorDetailDialogContent : Page
 {
     public ConfiguredEntity Entity { get; }
-    public ContentControl? CustomDetails { get; set; }
+    public string DisplayName { get; }
+    public string Description { get; }
+    public object? CustomDetails { get; set; }
     public bool CustomDetailsPresent => CustomDetails != null;
 
     public List<EntityCategory>? SensorsCategories { get; set; }
-    public bool SensorsCategoriesPresent => SensorsCategories != null;
+    public bool ShowSensorCategories => string.IsNullOrWhiteSpace(Entity.Type);
 
-    public SensorDetailDialogContent(ConfiguredEntity entity)
+    public SensorDetailDialogContent(ConfiguredEntity entity, string displayName, string description)
     {
         Entity = CloneConfiguredEntity(entity);
+        DisplayName = displayName;
+        Description = description;
+
         this.InitializeComponent();
     }
 

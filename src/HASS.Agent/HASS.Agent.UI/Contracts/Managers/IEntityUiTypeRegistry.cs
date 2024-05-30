@@ -7,16 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.UI.Models;
+using Microsoft.UI.Xaml.Controls;
+using HASS.Agent.UI.Views.Dialogs;
 
 namespace HASS.Agent.UI.Contracts.Managers;
 
 public interface IEntityUiTypeRegistry
 {
-    Dictionary<string, RegisteredUiEntity> SensorTypes { get; }
-    Dictionary<string, RegisteredUiEntity> CommandTypes { get; }
+    Dictionary<string, RegisteredUiEntity> SensorUiTypes { get; }
+    Dictionary<string, RegisteredUiEntity> CommandUiTypes { get; }
 
-    void RegisterSensorUiType(RegisteredEntity registeredEntity);
-    void RegisterCommandUiType(RegisteredEntity registeredEntity);
-    object CreateSensorUiInstance(RegisteredUiEntity registeredUiEntity);
-    object CreateCommandUiInstance(RegisteredUiEntity registeredUiEntity);
+    void RegisterSensorUiType(Type sensorType, Type? additionalSettingsUiType, string displayNameResourceKey, string descriptionResourceKey);
+    void RegisterCommandUiType(RegisteredEntity registeredEntity, Type? additionalSettingsUiType, string displayNameResourceKey, string descriptionResourceKey);
+    EntityContentDialog CreateSensorUiInstance(Control control, ConfiguredEntity entity);
+    EntityContentDialog CreateCommandUiInstance(Control control, ConfiguredEntity entity);
 }

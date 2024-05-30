@@ -93,7 +93,7 @@ public class NavigationService : INavigationService
             _frame.Tag = clearNavigation;
 
             var vmBeforeNavigation = _frame.GetPageViewModel();
-
+            
             var navigated = _frame.Navigate(pageType, parameter);
             if (navigated)
             {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Page
-    x:Class="HASS.Agent.UI.Views.Pages.Dialogs.SensorDetailDialogContent"
+<ContentDialog
+    x:Class="HASS.Agent.UI.Views.Dialogs.EntityContentDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:HASS.Agent.UI.Views.Pages.Dialogs"
+    xmlns:local="using:HASS.Agent.UI.Views.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
@@ -11,9 +11,9 @@
     xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
-    <Page.Resources>
+    <ContentDialog.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-    </Page.Resources>
+    </ContentDialog.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -81,14 +81,14 @@
 
 
             <Grid Grid.Column="2"
-                  Visibility="{x:Bind CustomDetailsPresent, Converter={StaticResource BoolToVisibilityConverter}}">
+                  Visibility="{x:Bind AdditionalSettingsPresent, Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal">
                     <AppBarSeparator Margin="20"/>
                     <Grid>
-                        <ContentControl Content="{x:Bind CustomDetails}"/>
+                        <ContentControl Content="{x:Bind AdditionalSettings}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
         </Grid>
     </Grid>
-</Page>
+</ContentDialog>

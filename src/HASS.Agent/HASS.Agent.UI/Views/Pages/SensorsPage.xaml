@@ -23,6 +23,12 @@
             TrueValue="Active"
 		/>
 
+        <converters:BoolToObjectConverter
+            x:Key="BoolToAccentColorConverter"
+            FalseValue="{ThemeResource AccentFillColorDefaultBrush}"
+            TrueValue="{ThemeResource ControlStrongFillColorDefaultBrush}" />
+
+
         <DataTemplate x:Key="SensorDataTemplate" x:DataType="models:AbstractDiscoverableViewModel">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -34,36 +40,40 @@
 
                 <Border Grid.Column="0">
                     <FontIcon Glyph="{x:Bind Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}"
+                              Foreground="{x:Bind Active, Converter={StaticResource BoolToAccentColorConverter}, Mode=OneWay}"
 							  HorizontalAlignment="Center"
 							  Margin="15 0"
 							  ToolTipService.ToolTip="{x:Bind Active, Converter={StaticResource BoolToActive}, Mode=OneWay}"/>
                 </Border>
                 <Border Grid.Column="1">
-                    <TextBlock Text="{x:Bind Name}" Margin="10"/>
+                    <TextBlock Text="{x:Bind Name}" Margin="10" VerticalAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="2">
-                    <TextBlock Text="{x:Bind Type}" Margin="10"/>
+                    <TextBlock Text="{x:Bind Type}" Margin="10" VerticalAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="3">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
-                        <Button ToolTipService.ToolTip="Edit" Command="{Binding ElementName=ThisPage, Path=ViewModel.EditCommand}" CommandParameter="{x:Bind}">
-                            <FontIcon Glyph="&#xE70F;" FontSize="16"/>
-                        </Button>
-                        <Button ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{x:Bind}">
-                            <FontIcon Glyph="&#xE7E8;" FontSize="16"/>
-                        </Button>
-                        <Button ToolTipService.ToolTip="Delete">
-                            <FontIcon Glyph="&#xE74D;" FontSize="16"/>
-                            <Button.Flyout>
-                                <Flyout>
-                                    <StackPanel>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Sensor will be removed.&#10;Do you want to continue?" Margin="0,0,0,12" />
-                                        <Button Content="Yes" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}"/>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </StackPanel>
+                    <CommandBar OverflowButtonVisibility="Collapsed">
+                        <CommandBar.PrimaryCommands>
+                            <AppBarButton Icon="Edit" ToolTipService.ToolTip="Edit" Command="{Binding ElementName=ThisPage, Path=ViewModel.EditCommand}" CommandParameter="{x:Bind}"/>
+                            <AppBarSeparator />
+                            <AppBarButton ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{x:Bind}">
+                                <AppBarButton.Icon>
+                                    <FontIcon Glyph="&#xE7E8;"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarSeparator />
+                            <AppBarButton Icon="Delete">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel>
+                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Sensor will be removed.&#10;Do you want to continue?" Margin="0,0,0,12" />
+                                            <Button Content="Yes" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}"/>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </AppBarButton>
+                        </CommandBar.PrimaryCommands>
+                    </CommandBar>
                 </Border>
             </Grid>
         </DataTemplate>
