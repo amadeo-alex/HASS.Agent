@@ -10,7 +10,6 @@ using HASS.Agent.Base.Models;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.ViewModels;
-using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;

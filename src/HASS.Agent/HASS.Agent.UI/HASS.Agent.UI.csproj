@@ -18,7 +18,6 @@
   <ItemGroup>
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
     <None Remove="Views\Pages\CommandsPage.xaml" />
-    <None Remove="Views\Pages\Dialogs\SensorDetailDialogContent.xaml" />
     <None Remove="Views\Pages\MainPage.xaml" />
     <None Remove="Views\Pages\SatelliteCommandsPage.xaml" />
     <None Remove="Views\Pages\SatelliteSensorsPage.xaml" />
@@ -105,11 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Pages\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\Pages\Dialogs\SensorDetailDialogContent.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -6,7 +6,6 @@ using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Models;
 using HASS.Agent.UI.Views.Dialogs;
-using HASS.Agent.UI.Views.Pages.Dialogs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
