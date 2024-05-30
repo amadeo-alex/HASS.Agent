@@ -126,6 +126,9 @@
   <data name="Dialog_SensorDetail_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Dialog_SensorDetail_DummySensor_EnsureRandomCheckBox.Content" xml:space="preserve">
+    <value>Ensure random value</value>
+  </data>
   <data name="Dialog_SensorDetail_EditSensor" xml:space="preserve">
     <value>Edit Sensor</value>
   </data>
@@ -161,6 +164,15 @@
   </data>
   <data name="General_Empty" xml:space="preserve">
     <value />
+  </data>
+  <data name="Sensor_Category_Debug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="Sensor_Category_Dummy" xml:space="preserve">
+    <value>Dummy</value>
+  </data>
+  <data name="Sensor_Category_Other" xml:space="preserve">
+    <value>Other</value>
   </data>
   <data name="Sensor_DummySensor_Description" xml:space="preserve">
     <value>Dummy sensor reporting random value each time.</value>

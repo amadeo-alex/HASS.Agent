@@ -5,7 +5,9 @@ using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.Base.Sensors.SingleValue;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Models;
+using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Dialogs;
+using HASS.Agent.UI.Views.Pages.SensorConfigs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -31,7 +33,7 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
         _serviceProvider = serviceProvider;
         _entityTypeRegistry = entityTypeRegistry;
 
-        RegisterSensorUiType(typeof(DummySensor), null, $"Sensor_{typeof(DummySensor).Name}_DisplayName", $"Sensor_{typeof(DummySensor).Name}_Description");
+        RegisterSensorUiType(typeof(DummySensor), typeof(DummySensorAdditionalSettings), $"Sensor_{typeof(DummySensor).Name}_DisplayName", $"Sensor_{typeof(DummySensor).Name}_Description");
     }
 
     public void RegisterSensorUiType(Type sensorType, Type? additionalSettingsUiType, string displayNameResourceKey, string descriptionResourceKey)
@@ -75,10 +77,12 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
             ? uiEntity
             : new RegisteredUiEntity();
 
-        var dialog = new EntityContentDialog(control, entity, registeredUiEntity);
+        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, entity);
+
+        var dialog = new EntityContentDialog(_serviceProvider, control, viewModel);
         if (registeredUiEntity.AdditionalSettingsUiType != null)
         {
-            var additionalSettingsUi = ActivatorUtilities.CreateInstance(_serviceProvider, registeredUiEntity.AdditionalSettingsUiType);
+            var additionalSettingsUi = ActivatorUtilities.CreateInstance(_serviceProvider, registeredUiEntity.AdditionalSettingsUiType, entity);
             dialog.AdditionalSettings = additionalSettingsUi;
         }
 
@@ -105,7 +109,7 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
         {
 
         }
-
-        return new EntityContentDialog(control, new ConfiguredEntity(), new RegisteredUiEntity());
+        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, entity);
+        return new EntityContentDialog(_serviceProvider, control, viewModel);
     }
 }

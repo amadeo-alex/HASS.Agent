@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Models;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Contracts.ViewModels;
@@ -31,6 +32,7 @@ namespace HASS.Agent.UI.Views.Pages;
 public sealed partial class SensorsPage : Page
 {
     private IEntityUiTypeRegistry _entityUiTypeRegistry;
+    private IEntityTypeRegistry _entityTypeRegistry;
 
     private bool _dialogShown = false;
     public SensorsPageViewModel ViewModel
@@ -41,6 +43,8 @@ public sealed partial class SensorsPage : Page
     public SensorsPage()
     {
         _entityUiTypeRegistry = App.GetService<IEntityUiTypeRegistry>();
+        _entityTypeRegistry = App.GetService<IEntityTypeRegistry>();
+
         ViewModel = App.GetService<SensorsPageViewModel>();
         ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
         ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
@@ -55,6 +59,7 @@ public sealed partial class SensorsPage : Page
         _dialogShown = true;
 
         var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
+        dialog.ViewModel.SensorsCategories = _entityTypeRegistry.SensorsCategories.SubCategories;
         await dialog.ShowAsync();
 
         _dialogShown = false;

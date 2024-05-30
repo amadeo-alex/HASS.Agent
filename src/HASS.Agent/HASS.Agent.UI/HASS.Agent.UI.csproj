@@ -21,6 +21,7 @@
     <None Remove="Views\Pages\MainPage.xaml" />
     <None Remove="Views\Pages\SatelliteCommandsPage.xaml" />
     <None Remove="Views\Pages\SatelliteSensorsPage.xaml" />
+    <None Remove="Views\Pages\SensorConfigs\DummySensorAdditionalSettings.xaml" />
     <None Remove="Views\Pages\SensorsPage.xaml" />
     <None Remove="Views\Pages\SettingsPage.xaml" />
     <None Remove="Views\Pages\ShellPage.xaml" />
@@ -109,6 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\EntityContentDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Pages\SensorConfigs\DummySensorAdditionalSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

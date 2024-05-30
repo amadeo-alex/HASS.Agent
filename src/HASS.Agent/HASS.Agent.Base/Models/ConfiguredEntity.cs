@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Models;
-public class ConfiguredEntity //TODO(Amadeo): interface
+public class ConfiguredEntity //TODO(Amadeo): interface?
 {
     public Dictionary<string, string> Properties { get; set; } = [];
 

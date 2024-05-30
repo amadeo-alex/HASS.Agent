@@ -1,6 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Entity;
 using HASS.Agent.UI.Models;
+using HASS.Agent.UI.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -8,6 +11,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.WindowsAppSDK.Runtime;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,39 +25,49 @@ using WinUI3Localizer;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace HASS.Agent.UI.Views.Dialogs;
+
+[INotifyPropertyChanged]
 public sealed partial class EntityContentDialog : ContentDialog
 {
+    private IServiceProvider _serviceProvider;
     private ILocalizer _localizer;
 
-    public ConfiguredEntity Entity { get; set; }
-    public RegisteredUiEntity UiEntity { get; set; }
-    public string DisplayName => _localizer.GetLocalizedString(UiEntity.DisplayNameResourceKey);
-    public string Description => _localizer.GetLocalizedString(UiEntity.DescriptionResourceKey);
-    public object? AdditionalSettings { get; set; }
+    public EntityContentDialogViewModel ViewModel { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AdditionalSettingsPresent))]
+    public object? additionalSettings;
     public bool AdditionalSettingsPresent => AdditionalSettings != null;
 
-    public List<EntityCategory>? SensorsCategories { get; set; }
-    public bool ShowSensorCategories => string.IsNullOrWhiteSpace(Entity.Type);
-
-    public EntityContentDialog(Control parentControl, ConfiguredEntity entity, RegisteredUiEntity uiEntity)
+    public EntityContentDialog(IServiceProvider serviceProvider, Control parentControl, EntityContentDialogViewModel viewModel)
     {
+        _serviceProvider = serviceProvider;
         _localizer = Localizer.Get();
 
-        Entity = entity;
-        UiEntity = uiEntity;
+        ViewModel = viewModel;
 
         this.InitializeComponent();
+
+        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 
         XamlRoot = parentControl.XamlRoot;
         Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
 
-        var titleResourceKey = string.IsNullOrWhiteSpace(entity.Type) ? "Dialog_SensorDetail_NewSensor" : "Dialog_SensorDetail_EditSensor";
+        var titleResourceKey = string.IsNullOrWhiteSpace(viewModel.Entity.Type) ? "Dialog_SensorDetail_NewSensor" : "Dialog_SensorDetail_EditSensor";
         Title = _localizer.GetLocalizedString(titleResourceKey);
-        var saveButtonResourceKey = string.IsNullOrWhiteSpace(entity.Type) ? "Dialog_SensorDetail_Add" : "Dialog_SensorDetail_Save";
+        var saveButtonResourceKey = string.IsNullOrWhiteSpace(viewModel.Entity.Type) ? "Dialog_SensorDetail_Add" : "Dialog_SensorDetail_Save";
         PrimaryButtonText = _localizer.GetLocalizedString(saveButtonResourceKey);
         CloseButtonText = _localizer.GetLocalizedString("Dialog_SensorDetail_Cancel");
 
         DefaultButton = ContentDialogButton.Primary;
         Resources["ContentDialogMaxWidth"] = 1080;
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if(e.PropertyName == nameof(EntityContentDialogViewModel.UiEntity)
+            && ViewModel.UiEntity.AdditionalSettingsUiType != null) {
+            AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, ViewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
+        }
     }
 }
