@@ -1,4 +1,5 @@
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Sensors.SingleValue;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -28,9 +29,22 @@ public sealed partial class DummySensorAdditionalSettings : Page
 
     public bool EnsureRandom
     {
-        get => _entity.GetBoolParameter("ensureRandom", false);
-        set => _entity.SetBoolParameter("ensureRandom", value);
+        get => _entity.GetBoolParameter(DummySensor.EnsureRandomKey, false);
+        set => _entity.SetBoolParameter(DummySensor.EnsureRandomKey, value);
     }
+
+    public int MinValue
+    {
+        get => _entity.GetIntParameter(DummySensor.MinValueKey, 0);
+        set => _entity.SetIntParameter(DummySensor.MinValueKey, value);
+    }
+
+    public int MaxValue
+    {
+        get => _entity.GetIntParameter(DummySensor.MaxValueKey, 100);
+        set => _entity.SetIntParameter(DummySensor.MaxValueKey, value);
+    }
+
     public DummySensorAdditionalSettings(ConfiguredEntity entity)
     {
         _entity = entity;

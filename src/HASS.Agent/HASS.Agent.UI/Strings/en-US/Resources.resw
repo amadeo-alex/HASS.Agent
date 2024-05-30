@@ -129,6 +129,12 @@
   <data name="Dialog_SensorDetail_DummySensor_EnsureRandomCheckBox.Content" xml:space="preserve">
     <value>Ensure random value</value>
   </data>
+  <data name="Dialog_SensorDetail_DummySensor_MaxNumberBox.Header" xml:space="preserve">
+    <value>Max value</value>
+  </data>
+  <data name="Dialog_SensorDetail_DummySensor_MinNumberBox.Header" xml:space="preserve">
+    <value>Min value</value>
+  </data>
   <data name="Dialog_SensorDetail_EditSensor" xml:space="preserve">
     <value>Edit Sensor</value>
   </data>

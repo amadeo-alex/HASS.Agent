@@ -11,6 +11,16 @@
 
     <StackPanel Orientation="Vertical" Spacing="4">
         <CheckBox l:Uids.Uid="Dialog_SensorDetail_DummySensor_EnsureRandomCheckBox"
-                              IsChecked="{x:Bind EnsureRandom, Mode=OneWay}"/>
+                              IsChecked="{x:Bind EnsureRandom, Mode=TwoWay}"/>
+        <NumberBox l:Uids.Uid="Dialog_SensorDetail_DummySensor_MinNumberBox"
+                               Value="{x:Bind MinValue, Mode=TwoWay}"
+                               SpinButtonPlacementMode="Inline"
+                               SmallChange="1"
+                               LargeChange="10"/>
+        <NumberBox l:Uids.Uid="Dialog_SensorDetail_DummySensor_MaxNumberBox"
+                               Value="{x:Bind MaxValue, Mode=TwoWay}"
+                               SpinButtonPlacementMode="Inline"
+                               SmallChange="1"
+                               LargeChange="10"/>
     </StackPanel>
 </Page>

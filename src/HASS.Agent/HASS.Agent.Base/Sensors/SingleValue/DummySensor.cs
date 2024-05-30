@@ -20,6 +20,10 @@ namespace HASS.Agent.Base.Sensors.SingleValue;
 /// </summary>
 public class DummySensor : AbstractSingleValueSensor
 {
+    public const string EnsureRandomKey = "ensureRandom";
+    public const string MinValueKey = "min";
+    public const string MaxValueKey = "max";
+
     public override string DefaultEntityIdName { get; } = "dummySensor";
 
     private MqttSensorDiscoveryConfigModel? _discoveryConfigModel;
@@ -52,11 +56,13 @@ public class DummySensor : AbstractSingleValueSensor
     {
         get
         {
+            var start = _configuration.GetIntParameter(MinValueKey, 0);
+            var end = _configuration.GetIntParameter(MaxValueKey, 100);
             var someValue = "0";
             do
             {
-                someValue = Random.Shared.Next(0, 100).ToString();
-            } while (someValue == PreviousPublishedState);
+                someValue = Random.Shared.Next(start, end).ToString();
+            } while (_configuration.GetBoolParameter(EnsureRandomKey, false) && someValue == PreviousPublishedState);
 
             return someValue;
         }
