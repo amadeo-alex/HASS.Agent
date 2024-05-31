@@ -11,7 +11,8 @@
     xmlns:l="using:WinUI3Localizer"
     xmlns:h="using:HASS.Agent.UI.Helpers"
     xmlns:ts="using:HASS.Agent.UI.Views.DataTemplateSelectors"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    PrimaryButtonClick="EntityContentDialog_PrimaryButtonClick">
 
     <ContentDialog.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -33,6 +34,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -76,9 +78,9 @@
                              Text="{x:Bind ViewModel.DisplayName, Mode=OneWay}"
                              IsEnabled="False"/>
                     <TextBox l:Uids.Uid="Dialog_SensorDetail_EntityIdTextBox"
-                             Text="{x:Bind ViewModel.Entity.EntityIdName, Mode=TwoWay}" />
+                             Text="{x:Bind ViewModel.Entity.EntityIdName, Mode=TwoWay}"/>
                     <TextBox l:Uids.Uid="Dialog_SensorDetail_NameTextBox"
-                             Text="{x:Bind ViewModel.Entity.Name, Mode=TwoWay}" />
+                             Text="{x:Bind ViewModel.Entity.Name, Mode=TwoWay}"/>
                     <TextBox l:Uids.Uid="Dialog_SensorDetail_UniqueIdTextBox"
                              Text="{x:Bind ViewModel.Entity.UniqueId, Mode=OneWay}"
                              IsEnabled="False"/>
@@ -103,5 +105,15 @@
                 </StackPanel>
             </Grid>
         </Grid>
+
+        <Grid Grid.Row="2">
+            <InfoBar l:Uids.Uid="Dialog_SensorDetail_IdInfoBar"
+                IsOpen="{x:Bind ViewModel.EntityIdNameInvalid, Mode=OneWay}"
+                Severity="Error"/>
+            <InfoBar l:Uids.Uid="Dialog_SensorDetail_NameInfoBar"
+                IsOpen="{x:Bind ViewModel.EntityNameInvalid, Mode=OneWay}"
+                Severity="Error"/>
+        </Grid>
+
     </Grid>
 </ContentDialog>

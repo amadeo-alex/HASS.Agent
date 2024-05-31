@@ -144,8 +144,20 @@
   <data name="Dialog_SensorDetail_EntityIdTextBox.PlaceholderText" xml:space="preserve">
     <value>Sensor entity ID name</value>
   </data>
+  <data name="Dialog_SensorDetail_IdInfoBar.Message" xml:space="preserve">
+    <value>New entity ID is already in use by other sensor.</value>
+  </data>
+  <data name="Dialog_SensorDetail_IdInfoBar.Title" xml:space="preserve">
+    <value>Entity ID Conflict</value>
+  </data>
   <data name="Dialog_SensorDetail_IntervalNumberBox.Header" xml:space="preserve">
     <value>Update interval (seconds)</value>
+  </data>
+  <data name="Dialog_SensorDetail_NameInfoBar.Message" xml:space="preserve">
+    <value>New entity name is already in use by other sensor.</value>
+  </data>
+  <data name="Dialog_SensorDetail_NameInfoBar.Title" xml:space="preserve">
+    <value>Entity Name Conflict</value>
   </data>
   <data name="Dialog_SensorDetail_NameTextBox.Header" xml:space="preserve">
     <value>Name</value>

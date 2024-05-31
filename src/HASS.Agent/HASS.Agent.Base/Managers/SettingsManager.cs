@@ -58,15 +58,16 @@ public class SettingsManager : ISettingsManager
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                if(e.NewItems == null)
+                if (e.NewItems == null)
                     return;
 
-                foreach(var configured in e.NewItems)
+                foreach (var configured in e.NewItems)
                 {
-                    if(configured is ConfiguredEntity configuredEntity)
+                    if (configured is ConfiguredEntity configuredEntity)
                     {
                         _guidManager.MarkAsUsed(configuredEntity.UniqueId);
-                    }else if(configured is IQuickAction configuredQuickAction)
+                    }
+                    else if (configured is IQuickAction configuredQuickAction)
                     {
                         _guidManager.MarkAsUsed(configuredQuickAction.UniqueId);
                     }
@@ -334,6 +335,34 @@ public class SettingsManager : ISettingsManager
         }
 
         return true;
+    }
+
+    public void AddUpdateConfiguredSensor(ConfiguredEntity sensor)
+    {
+        var existingSensor = ConfiguredSensors.FirstOrDefault(s => s.UniqueId == sensor.UniqueId);
+        if (existingSensor != null)
+        {
+            if (existingSensor.Type != sensor.Type)
+                throw new ArgumentException($"sensor with ID {existingSensor.UniqueId} of different type ({existingSensor.Type}) than {sensor.Type} already exists");
+
+            ConfiguredSensors.Remove(existingSensor);
+        }
+
+        ConfiguredSensors.Add(sensor);
+    }
+
+    public void AddUpdateConfiguredCommand(ConfiguredEntity command)
+    {
+        var existingCommand = ConfiguredCommands.FirstOrDefault(c => c.UniqueId == command.UniqueId);
+        if (existingCommand != null)
+        {
+            if (existingCommand.Type != command.Type)
+                throw new ArgumentException($"command with ID {existingCommand.UniqueId} of different type ({existingCommand.Type}) than {command.Type} already exists");
+
+            ConfiguredSensors.Remove(existingCommand);
+        }
+
+        ConfiguredCommands.Add(command);
     }
 
     public bool GetExtendedLoggingSetting()

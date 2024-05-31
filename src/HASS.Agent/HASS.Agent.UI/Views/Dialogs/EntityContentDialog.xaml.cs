@@ -70,4 +70,12 @@ public sealed partial class EntityContentDialog : ContentDialog
             AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, ViewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
         }
     }
+
+    private async void EntityContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+        ViewModel.ReevaluateInput();
+
+        if (ViewModel.EntityIdNameInvalid || ViewModel.EntityNameInvalid)
+            args.Cancel = true;
+    }
 }

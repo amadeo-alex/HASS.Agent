@@ -24,14 +24,16 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
 {
     private IServiceProvider _serviceProvider;
     private IEntityTypeRegistry _entityTypeRegistry;
+    private ISettingsManager _settingsManager;
     public Dictionary<string, RegisteredUiEntity> SensorUiTypes { get; } = [];
 
     public Dictionary<string, RegisteredUiEntity> CommandUiTypes { get; } = [];
 
-    public EntityUiTypeRegistry(IServiceProvider serviceProvider, IEntityTypeRegistry entityTypeRegistry)
+    public EntityUiTypeRegistry(IServiceProvider serviceProvider, IEntityTypeRegistry entityTypeRegistry, ISettingsManager settingsManager)
     {
         _serviceProvider = serviceProvider;
         _entityTypeRegistry = entityTypeRegistry;
+        _settingsManager = settingsManager;
 
         RegisterSensorUiType(typeof(DummySensor), typeof(DummySensorAdditionalSettings), $"Sensor_{typeof(DummySensor).Name}_DisplayName", $"Sensor_{typeof(DummySensor).Name}_Description");
     }
@@ -77,7 +79,7 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
             ? uiEntity
             : new RegisteredUiEntity();
 
-        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, entity);
+        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, _settingsManager, entity);
 
         var dialog = new EntityContentDialog(_serviceProvider, control, viewModel);
         if (registeredUiEntity.AdditionalSettingsUiType != null)
@@ -109,7 +111,7 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
         {
 
         }
-        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, entity);
+        var viewModel = new EntityContentDialogViewModel(this, _entityTypeRegistry, _settingsManager, entity);
         return new EntityContentDialog(_serviceProvider, control, viewModel);
     }
 }
