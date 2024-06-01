@@ -45,6 +45,7 @@ public sealed partial class SensorsPage : Page
         _settingsManager = App.GetService<ISettingsManager>();
 
         ViewModel = App.GetService<SensorsPageViewModel>();
+        DataContext = ViewModel;
         //ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
         //ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
         this.InitializeComponent();
@@ -93,14 +94,16 @@ public sealed partial class SensorsPage : Page
             ViewModel.NewSensorEventHandler -= ViewModel_NewSensorEventHandler;
         }
 
-        Bindings.StopTracking();
+        SensorsListView.ItemsSource = null;
+
+        //Bindings.StopTracking();
         ViewModel = null;
     }
 
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
     {
         base.OnNavigatingFrom(e);
-        Bindings.StopTracking();
+        //Bindings.StopTracking();
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

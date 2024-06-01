@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -32,7 +33,7 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
         Value = 0
     };
 
-    public ObservableCollection<AbstractDiscoverableViewModel> Sensors = [];
+    public ObservableCollection<AbstractDiscoverableViewModel> Sensors { get; } = [];
     public List<EntityCategory> SensorsCategories => _entityTypeRegistry.SensorsCategories.SubCategories;
 
     public RelayCommand<AbstractDiscoverableViewModel> EditCommand { get; set; }
@@ -44,6 +45,8 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
     public event EventHandler<ConfiguredEntity>? NewSensorEventHandler;
     public SensorsPageViewModel(DispatcherQueue dispatcherQueue, ISensorManager sensorManager, ISettingsManager settingsManager, IEntityTypeRegistry entityTypeRegistry, IGuidManager guidManager) : base(dispatcherQueue)
     {
+        Debug.WriteLine("constructor");
+
         _sensorManager = sensorManager;
         _settingsManager = settingsManager;
         _entityTypeRegistry = entityTypeRegistry;
@@ -168,6 +171,6 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
 
     ~SensorsPageViewModel()
     {
-        Console.WriteLine();
+        Debug.WriteLine("desctructor");
     }
 }

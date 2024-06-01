@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +63,8 @@ public partial class SettingsPageViewModel : ViewModelBase
 
         ButtonCommand3 = new RelayCommand(async () =>
         {
-
+            Debug.WriteLine("GC collect");
+            GC.Collect();
 
         });
 

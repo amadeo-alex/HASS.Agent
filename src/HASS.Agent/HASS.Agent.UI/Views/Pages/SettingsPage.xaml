@@ -16,6 +16,7 @@
 			<RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 		
 		<TextBlock Grid.Row="0" Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -23,6 +24,7 @@
 		<Button Grid.Row="2" Content="plus" Command="{x:Bind ViewModel.ButtonCommand}"/>
 		<Button Grid.Row="3" Content="stop mqtt" Command="{x:Bind ViewModel.ButtonCommand2}"/>
         <Button Grid.Row="4" Content="show dialog" Click="Button_Click"/>
+        <Button Grid.Row="5" Content="GC" Command="{x:Bind ViewModel.ButtonCommand3}"/>
         <TreeView ItemsSource="{x:Bind ViewModel.SomeItems}">
             <TreeView.ItemTemplate>
                 <DataTemplate x:DataType="test:SomeItem">

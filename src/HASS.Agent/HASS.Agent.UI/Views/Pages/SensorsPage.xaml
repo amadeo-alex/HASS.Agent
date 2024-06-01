@@ -39,24 +39,24 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0">
-                    <FontIcon Glyph="{x:Bind Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}"
-                              Foreground="{x:Bind Active, Converter={StaticResource BoolToAccentColorConverter}, Mode=OneWay}"
+                    <FontIcon Glyph="{Binding Active, Converter={StaticResource BoolToGlyph}, Mode=OneWay}"
+                              Foreground="{Binding Active, Converter={StaticResource BoolToAccentColorConverter}, Mode=OneWay}"
 							  HorizontalAlignment="Center"
 							  Margin="15 0"
-							  ToolTipService.ToolTip="{x:Bind Active, Converter={StaticResource BoolToActive}, Mode=OneWay}"/>
+							  ToolTipService.ToolTip="{Binding Active, Converter={StaticResource BoolToActive}, Mode=OneWay}"/>
                 </Border>
                 <Border Grid.Column="1">
-                    <TextBlock Text="{x:Bind Name}" Margin="10" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Name}" Margin="10" VerticalAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="2">
-                    <TextBlock Text="{x:Bind Type}" Margin="10" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Type}" Margin="10" VerticalAlignment="Center"/>
                 </Border>
                 <Border Grid.Column="3">
                     <CommandBar OverflowButtonVisibility="Collapsed">
                         <CommandBar.PrimaryCommands>
-                            <AppBarButton Icon="Edit" ToolTipService.ToolTip="Edit" Command="{Binding ElementName=ThisPage, Path=ViewModel.EditCommand}" CommandParameter="{x:Bind}"/>
+                            <AppBarButton Icon="Edit" ToolTipService.ToolTip="Edit" Command="{Binding ElementName=ThisPage, Path=ViewModel.EditCommand}" CommandParameter="{Binding}"/>
                             <AppBarSeparator />
-                            <AppBarButton ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{x:Bind}">
+                            <AppBarButton ToolTipService.ToolTip="Start/Stop" Command="{Binding ElementName=ThisPage, Path=ViewModel.StartStopCommand}" CommandParameter="{Binding}">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE7E8;"/>
                                 </AppBarButton.Icon>
@@ -67,7 +67,7 @@
                                     <Flyout>
                                         <StackPanel>
                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Sensor will be removed.&#10;Do you want to continue?" Margin="0,0,0,12" />
-                                            <Button Content="Yes" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}"/>
+                                            <Button Content="Yes" Command="{Binding ElementName=ThisPage, Path=ViewModel.DeleteCommand}" CommandParameter="{Binding}"/>
                                         </StackPanel>
                                     </Flyout>
                                 </Button.Flyout>
@@ -121,7 +121,7 @@
         
         <Grid Grid.Row="0" Grid.Column="1" Margin="0 8">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
-                <Button ToolTipService.ToolTip="Add new sensor" Command="{x:Bind ViewModel.NewCommand}">
+                <Button ToolTipService.ToolTip="Add new sensor" Command="{Binding NewCommand}">
                     <FontIcon Glyph="&#xECC8;" FontSize="16"/>
                 </Button>
             </StackPanel>
@@ -132,7 +132,7 @@
                 x:Name="SensorsListView"
 			    HeaderTemplate="{StaticResource SensorListHeaderTemplate}"
                 ItemTemplate="{StaticResource SensorDataTemplate}"
-			    ItemsSource="{x:Bind ViewModel.Sensors}"
+			    ItemsSource="{Binding Sensors}"
                 MinWidth="900"
                 Height="400"
                 HorizontalAlignment="Center"
