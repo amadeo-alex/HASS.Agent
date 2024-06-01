@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.UI.Views.DataTemplateSelectors;
-public class EntityCategoryTemplateSelector : DataTemplateSelector
+public class EntityCategoryTemplateSelector : DataTemplateSelector //TODO(Amadeo): move
 {
     public DataTemplate? CategoryTemplate { get; set; }
     public DataTemplate? EntityTemplate { get; set; }

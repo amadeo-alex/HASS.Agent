@@ -34,12 +34,11 @@ public sealed partial class EntityContentDialog : ContentDialog
     private IServiceProvider _serviceProvider;
     private ILocalizer _localizer;
 
-    public EntityContentDialogViewModel ViewModel { get; set; }
+    public EntityContentDialogViewModel? ViewModel { get; set; }
+    public ConfiguredEntity? NewConfiguredEntity { get; private set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AdditionalSettingsPresent))]
     public object? additionalSettings;
-    public bool AdditionalSettingsPresent => AdditionalSettings != null;
 
     public EntityContentDialog(IServiceProvider serviceProvider, Control parentControl, EntityContentDialogViewModel viewModel)
     {
@@ -47,10 +46,13 @@ public sealed partial class EntityContentDialog : ContentDialog
         _localizer = Localizer.Get();
 
         ViewModel = viewModel;
+        DataContext = viewModel;
 
         this.InitializeComponent();
 
-        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        DataContext = viewModel;
+        if (ViewModel != null)
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 
         XamlRoot = parentControl.XamlRoot;
         Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
@@ -70,13 +72,22 @@ public sealed partial class EntityContentDialog : ContentDialog
     private void EntityContentDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
     {
         (AdditionalSettings as IAdditionalSettingsPage)?.Cleanup();
-        Bindings.StopTracking();
+        //Bindings.StopTracking();
+
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            NewConfiguredEntity = ViewModel.Entity;
+        }
+
+        DataContext = null;
+        ViewModel = null;
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(EntityContentDialogViewModel.UiEntity)
-            && ViewModel.UiEntity.AdditionalSettingsUiType != null)
+            && ViewModel?.UiEntity.AdditionalSettingsUiType != null)
         {
             AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, ViewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
         }
@@ -84,6 +95,9 @@ public sealed partial class EntityContentDialog : ContentDialog
 
     private async void EntityContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
+        if (ViewModel == null)
+            return;
+
         ViewModel.ReevaluateInput();
 
         if (ViewModel.ShowSensorCategories)

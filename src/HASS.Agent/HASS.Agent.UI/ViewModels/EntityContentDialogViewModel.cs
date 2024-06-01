@@ -20,11 +20,13 @@ public partial class EntityContentDialogViewModel : ObservableObject
     private ISettingsManager _settingsManager;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowSensorCategories))]
     public ConfiguredEntity entity;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(DisplayName))]
     [NotifyPropertyChangedFor(nameof(Description))]
+    [NotifyPropertyChangedFor(nameof(AdditionalSettingsPresent))]
     public RegisteredUiEntity uiEntity;
 
     public string DisplayName => _localizer.GetLocalizedString(UiEntity.DisplayNameResourceKey);
@@ -32,15 +34,14 @@ public partial class EntityContentDialogViewModel : ObservableObject
 
     public List<EntityCategory>? SensorsCategories { get; set; }
     public bool ShowSensorCategories => string.IsNullOrWhiteSpace(Entity.Type);
+    public bool AdditionalSettingsPresent => UiEntity.AdditionalSettingsUiType != null;
 
     [ObservableProperty]
     public EntityCategory? selectedItem;
 
-    //public bool EntityIdNameValid => _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.EntityIdName == Entity.EntityIdName) == null;
     [ObservableProperty]
     public bool entityIdNameInvalid;
 
-    //public bool EntityNameValid => _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.Name == Entity.Name) == null;
     [ObservableProperty]
     public bool entityNameInvalid;
     public EntityContentDialogViewModel(IEntityUiTypeRegistry entityUiTypeRegistry, IEntityTypeRegistry entityTypeRegistry, ISettingsManager settingsManager, ConfiguredEntity entity)

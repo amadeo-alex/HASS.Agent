@@ -74,7 +74,7 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
             if (configuredSensor == null)
                 return;
 
-            SensorEditEventHandler?.Invoke(this, configuredSensor);
+            SensorEditEventHandler?.Invoke(this, (ConfiguredEntity)configuredSensor.Clone());
         });
 
         StartStopCommand = new RelayCommand<AbstractDiscoverableViewModel>((sensorViewModel) =>

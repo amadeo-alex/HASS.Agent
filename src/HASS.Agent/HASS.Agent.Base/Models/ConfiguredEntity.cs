@@ -8,7 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Models;
-public class ConfiguredEntity //TODO(Amadeo): interface?
+public class ConfiguredEntity : ICloneable //TODO(Amadeo): interface?
 {
     public Dictionary<string, string> Properties { get; set; } = [];
 
@@ -119,5 +119,11 @@ public class ConfiguredEntity //TODO(Amadeo): interface?
 
         var stringParam = GetParameter(parameterName, defaultValue.ToString());
         return Convert.ToBoolean(stringParam);
+    }
+
+    public object Clone()
+    {
+        var clone = JsonConvert.DeserializeObject<ConfiguredEntity>(JsonConvert.SerializeObject(this));
+        return clone ?? throw new InvalidOperationException("cannot clone configured entity");
     }
 }

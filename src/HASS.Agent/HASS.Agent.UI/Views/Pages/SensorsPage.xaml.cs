@@ -64,8 +64,8 @@ public sealed partial class SensorsPage : Page
 
         _dialogShown = false;
 
-        if (result == ContentDialogResult.Primary)
-            _settingsManager.AddUpdateConfiguredSensor(dialog.ViewModel.Entity); //TODO(Amadeo): move to ViewModel?
+        if (result == ContentDialogResult.Primary && dialog.NewConfiguredEntity != null)
+            _settingsManager.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity); //TODO(Amadeo): move to ViewModel?
     }
 
     private async void ViewModel_SensorEditEventHandler(object? sender, ConfiguredEntity entity)
@@ -80,8 +80,8 @@ public sealed partial class SensorsPage : Page
 
         _dialogShown = false;
 
-        if (result == ContentDialogResult.Primary)
-            _settingsManager.AddUpdateConfiguredSensor(dialog.ViewModel.Entity); //TODO(Amadeo): move to ViewModel?
+        if (result == ContentDialogResult.Primary && dialog.NewConfiguredEntity != null)
+            _settingsManager.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity); //TODO(Amadeo): move to ViewModel?
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
