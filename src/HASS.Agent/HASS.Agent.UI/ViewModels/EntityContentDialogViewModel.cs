@@ -71,9 +71,28 @@ public partial class EntityContentDialogViewModel : ObservableObject
 
     public void ReevaluateInput()
     {
+        var existingEntity = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.UniqueId == Entity.UniqueId);
+        if (existingEntity == null)
+        {
+            EntityIdNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.EntityIdName == Entity.EntityIdName) != null;
+            EntityNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.Name == Entity.Name) != null;
+        }
+        else
+        {
+            EntityIdNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs =>
+                cs.UniqueId != existingEntity.UniqueId &&
+                cs.EntityIdName == Entity.EntityIdName) != null;
+
+            EntityNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(
+                cs => cs.UniqueId != existingEntity.UniqueId &&
+                cs.Name == Entity.Name) != null;
+        }
+
         //EntityIdNameInvalid = Entity.EntityIdName.Contains("asd");
-        EntityIdNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.EntityIdName == Entity.EntityIdName) != null;
-        EntityNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.Name == Entity.Name) != null;
+        /*        EntityIdNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(
+                    cs => cs.EntityIdName == Entity.EntityIdName
+                    ) != null;
+                EntityNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.Name == Entity.Name) != null;*/
         //EntityNameInvalid = Entity.Name.Contains("123");
 
         OnPropertyChanged(nameof(EntityIdNameInvalid));

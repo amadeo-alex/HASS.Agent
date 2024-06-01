@@ -33,21 +33,20 @@ public sealed partial class SensorsPage : Page
 {
     private IEntityUiTypeRegistry _entityUiTypeRegistry;
     private IEntityTypeRegistry _entityTypeRegistry;
+    private ISettingsManager _settingsManager;
 
     private bool _dialogShown = false;
-    public SensorsPageViewModel ViewModel
-    {
-        get;
-    }
+    public SensorsPageViewModel? ViewModel { get; private set; }
 
     public SensorsPage()
     {
         _entityUiTypeRegistry = App.GetService<IEntityUiTypeRegistry>();
         _entityTypeRegistry = App.GetService<IEntityTypeRegistry>();
+        _settingsManager = App.GetService<ISettingsManager>();
 
         ViewModel = App.GetService<SensorsPageViewModel>();
-        ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
-        ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
+        //ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
+        //ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
         this.InitializeComponent();
     }
 
@@ -60,9 +59,12 @@ public sealed partial class SensorsPage : Page
 
         var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
         dialog.ViewModel.SensorsCategories = _entityTypeRegistry.SensorsCategories.SubCategories;
-        await dialog.ShowAsync();
+        var result = await dialog.ShowAsync();
 
         _dialogShown = false;
+
+        if (result == ContentDialogResult.Primary)
+            _settingsManager.AddUpdateConfiguredSensor(dialog.ViewModel.Entity); //TODO(Amadeo): move to ViewModel?
     }
 
     private async void ViewModel_SensorEditEventHandler(object? sender, ConfiguredEntity entity)
@@ -73,8 +75,44 @@ public sealed partial class SensorsPage : Page
         _dialogShown = true;
 
         var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
-        await dialog.ShowAsync();
+        var result = await dialog.ShowAsync();
 
         _dialogShown = false;
+
+        if (result == ContentDialogResult.Primary)
+            _settingsManager.AddUpdateConfiguredSensor(dialog.ViewModel.Entity); //TODO(Amadeo): move to ViewModel?
+    }
+
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e);
+
+        if (ViewModel != null)
+        {
+            ViewModel.SensorEditEventHandler -= ViewModel_SensorEditEventHandler;
+            ViewModel.NewSensorEventHandler -= ViewModel_NewSensorEventHandler;
+        }
+
+        Bindings.StopTracking();
+        ViewModel = null;
+    }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        base.OnNavigatingFrom(e);
+        Bindings.StopTracking();
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+
+        if (ViewModel != null)
+        {
+            ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
+            ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
+        }
+
+        Console.WriteLine();
     }
 }

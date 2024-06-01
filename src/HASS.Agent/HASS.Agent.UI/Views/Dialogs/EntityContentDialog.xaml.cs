@@ -1,8 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Entity;
+using HASS.Agent.UI.Contracts.Views;
 using HASS.Agent.UI.Models;
 using HASS.Agent.UI.ViewModels;
+using HASS.Agent.UI.Views.Pages.SensorConfigs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -61,12 +63,21 @@ public sealed partial class EntityContentDialog : ContentDialog
 
         DefaultButton = ContentDialogButton.Primary;
         Resources["ContentDialogMaxWidth"] = 1080;
+
+        Closed += EntityContentDialog_Closed;
+    }
+
+    private void EntityContentDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
+    {
+        (AdditionalSettings as IAdditionalSettingsPage)?.Cleanup();
+        Bindings.StopTracking();
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if(e.PropertyName == nameof(EntityContentDialogViewModel.UiEntity)
-            && ViewModel.UiEntity.AdditionalSettingsUiType != null) {
+        if (e.PropertyName == nameof(EntityContentDialogViewModel.UiEntity)
+            && ViewModel.UiEntity.AdditionalSettingsUiType != null)
+        {
             AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, ViewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
         }
     }
@@ -75,7 +86,15 @@ public sealed partial class EntityContentDialog : ContentDialog
     {
         ViewModel.ReevaluateInput();
 
-        if (ViewModel.EntityIdNameInvalid || ViewModel.EntityNameInvalid)
-            args.Cancel = true;
+        if (ViewModel.ShowSensorCategories)
+        {
+            if (ViewModel.EntityIdNameInvalid || ViewModel.EntityNameInvalid)
+                args.Cancel = true;
+        }
+    }
+
+    ~EntityContentDialog()
+    {
+        Console.WriteLine();
     }
 }

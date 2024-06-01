@@ -1,5 +1,6 @@
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
+using HASS.Agent.UI.Contracts.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,7 +24,7 @@ namespace HASS.Agent.UI.Views.Pages.SensorConfigs;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class DummySensorAdditionalSettings : Page
+public sealed partial class DummySensorAdditionalSettings : Page, IAdditionalSettingsPage
 {
     private ConfiguredEntity _entity;
 
@@ -50,5 +51,10 @@ public sealed partial class DummySensorAdditionalSettings : Page
         _entity = entity;
 
         this.InitializeComponent();
+    }
+
+    public void Cleanup()
+    {
+        Bindings.StopTracking();
     }
 }

@@ -58,7 +58,7 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
                 UniqueId = sensor.UniqueId
             });
 
-        _sensorManager.Sensors.CollectionChanged += Sensors_CollectionChanged;
+        //_sensorManager.Sensors.CollectionChanged += Sensors_CollectionChanged;
 
         _badge.Value = Sensors.Count;
 
@@ -159,10 +159,15 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
     }
     public void OnNavigatedFrom()
     {
-        //value++;
+        _sensorManager.Sensors.CollectionChanged -= Sensors_CollectionChanged;
     }
     public void OnNavigatedTo(object parameter)
     {
-        //value++;
+        _sensorManager.Sensors.CollectionChanged += Sensors_CollectionChanged;
+    }
+
+    ~SensorsPageViewModel()
+    {
+        Console.WriteLine();
     }
 }
