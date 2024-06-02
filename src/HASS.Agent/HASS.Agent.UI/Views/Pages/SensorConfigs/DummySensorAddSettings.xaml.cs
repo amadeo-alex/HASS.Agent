@@ -1,6 +1,6 @@
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
-using HASS.Agent.UI.Contracts.Views;
+using HASS.Agent.UI.ViewModels.SensorConfigs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -24,37 +24,15 @@ namespace HASS.Agent.UI.Views.Pages.SensorConfigs;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class DummySensorAdditionalSettings : Page, IAdditionalSettingsPage
+public sealed partial class DummySensorAddSettings : Page
 {
-    private ConfiguredEntity _entity;
+    private readonly DummySensorAddSettingsViewModel _viewModel;
 
-    public bool EnsureRandom
+    public DummySensorAddSettings(ConfiguredEntity entity)
     {
-        get => _entity.GetBoolParameter(DummySensor.EnsureRandomKey, false);
-        set => _entity.SetBoolParameter(DummySensor.EnsureRandomKey, value);
-    }
-
-    public int MinValue
-    {
-        get => _entity.GetIntParameter(DummySensor.MinValueKey, 0);
-        set => _entity.SetIntParameter(DummySensor.MinValueKey, value);
-    }
-
-    public int MaxValue
-    {
-        get => _entity.GetIntParameter(DummySensor.MaxValueKey, 100);
-        set => _entity.SetIntParameter(DummySensor.MaxValueKey, value);
-    }
-
-    public DummySensorAdditionalSettings(ConfiguredEntity entity)
-    {
-        _entity = entity;
+        _viewModel = new DummySensorAddSettingsViewModel(entity);
+        DataContext = _viewModel;
 
         this.InitializeComponent();
-    }
-
-    public void Cleanup()
-    {
-        Bindings.StopTracking();
     }
 }

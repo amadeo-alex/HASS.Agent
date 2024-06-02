@@ -49,6 +49,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
         UpdateIntervalSeconds = configuredEntity.UpdateIntervalSeconds;
         Domain = HassDomain.Sensor.ToString();
         UseAttributes = configuredEntity.UseAttributes;
+        Active = configuredEntity.Active;
     }
 
     public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);

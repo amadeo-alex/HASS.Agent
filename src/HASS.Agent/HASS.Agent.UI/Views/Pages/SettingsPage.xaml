@@ -16,21 +16,16 @@
 			<RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
 		
 		<TextBlock Grid.Row="0" Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-		<TextBlock Grid.Row="1" Text="{x:Bind ViewModel.MqttStatus, Mode=OneWay}"/>
-		<Button Grid.Row="2" Content="plus" Command="{x:Bind ViewModel.ButtonCommand}"/>
-		<Button Grid.Row="3" Content="stop mqtt" Command="{x:Bind ViewModel.ButtonCommand2}"/>
+		<TextBlock Grid.Row="1" Text="{Binding MqttStatus, Mode=OneWay}"/>
+		<Button Grid.Row="2" Content="plus" Command="{Binding ButtonCommand}"/>
+		<Button Grid.Row="3" Content="stop mqtt" Command="{Binding ButtonCommand2}"/>
         <Button Grid.Row="4" Content="show dialog" Click="Button_Click"/>
-        <Button Grid.Row="5" Content="GC" Command="{x:Bind ViewModel.ButtonCommand3}"/>
-        <TreeView ItemsSource="{x:Bind ViewModel.SomeItems}">
-            <TreeView.ItemTemplate>
-                <DataTemplate x:DataType="test:SomeItem">
-                    <TreeViewItem ItemsSource="{x:Bind Children}" Content="{x:Bind Name}" IsExpanded="True"/>
-                </DataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
+		<Button Grid.Row="5" Content="GC" Command="{Binding ButtonCommand3}"/>
+		<Button Grid.Row="6" Content="Save" Command="{Binding ButtonCommand4}"/>
+
     </Grid>
 </Page>

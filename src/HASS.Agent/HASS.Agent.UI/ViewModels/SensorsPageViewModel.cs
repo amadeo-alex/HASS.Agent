@@ -22,10 +22,10 @@ namespace HASS.Agent.UI.ViewModels;
 
 public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INavigationAware
 {
-    private ISensorManager _sensorManager;
-    private ISettingsManager _settingsManager;
-    private IEntityTypeRegistry _entityTypeRegistry;
-    private IGuidManager _guidManager;
+    private readonly ISensorManager _sensorManager;
+    private readonly ISettingsManager _settingsManager;
+    private readonly IEntityTypeRegistry _entityTypeRegistry;
+    private readonly IGuidManager _guidManager;
 
     private IInfoBadge _badge = new InfoBadge()
     {
@@ -55,13 +55,11 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
         foreach (var sensor in _sensorManager.Sensors)
             Sensors.Add(new AbstractDiscoverableViewModel
             {
-                Active = true,
+                Active = sensor.Active,
                 Name = sensor.Name,
                 Type = sensor.GetType().Name,
                 UniqueId = sensor.UniqueId
             });
-
-        //_sensorManager.Sensors.CollectionChanged += Sensors_CollectionChanged;
 
         _badge.Value = Sensors.Count;
 
@@ -87,6 +85,9 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
             {
                 sensor.Active = !sensor.Active;
                 sensorViewModel.Active = sensor.Active;
+
+                var configuredSensor = _settingsManager.ConfiguredSensors.First(cs=>cs.UniqueId.ToString() == sensorViewModel.UniqueId);
+                configuredSensor.Active = sensor.Active;
             }
         });
 
@@ -108,6 +109,23 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
             };
             NewSensorEventHandler?.Invoke(this, newSensor);
         });
+    }
+
+    public void AddUpdateConfiguredSensor(ConfiguredEntity sensor)
+    {
+        var existingSensor = _settingsManager.ConfiguredSensors.FirstOrDefault(s => s.UniqueId == sensor.UniqueId);
+        if (existingSensor != null)
+        {
+            if(existingSensor == sensor)
+                return;
+
+            if (existingSensor.Type != sensor.Type)
+                throw new ArgumentException($"sensor with ID {existingSensor.UniqueId} of different type ({existingSensor.Type}) than {sensor.Type} already exists");
+
+            _settingsManager.ConfiguredSensors.Remove(existingSensor);
+        }
+
+        _settingsManager.ConfiguredSensors.Add(sensor);
     }
 
     private void Sensors_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

@@ -27,6 +27,7 @@ public partial class SettingsPageViewModel : ViewModelBase
     public RelayCommand ButtonCommand { get; set; }
     public RelayCommand ButtonCommand2 { get; set; }
     public RelayCommand ButtonCommand3 { get; set; }
+    public RelayCommand ButtonCommand4 { get; set; }
     public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
 
     public List<SomeItem> SomeItems = new List<SomeItem>()
@@ -46,10 +47,10 @@ public partial class SettingsPageViewModel : ViewModelBase
             _settingsManager.ConfiguredSensors.Add(new ConfiguredEntity
             {
                 Type = typeof(DummySensor).Name,
-                Name = $"added sensor {x}",
-                EntityIdName = $"added sensor {x}",
+                Name = $"Dummy Sensor {x}",
+                EntityIdName = $"dummysensor{x}",
                 UniqueId = Guid.NewGuid(),
-                UpdateIntervalSeconds = 1
+                UpdateIntervalSeconds = 20
             });
 
             x++;
@@ -68,7 +69,13 @@ public partial class SettingsPageViewModel : ViewModelBase
 
         });
 
-        _mqttManager.PropertyChanged += OnMqttPropertyChanged;
+        ButtonCommand4 = new RelayCommand(async () =>
+        {
+            _settingsManager.StoreConfiguredEntities();
+
+        });
+
+        _mqttManager.PropertyChanged += OnMqttPropertyChanged; //Note(Amadeo): leaks
     }
 
     private void OnMqttPropertyChanged(object? sender, PropertyChangedEventArgs e)

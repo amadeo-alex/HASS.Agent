@@ -39,7 +39,7 @@ namespace HASS.Agent.UI;
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
 /// </summary>
-public partial class App : Application, IAgentServiceProvider
+public partial class App : Application
 {
     public IHost Host { get; private set; }
 

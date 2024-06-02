@@ -35,9 +35,9 @@ public sealed partial class SensorsPage : Page
     private readonly IEntityUiTypeRegistry _entityUiTypeRegistry;
     private readonly IEntityTypeRegistry _entityTypeRegistry;
     private readonly ISettingsManager _settingsManager;
+    private readonly SensorsPageViewModel _viewModel;
 
     private bool _dialogShown = false;
-    public SensorsPageViewModel? ViewModel { get; private set; }
 
     public SensorsPage()
     {
@@ -47,8 +47,8 @@ public sealed partial class SensorsPage : Page
         _entityTypeRegistry = App.GetService<IEntityTypeRegistry>();
         _settingsManager = App.GetService<ISettingsManager>();
 
-        ViewModel = App.GetService<SensorsPageViewModel>();
-        DataContext = ViewModel;
+        _viewModel = App.GetService<SensorsPageViewModel>();
+        DataContext = _viewModel;
 
         this.InitializeComponent();
     }
@@ -69,7 +69,7 @@ public sealed partial class SensorsPage : Page
         _dialogShown = false;
 
         if (result == ContentDialogResult.Primary && dialog.NewConfiguredEntity != null)
-            _settingsManager.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity); //TODO(Amadeo): move to ViewModel?
+            _viewModel.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity);
     }
 
     private async void ViewModel_SensorEditEventHandler(object? sender, ConfiguredEntity entity)
@@ -85,34 +85,28 @@ public sealed partial class SensorsPage : Page
         _dialogShown = false;
 
         if (result == ContentDialogResult.Primary && dialog.NewConfiguredEntity != null)
-            _settingsManager.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity); //TODO(Amadeo): move to ViewModel?
+            _viewModel.AddUpdateConfiguredSensor(dialog.NewConfiguredEntity);
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
 
-        if (ViewModel != null)
+        if (_viewModel != null)
         {
-            ViewModel.SensorEditEventHandler -= ViewModel_SensorEditEventHandler;
-            ViewModel.NewSensorEventHandler -= ViewModel_NewSensorEventHandler;
+            _viewModel.SensorEditEventHandler -= ViewModel_SensorEditEventHandler;
+            _viewModel.NewSensorEventHandler -= ViewModel_NewSensorEventHandler;
         }
 
         SensorsListView.ItemsSource = null;
-
-        //Bindings.StopTracking();
-        ViewModel = null;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
 
-        if (ViewModel != null)
-        {
-            ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
-            ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
-        }
+        _viewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
+        _viewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
     }
 
     ~SensorsPage()

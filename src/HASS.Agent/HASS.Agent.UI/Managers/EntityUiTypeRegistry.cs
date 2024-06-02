@@ -35,7 +35,7 @@ public class EntityUiTypeRegistry : IEntityUiTypeRegistry
         _entityTypeRegistry = entityTypeRegistry;
         _settingsManager = settingsManager;
 
-        RegisterSensorUiType(typeof(DummySensor), typeof(DummySensorAdditionalSettings), $"Sensor_{typeof(DummySensor).Name}_DisplayName", $"Sensor_{typeof(DummySensor).Name}_Description");
+        RegisterSensorUiType(typeof(DummySensor), typeof(DummySensorAddSettings), $"Sensor_{typeof(DummySensor).Name}_DisplayName", $"Sensor_{typeof(DummySensor).Name}_Description");
     }
 
     public void RegisterSensorUiType(Type sensorType, Type? additionalSettingsUiType, string displayNameResourceKey, string descriptionResourceKey)

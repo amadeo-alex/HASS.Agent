@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Entity;
-using HASS.Agent.UI.Contracts.Views;
 using HASS.Agent.UI.Models;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages.SensorConfigs;
@@ -16,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.WindowsAppSDK.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -33,8 +33,9 @@ public sealed partial class EntityContentDialog : ContentDialog
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILocalizer _localizer;
+    private readonly EntityContentDialogViewModel _viewModel;
 
-    public EntityContentDialogViewModel? ViewModel { get; set; }
+    public EntityContentDialogViewModel ViewModel => _viewModel;
     public ConfiguredEntity? NewConfiguredEntity { get; private set; }
 
     [ObservableProperty]
@@ -42,17 +43,17 @@ public sealed partial class EntityContentDialog : ContentDialog
 
     public EntityContentDialog(IServiceProvider serviceProvider, Control parentControl, EntityContentDialogViewModel viewModel)
     {
+        Debug.WriteLine("ec page constructor");
+
         _serviceProvider = serviceProvider;
         _localizer = Localizer.Get();
 
-        ViewModel = viewModel;
-        DataContext = viewModel;
+        _viewModel = viewModel;
+        DataContext = _viewModel;
 
         this.InitializeComponent();
 
-        DataContext = viewModel;
-        if (ViewModel != null)
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
         XamlRoot = parentControl.XamlRoot;
         Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
@@ -71,44 +72,34 @@ public sealed partial class EntityContentDialog : ContentDialog
 
     private void EntityContentDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
     {
-        (AdditionalSettings as IAdditionalSettingsPage)?.Cleanup();
-        //Bindings.StopTracking();
+        _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        NewConfiguredEntity = _viewModel.Entity;
 
-        if (ViewModel != null)
-        {
-            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
-            NewConfiguredEntity = ViewModel.Entity;
-        }
-
-        DataContext = null;
-        ViewModel = null;
+        //DataContext = null;
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(EntityContentDialogViewModel.UiEntity)
-            && ViewModel?.UiEntity.AdditionalSettingsUiType != null)
+            && _viewModel.UiEntity.AdditionalSettingsUiType != null)
         {
-            AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, ViewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
+            AdditionalSettings = ActivatorUtilities.CreateInstance(_serviceProvider, _viewModel.UiEntity.AdditionalSettingsUiType, ViewModel.Entity);
         }
     }
 
     private async void EntityContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (ViewModel == null)
-            return;
+        _viewModel.ReevaluateInput();
 
-        ViewModel.ReevaluateInput();
-
-        if (ViewModel.IsNewSensor)
+        if (_viewModel.IsNewSensor)
         {
-            if (ViewModel.EntityIdNameInvalid || ViewModel.EntityNameInvalid)
+            if (_viewModel.EntityIdNameInvalid || _viewModel.EntityNameInvalid)
                 args.Cancel = true;
         }
     }
 
     ~EntityContentDialog()
     {
-        Console.WriteLine();
+        Debug.WriteLine("ec page destructor");
     }
 }

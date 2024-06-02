@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 using WinUI3Localizer;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.UI.Contracts.Managers;
+using System.Diagnostics;
 
 namespace HASS.Agent.UI.ViewModels;
 public partial class EntityContentDialogViewModel : ObservableObject
 {
     private readonly ILocalizer _localizer;
     private readonly IEntityUiTypeRegistry _entityUiTypeRegistry;
-    private readonly IEntityTypeRegistry _entityTypeRegistry;
     private readonly ISettingsManager _settingsManager;
 
     [ObservableProperty]
@@ -34,7 +34,7 @@ public partial class EntityContentDialogViewModel : ObservableObject
 
     public List<EntityCategory>? SensorsCategories { get; set; }
     public bool ShowSensorCategories => string.IsNullOrWhiteSpace(Entity.Type);
-    public bool IsNewSensor => _settingsManager.ConfiguredSensors.FirstOrDefault(cs=>cs.UniqueId == Entity.UniqueId) == null;
+    public bool IsNewSensor => _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.UniqueId == Entity.UniqueId) == null;
     public bool AdditionalSettingsPresent => UiEntity.AdditionalSettingsUiType != null;
 
     [ObservableProperty]
@@ -47,9 +47,10 @@ public partial class EntityContentDialogViewModel : ObservableObject
     public bool entityNameInvalid;
     public EntityContentDialogViewModel(IEntityUiTypeRegistry entityUiTypeRegistry, IEntityTypeRegistry entityTypeRegistry, ISettingsManager settingsManager, ConfiguredEntity entity)
     {
+        Debug.WriteLine("ec constructor");
+
         _localizer = Localizer.Get();
         _entityUiTypeRegistry = entityUiTypeRegistry;
-        _entityTypeRegistry = entityTypeRegistry;
         _settingsManager = settingsManager;
 
         Entity = entity;
@@ -92,5 +93,10 @@ public partial class EntityContentDialogViewModel : ObservableObject
 
         OnPropertyChanged(nameof(EntityIdNameInvalid));
         OnPropertyChanged(nameof(EntityNameInvalid));
+    }
+
+    ~EntityContentDialogViewModel()
+    {
+        Debug.WriteLine("ec destructor");
     }
 }

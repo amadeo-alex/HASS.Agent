@@ -19,7 +19,6 @@ public interface ISettingsManager
 
     bool StoreConfiguredEntities();
     bool StoreApplicationSettings();
-    void AddUpdateConfiguredSensor(ConfiguredEntity sensor);
     bool GetExtendedLoggingSetting();
     void SetExtendedLoggingSetting(bool enabled);
     bool GetDpiWarningShown();

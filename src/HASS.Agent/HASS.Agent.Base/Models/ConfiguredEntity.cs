@@ -8,7 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
 namespace HASS.Agent.Base.Models;
-public class ConfiguredEntity : ICloneable //TODO(Amadeo): interface?
+public class ConfiguredEntity : IEquatable<ConfiguredEntity> //TODO(Amadeo): interface?
 {
     public Dictionary<string, string> Properties { get; set; } = [];
 
@@ -22,7 +22,7 @@ public class ConfiguredEntity : ICloneable //TODO(Amadeo): interface?
     [JsonIgnore]
     public Guid UniqueId
     {
-        get => Guid.Parse(GetParameter(nameof(UniqueId)));
+        get => Guid.TryParse(GetParameter(nameof(UniqueId)), out var guid) ? guid : Guid.Empty;
         set => SetParameter(nameof(UniqueId), value.ToString());
     }
 
@@ -102,7 +102,7 @@ public class ConfiguredEntity : ICloneable //TODO(Amadeo): interface?
 
         return Properties[parameterName];
     }
-    
+
     public int GetIntParameter(string parameterName, int defaultValue)
     {
         if (string.IsNullOrWhiteSpace(parameterName))
@@ -125,5 +125,44 @@ public class ConfiguredEntity : ICloneable //TODO(Amadeo): interface?
     {
         var clone = JsonConvert.DeserializeObject<ConfiguredEntity>(JsonConvert.SerializeObject(this));
         return clone ?? throw new InvalidOperationException("cannot clone configured entity");
+    }
+
+    private bool CompareSettings(ConfiguredEntity other)
+    {
+        if (UniqueId != other.UniqueId || Type != other.Type)
+            return false;
+
+        return other.Properties
+            .OrderBy(kvp => kvp.Key)
+            .SequenceEqual(Properties.OrderBy(kvp => kvp.Key));
+    }
+
+    public static bool operator ==(ConfiguredEntity? obj1, ConfiguredEntity? obj2)
+    {
+        if (ReferenceEquals(obj1, obj2))
+            return true;
+        if (obj1 is null || obj2 is null)
+            return false;
+
+        return obj1.Equals(obj2);
+    }
+    public static bool operator !=(ConfiguredEntity? obj1, ConfiguredEntity? obj2) => !(obj1 == obj2);
+
+    public bool Equals(ConfiguredEntity? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return CompareSettings(other);
+    }
+
+    public override bool Equals(object? obj) => Equals(obj as ConfiguredEntity);
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(UniqueId, Type);
     }
 }

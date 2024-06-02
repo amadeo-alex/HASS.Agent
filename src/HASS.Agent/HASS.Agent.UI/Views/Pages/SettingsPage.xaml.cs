@@ -28,16 +28,13 @@ namespace HASS.Agent.UI.Views.Pages;
 /// </summary>
 public sealed partial class SettingsPage : Page
 {
-    public SettingsPageViewModel ViewModel
-    {
-        get;
-    }
+    private readonly SettingsPageViewModel _viewModel;
 
     public SettingsPage()
     {
-        ViewModel = App.GetService<SettingsPageViewModel>();
+        _viewModel = App.GetService<SettingsPageViewModel>();
         this.InitializeComponent();
-        DataContext = ViewModel;
+        DataContext = _viewModel;
     }
 
     private async void Button_Click(object sender, RoutedEventArgs e)
