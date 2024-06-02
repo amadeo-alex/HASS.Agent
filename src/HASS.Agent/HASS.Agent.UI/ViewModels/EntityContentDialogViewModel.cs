@@ -14,10 +14,10 @@ using HASS.Agent.UI.Contracts.Managers;
 namespace HASS.Agent.UI.ViewModels;
 public partial class EntityContentDialogViewModel : ObservableObject
 {
-    private ILocalizer _localizer;
-    private IEntityUiTypeRegistry _entityUiTypeRegistry;
-    private IEntityTypeRegistry _entityTypeRegistry;
-    private ISettingsManager _settingsManager;
+    private readonly ILocalizer _localizer;
+    private readonly IEntityUiTypeRegistry _entityUiTypeRegistry;
+    private readonly IEntityTypeRegistry _entityTypeRegistry;
+    private readonly ISettingsManager _settingsManager;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowSensorCategories))]
@@ -34,6 +34,7 @@ public partial class EntityContentDialogViewModel : ObservableObject
 
     public List<EntityCategory>? SensorsCategories { get; set; }
     public bool ShowSensorCategories => string.IsNullOrWhiteSpace(Entity.Type);
+    public bool IsNewSensor => _settingsManager.ConfiguredSensors.FirstOrDefault(cs=>cs.UniqueId == Entity.UniqueId) == null;
     public bool AdditionalSettingsPresent => UiEntity.AdditionalSettingsUiType != null;
 
     [ObservableProperty]
@@ -88,13 +89,6 @@ public partial class EntityContentDialogViewModel : ObservableObject
                 cs => cs.UniqueId != existingEntity.UniqueId &&
                 cs.Name == Entity.Name) != null;
         }
-
-        //EntityIdNameInvalid = Entity.EntityIdName.Contains("asd");
-        /*        EntityIdNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(
-                    cs => cs.EntityIdName == Entity.EntityIdName
-                    ) != null;
-                EntityNameInvalid = _settingsManager.ConfiguredSensors.FirstOrDefault(cs => cs.Name == Entity.Name) != null;*/
-        //EntityNameInvalid = Entity.Name.Contains("123");
 
         OnPropertyChanged(nameof(EntityIdNameInvalid));
         OnPropertyChanged(nameof(EntityNameInvalid));

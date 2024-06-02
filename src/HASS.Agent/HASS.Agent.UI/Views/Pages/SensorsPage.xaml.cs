@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -31,23 +32,24 @@ namespace HASS.Agent.UI.Views.Pages;
 /// </summary>
 public sealed partial class SensorsPage : Page
 {
-    private IEntityUiTypeRegistry _entityUiTypeRegistry;
-    private IEntityTypeRegistry _entityTypeRegistry;
-    private ISettingsManager _settingsManager;
+    private readonly IEntityUiTypeRegistry _entityUiTypeRegistry;
+    private readonly IEntityTypeRegistry _entityTypeRegistry;
+    private readonly ISettingsManager _settingsManager;
 
     private bool _dialogShown = false;
     public SensorsPageViewModel? ViewModel { get; private set; }
 
     public SensorsPage()
     {
+        Debug.WriteLine("page constructor");
+
         _entityUiTypeRegistry = App.GetService<IEntityUiTypeRegistry>();
         _entityTypeRegistry = App.GetService<IEntityTypeRegistry>();
         _settingsManager = App.GetService<ISettingsManager>();
 
         ViewModel = App.GetService<SensorsPageViewModel>();
         DataContext = ViewModel;
-        //ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
-        //ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
+
         this.InitializeComponent();
     }
 
@@ -59,7 +61,9 @@ public sealed partial class SensorsPage : Page
         _dialogShown = true;
 
         var dialog = _entityUiTypeRegistry.CreateSensorUiInstance(this, entity);
-        dialog.ViewModel.SensorsCategories = _entityTypeRegistry.SensorsCategories.SubCategories;
+        if (dialog.ViewModel != null)
+            dialog.ViewModel.SensorsCategories = _entityTypeRegistry.SensorsCategories.SubCategories;
+
         var result = await dialog.ShowAsync();
 
         _dialogShown = false;
@@ -100,12 +104,6 @@ public sealed partial class SensorsPage : Page
         ViewModel = null;
     }
 
-    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-    {
-        base.OnNavigatingFrom(e);
-        //Bindings.StopTracking();
-    }
-
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
@@ -115,7 +113,10 @@ public sealed partial class SensorsPage : Page
             ViewModel.SensorEditEventHandler += ViewModel_SensorEditEventHandler;
             ViewModel.NewSensorEventHandler += ViewModel_NewSensorEventHandler;
         }
+    }
 
-        Console.WriteLine();
+    ~SensorsPage()
+    {
+        Debug.WriteLine("page destructor");
     }
 }

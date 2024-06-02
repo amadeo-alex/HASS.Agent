@@ -31,8 +31,8 @@ namespace HASS.Agent.UI.Views.Dialogs;
 [INotifyPropertyChanged]
 public sealed partial class EntityContentDialog : ContentDialog
 {
-    private IServiceProvider _serviceProvider;
-    private ILocalizer _localizer;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILocalizer _localizer;
 
     public EntityContentDialogViewModel? ViewModel { get; set; }
     public ConfiguredEntity? NewConfiguredEntity { get; private set; }
@@ -100,7 +100,7 @@ public sealed partial class EntityContentDialog : ContentDialog
 
         ViewModel.ReevaluateInput();
 
-        if (ViewModel.ShowSensorCategories)
+        if (ViewModel.IsNewSensor)
         {
             if (ViewModel.EntityIdNameInvalid || ViewModel.EntityNameInvalid)
                 args.Cancel = true;

@@ -16,107 +16,111 @@
     PrimaryButtonClick="EntityContentDialog_PrimaryButtonClick"
     x:Name="ThisDialog">
 
-    <ContentDialog.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <vc:CategoryDisplayNameConverter x:Key="CategoryToDisplayNameConverter" />
+	<ContentDialog.Resources>
+		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+		<vc:CategoryDisplayNameConverter x:Key="CategoryToDisplayNameConverter" />
 
-        <DataTemplate x:Key="CategoryDataTemplate" x:DataType="models:EntityCategory">
-            <TreeViewItem ItemsSource="{Binding SubCategories}" Content="{Binding Name, Converter={StaticResource CategoryToDisplayNameConverter}, ConverterParameter='Sensor_Category_{}'}"/>
-        </DataTemplate>
+		<DataTemplate x:Key="CategoryDataTemplate" x:DataType="models:EntityCategory">
+			<TreeViewItem ItemsSource="{Binding SubCategories}" Content="{Binding Name, Converter={StaticResource CategoryToDisplayNameConverter}, ConverterParameter='Sensor_Category_{}'}"/>
+		</DataTemplate>
 
-        <DataTemplate x:Key="EntityDataTemplate" x:DataType="models:EntityCategory">
-            <TreeViewItem ItemsSource="{Binding SubCategories}" Content="{Binding Name, Converter={StaticResource CategoryToDisplayNameConverter}, ConverterParameter='Sensor_{}_DisplayName'}"/>
-        </DataTemplate>
+		<DataTemplate x:Key="EntityDataTemplate" x:DataType="models:EntityCategory">
+			<TreeViewItem ItemsSource="{Binding SubCategories}" Content="{Binding Name, Converter={StaticResource CategoryToDisplayNameConverter}, ConverterParameter='Sensor_{}_DisplayName'}"/>
+		</DataTemplate>
 
-        <ts:EntityCategoryTemplateSelector x:Key="EntityTemplateSelector"
+		<ts:EntityCategoryTemplateSelector x:Key="EntityTemplateSelector"
                                            EntityTemplate="{StaticResource EntityDataTemplate}"
                                            CategoryTemplate="{StaticResource CategoryDataTemplate}"/>
-    </ContentDialog.Resources>
+	</ContentDialog.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <StackPanel Orientation="Vertical">
-                <Grid>
-                    <TextBlock Text="{Binding Description, Mode=OneWay}"
+		<Grid Grid.Row="0">
+			<StackPanel Orientation="Vertical">
+				<Grid>
+					<TextBlock Text="{Binding Description, Mode=OneWay}"
                                Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                </Grid>
-                <MenuFlyoutSeparator Margin="20"/>
-            </StackPanel>
-        </Grid>
+				</Grid>
+				<MenuFlyoutSeparator Margin="20"/>
+			</StackPanel>
+		</Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0"
+			<StackPanel Grid.Column="0"
                         Orientation="Horizontal"
                         Visibility="{Binding ShowSensorCategories, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Grid>
-                    <TreeView ItemsSource="{Binding SensorsCategories}"
+				<Grid>
+					<TreeView ItemsSource="{Binding SensorsCategories}"
                               ItemTemplateSelector="{StaticResource EntityTemplateSelector}"
                               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                               Width="256">
-                        <TreeView.ItemContainerStyle>
-                            <Style TargetType="TreeViewItem">
-                                <Setter Property="IsExpanded" Value="True" />
-                            </Style>
-                        </TreeView.ItemContainerStyle>
-                    </TreeView>
-                </Grid>
-                <AppBarSeparator Margin="20"/>
-            </StackPanel>
+						<TreeView.ItemContainerStyle>
+							<Style TargetType="TreeViewItem">
+								<Setter Property="IsExpanded" Value="True" />
+							</Style>
+						</TreeView.ItemContainerStyle>
+					</TreeView>
+				</Grid>
+				<AppBarSeparator Margin="20"/>
+			</StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <StackPanel Orientation="Vertical" Spacing="4">
-                    <TextBox l:Uids.Uid="Dialog_SensorDetail_TypeTextBox"
+			<StackPanel Grid.Column="1" Orientation="Horizontal">
+				<StackPanel Orientation="Vertical" Spacing="4">
+					<TextBox l:Uids.Uid="Dialog_SensorDetail_TypeTextBox"
                              Text="{Binding DisplayName, Mode=OneWay}"
                              IsEnabled="False"/>
-                    <TextBox l:Uids.Uid="Dialog_SensorDetail_EntityIdTextBox"
+					<TextBox l:Uids.Uid="Dialog_SensorDetail_EntityIdTextBox"
                              Text="{Binding Entity.EntityIdName, Mode=TwoWay}"/>
-                    <TextBox l:Uids.Uid="Dialog_SensorDetail_NameTextBox"
+					<TextBox l:Uids.Uid="Dialog_SensorDetail_NameTextBox"
                              Text="{Binding Entity.Name, Mode=TwoWay}"/>
-                    <TextBox l:Uids.Uid="Dialog_SensorDetail_UniqueIdTextBox"
+					<TextBox l:Uids.Uid="Dialog_SensorDetail_UniqueIdTextBox"
                              Text="{Binding Entity.UniqueId, Mode=OneWay}"
                              IsEnabled="False"/>
-                    <NumberBox l:Uids.Uid="Dialog_SensorDetail_IntervalNumberBox"
+					<NumberBox l:Uids.Uid="Dialog_SensorDetail_IntervalNumberBox"
                                Value="{Binding Entity.UpdateIntervalSeconds, Mode=TwoWay}"
                                SpinButtonPlacementMode="Inline"
                                SmallChange="1"
                                LargeChange="10"/>
-                    <CheckBox l:Uids.Uid="Dialog_SensorDetail_AvailabilityCheckBox"
+					<CheckBox l:Uids.Uid="Dialog_SensorDetail_AvailabilityCheckBox"
                               IsChecked="{Binding Entity.IgnoreAvailability, Mode=TwoWay}"/>
-                </StackPanel>
-            </StackPanel>
+				</StackPanel>
+			</StackPanel>
 
 
-            <Grid Grid.Column="2"
+			<Grid Grid.Column="2"
                   Visibility="{Binding AdditionalSettingsPresent, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-                <StackPanel Orientation="Horizontal">
-                    <AppBarSeparator Margin="20"/>
-                    <Grid DataContext="{Binding ElementName=ThisDialog}">
-                        <ContentControl Content="{Binding AdditionalSettings, Mode=OneWay}"/>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-        </Grid>
+				<StackPanel Orientation="Horizontal">
+					<AppBarSeparator Margin="20"/>
+					<Grid DataContext="{Binding ElementName=ThisDialog}">
+						<ContentControl Content="{Binding AdditionalSettings, Mode=OneWay}"/>
+					</Grid>
+				</StackPanel>
+			</Grid>
+		</Grid>
 
-        <Grid Grid.Row="2">
-            <InfoBar l:Uids.Uid="Dialog_SensorDetail_IdInfoBar"
-                IsOpen="{Binding EntityIdNameInvalid, Mode=OneWay}"
-                Severity="Error"/>
-            <InfoBar l:Uids.Uid="Dialog_SensorDetail_NameInfoBar"
-                IsOpen="{Binding EntityNameInvalid, Mode=OneWay}"
-                Severity="Error"/>
-        </Grid>
+		<Grid Grid.Row="2">
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<InfoBar l:Uids.Uid="Dialog_SensorDetail_IdInfoBar"
+					IsOpen="{Binding EntityIdNameInvalid, Mode=OneWay}"
+					IsClosable="False"
+					Severity="Error"/>
+				<InfoBar l:Uids.Uid="Dialog_SensorDetail_NameInfoBar"
+					IsOpen="{Binding EntityNameInvalid, Mode=OneWay}"
+					IsClosable="False"
+					Severity="Error"/>
+			</StackPanel>
+		</Grid>
 
-    </Grid>
+	</Grid>
 </ContentDialog>
