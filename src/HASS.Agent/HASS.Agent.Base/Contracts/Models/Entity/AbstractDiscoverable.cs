@@ -33,11 +33,12 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     public int UpdateIntervalSeconds { get; set; } = 1;
     public bool Active { get; set; } = true;
 
-    public abstract string State { get; }
-    public virtual string Attributes { get; } = string.Empty;
     public DateTime LastUpdated { get; set; } = DateTime.MinValue;
     public string PreviousPublishedState { get; set; } = string.Empty;
     public string PreviousPublishedAttributes { get; set; } = string.Empty;
+
+    public abstract Task<string> GetState();
+    public async virtual Task<string> GetAttributes() { return string.Empty; }
 
     protected AbstractDiscoverable(ConfiguredEntity configuredEntity)
     {
@@ -53,7 +54,7 @@ public abstract partial class AbstractDiscoverable : IDiscoverable
     }
 
     public abstract AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
-    public abstract AbstractMqttDiscoveryConfigModel GetAutoDiscoveryConfig();
+    public abstract AbstractMqttDiscoveryConfigModel? GetAutoDiscoveryConfig();
     //public abstract void ClearAutoDiscoveryConfig();
     public abstract void ResetChecks();
     public abstract ConfiguredEntity ToConfiguredEntity();

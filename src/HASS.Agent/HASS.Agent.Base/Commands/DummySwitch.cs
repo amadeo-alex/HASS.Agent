@@ -47,19 +47,19 @@ public class DummySwitch : AbstractCommand
 
     public override MqttCommandDiscoveryConfigModel? GetAutoDiscoveryConfig() => _discoveryConfigModel;
 
-    public override string State => _state;
+    public async override Task<string> GetState() { return _state; }
 
-    public override void TurnOn()
+    public async override Task TurnOn()
     {
         Log.Debug("[{name}] turned on");
         _state = StateOn;
     }
-    public override void TurnOn(string action)
+    public async override Task TurnOn(string action)
     {
         Log.Debug("[{name}] turned with action");
         _state = action;
     }
-    public override void TurnOff()
+    public async override Task TurnOff()
     {
         Log.Debug("[{name}] turned off");
         _state = StateOff;

@@ -17,12 +17,14 @@ public interface IDiscoverable
     public string UniqueId { get; set; }
     public bool UseAttributes { get; set; }
     public bool IgnoreAvailability { get; set; }
-    public string State { get; }
-    public string Attributes { get; }
     public int UpdateIntervalSeconds { get; set; }
     public DateTime LastUpdated { get; }
     public string PreviousPublishedState { get; }
     public string PreviousPublishedAttributes { get; }
+
+    public abstract Task<string> GetState();
+    public abstract Task<string> GetAttributes();
+
     public AbstractMqttDiscoveryConfigModel ConfigureAutoDiscoveryConfig(string discoveryPrefix, AbstractMqttDeviceConfigModel deviceConfigModel);
     public AbstractMqttDiscoveryConfigModel? GetAutoDiscoveryConfig();
     //public void ClearAutoDiscoveryConfig();

@@ -52,20 +52,17 @@ public class DummySensor : AbstractSingleValueSensor
 
     public override MqttSensorDiscoveryConfigModel? GetAutoDiscoveryConfig() => _discoveryConfigModel;
 
-    public override string State
+    public async override Task<string> GetState()
     {
-        get
+        var start = _configuration.GetIntParameter(MinValueKey, 0);
+        var end = _configuration.GetIntParameter(MaxValueKey, 100);
+        string? someValue;
+        do
         {
-            var start = _configuration.GetIntParameter(MinValueKey, 0);
-            var end = _configuration.GetIntParameter(MaxValueKey, 100);
-            var someValue = "0";
-            do
-            {
-                someValue = Random.Shared.Next(start, end).ToString();
-            } while (_configuration.GetBoolParameter(EnsureRandomKey, false) && someValue == PreviousPublishedState);
+            someValue = Random.Shared.Next(start, end).ToString();
+        } while (_configuration.GetBoolParameter(EnsureRandomKey, false) && someValue == PreviousPublishedState);
 
-            return someValue;
-        }
+        return someValue;
     }
 
     public override ConfiguredEntity ToConfiguredEntity()

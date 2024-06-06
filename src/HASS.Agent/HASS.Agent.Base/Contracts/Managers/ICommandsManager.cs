@@ -15,7 +15,7 @@ public interface ICommandsManager
     bool Pause { get; set; }
     bool Exit { get; set; }
 
-    void Initialize();
+    Task Initialize();
     Task PublishCommandsDiscoveryAsync(bool force);
     Task UnpublishCommandsDiscoveryAsync();
     Task PublishCommandsStateAsync();

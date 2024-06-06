@@ -34,9 +34,9 @@ public abstract class AbstractCommand : AbstractDiscoverable
         UseAttributes = configuredEntity.UseAttributes;
     }
 
-    public abstract void TurnOn();
-    public abstract void TurnOn(string action);
-    public abstract void TurnOff();
+    public abstract Task TurnOn();
+    public abstract Task TurnOn(string action);
+    public abstract Task TurnOff();
 
     public override void ResetChecks()
     {

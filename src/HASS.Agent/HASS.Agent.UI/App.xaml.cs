@@ -118,11 +118,11 @@ public partial class App : Application
                 await mqtt.StartClient();
 
                 var sensorManager = GetService<ISensorManager>();
-                sensorManager.Initialize();
+                await sensorManager.Initialize();
                 _ = Task.Run(sensorManager.Process);
 
                 var commandsManager = GetService<ICommandsManager>();
-                commandsManager.Initialize();
+                await commandsManager.Initialize();
                 _ = Task.Run(commandsManager.Process);
 
                 await Task.Run(async () =>

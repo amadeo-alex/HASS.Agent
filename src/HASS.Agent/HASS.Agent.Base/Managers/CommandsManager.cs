@@ -48,36 +48,40 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         _mqttManager = mqttManager;
     }
 
-    public void Initialize()
+    public async Task Initialize()
     {
         _settingsManager.ConfiguredCommands.CollectionChanged -= ConfiguredCommands_CollectionChanged;
 
         foreach (var configuredCommand in _settingsManager.ConfiguredCommands)
-            AddCommand(configuredCommand);
+            await AddCommand(configuredCommand);
 
         _settingsManager.ConfiguredCommands.CollectionChanged += ConfiguredCommands_CollectionChanged; ;
     }
 
-    private void AddCommand(ConfiguredEntity configuredCommand)
+    private async Task AddCommand(ConfiguredEntity configuredCommand)
     {
         var command = (AbstractDiscoverable)_entityTypeRegistry.CreateCommandInstance(configuredCommand);
         command.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
 
-        var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+        if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+            return;
+
         _mqttManager.RegisterMessageHandler(commandConfig.ActionTopic, this);
         _mqttManager.RegisterMessageHandler(commandConfig.CommandTopic, this);
 
-        _ = PublishCommandAutoDiscoveryConfigAsync(command);
+        await PublishCommandAutoDiscoveryConfigAsync(command);
         Commands.Add(command);
     }
 
-    private void RemoveCommand(AbstractDiscoverable command)
+    private async Task RemoveCommand(AbstractDiscoverable command)
     {
         Commands.Remove(command);
-        _ = PublishCommandStateAsync(command, respectChecks: false, clear: true);
-        _ = PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
+        await PublishCommandStateAsync(command, respectChecks: false, clear: true);
+        await PublishCommandAutoDiscoveryConfigAsync(command, clear: true);
 
-        var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+        if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+            return;
+
         _mqttManager.UnregisterMessageHandler(commandConfig.CommandTopic);
         _mqttManager.UnregisterMessageHandler(commandConfig.ActionTopic);
     }
@@ -93,7 +97,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                     return;
 
                 foreach (ConfiguredEntity configuredCommand in e.NewItems)
-                    AddCommand(configuredCommand);
+                    _ = AddCommand(configuredCommand);
                 break;
 
             case NotifyCollectionChangedAction.Remove:
@@ -104,7 +108,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                 {
                     var command = Commands.Where(s => s.UniqueId == configuredCommand.UniqueId.ToString()).FirstOrDefault();
                     if (command != null)
-                        RemoveCommand(command);
+                        _ = RemoveCommand(command);
                 }
                 break;
         }
@@ -127,6 +131,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             else
             {
                 var payload = command.GetAutoDiscoveryConfig();
+                if (payload == null)
+                    return;
+
                 if (command.IgnoreAvailability)
                     payload.AvailabilityTopic = string.Empty;
 
@@ -148,11 +155,11 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             if (respectChecks && command.LastUpdated.AddSeconds(command.UpdateIntervalSeconds) > DateTime.Now)
                 return;
 
-            var state = command.State;
+            var state = await command.GetState();
             if (state == null)
                 return;
 
-            var attributes = command.Attributes;
+            var attributes = await command.GetAttributes();
 
             if (respectChecks &&
                 command.PreviousPublishedState == state &&
@@ -162,7 +169,9 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                 return;
             }
 
-            var autodiscoveryConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+            if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel autodiscoveryConfig)
+                return;
+
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
                 .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
@@ -257,7 +266,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             command.ResetChecks();
     }
 
-    public Task HandleMqttMessage(MqttApplicationMessage message)
+    public async Task HandleMqttMessage(MqttApplicationMessage message)
     {
         foreach (var commandDiscoverable in Commands)
         {
@@ -265,7 +274,8 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                 continue;
 
             var command = (AbstractCommand)commandDiscoverable;
-            var commandConfig = (MqttCommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+            if(command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
+                return;
 
             if (commandConfig.ActionTopic == message.Topic || commandConfig.CommandTopic == message.Topic)
             {
@@ -274,12 +284,10 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
                     : string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(payload))
-                    command.TurnOn(payload);
+                    await command.TurnOn(payload);
                 else
-                    command.TurnOn();
+                    await command.TurnOn();
             }
         }
-
-        return Task.CompletedTask;
     }
 }

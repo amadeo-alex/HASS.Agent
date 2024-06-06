@@ -50,29 +50,29 @@ public class SensorManager : ISensorManager
         _mqttManager = mqttManager;
     }
 
-    private void AddSensor(ConfiguredEntity configuredSensor)
-    {
-        var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
-        _ = PublishSensorAutoDiscoveryConfigAsync(sensor);
-        Sensors.Add(sensor);
-    }
-
-    private void RemoveSensor(AbstractDiscoverable sensor)
-    {
-        Sensors.Remove(sensor);
-        _ = PublishSingleSensorStateAsync(sensor, respectChecks: false, clear: true);
-        _ = PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
-    }
-
-    public void Initialize()
+    public async Task Initialize()
     {
         _settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
 
         foreach (var configuredSensor in _settingsManager.ConfiguredSensors)
-            AddSensor(configuredSensor);
+            await AddSensor(configuredSensor);
 
         _settingsManager.ConfiguredSensors.CollectionChanged += ConfiguredSensors_CollectionChanged;
+    }
+
+    private async Task AddSensor(ConfiguredEntity configuredSensor)
+    {
+        var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
+        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        await PublishSensorAutoDiscoveryConfigAsync(sensor);
+        Sensors.Add(sensor);
+    }
+
+    private async Task RemoveSensor(AbstractDiscoverable sensor)
+    {
+        Sensors.Remove(sensor);
+        await PublishSingleSensorStateAsync(sensor, respectChecks: false, clear: true);
+        await PublishSensorAutoDiscoveryConfigAsync(sensor, clear: true);
     }
 
     private void ConfiguredSensors_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -86,7 +86,7 @@ public class SensorManager : ISensorManager
                     return;
 
                 foreach (ConfiguredEntity configuredSensor in e.NewItems)
-                    AddSensor(configuredSensor);
+                    _ = AddSensor(configuredSensor);
                 break;
 
             case NotifyCollectionChangedAction.Remove:
@@ -97,7 +97,7 @@ public class SensorManager : ISensorManager
                 {
                     var sensor = Sensors.Where(s => s.UniqueId == configuredSensor.UniqueId.ToString()).FirstOrDefault();
                     if (sensor != null)
-                        RemoveSensor(sensor);
+                        _ = RemoveSensor(sensor);
                 }
                 break;
         }
@@ -133,6 +133,9 @@ public class SensorManager : ISensorManager
             else
             {
                 var payload = sensor.GetAutoDiscoveryConfig();
+                if(payload == null)
+                    return;
+
                 if (sensor.IgnoreAvailability)
                     payload.AvailabilityTopic = string.Empty;
 
@@ -167,12 +170,11 @@ public class SensorManager : ISensorManager
             if (respectChecks && sensor.LastUpdated.AddSeconds(sensor.UpdateIntervalSeconds) > DateTime.Now)
                 return;
 
-            var state = sensor.State;
+            var state = await sensor.GetState();
             if (state == null)
                 return;
 
-            var attributes = sensor.Attributes;
-
+            var attributes = await sensor.GetAttributes();
 
             if (respectChecks &&
                 sensor.PreviousPublishedState == state &&
@@ -182,7 +184,9 @@ public class SensorManager : ISensorManager
                 return;
             }
 
-            var autodiscoveryConfig = (MqttSensorDiscoveryConfigModel)sensor.GetAutoDiscoveryConfig();
+            if (sensor.GetAutoDiscoveryConfig() is not MqttSensorDiscoveryConfigModel autodiscoveryConfig)
+                return;
+
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
                 .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);

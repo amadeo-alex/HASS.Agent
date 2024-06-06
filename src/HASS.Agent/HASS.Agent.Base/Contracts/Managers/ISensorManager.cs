@@ -15,7 +15,7 @@ public interface ISensorManager
     bool Pause { get; set; }
     bool Exit { get; set; }
 
-    void Initialize();
+    Task Initialize();
     Task PublishSensorsDiscoveryAsync(bool force);
     Task UnpublishSensorsDiscoveryAsync();
     Task PublishSensorsStateAsync();
