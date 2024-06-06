@@ -30,6 +30,12 @@ public class DummySensorAddSettingsViewModel
         set => _entity.SetIntParameter(DummySensor.MaxValueKey, value);
     }
 
+    public int MaxRetries
+    {
+        get => _entity.GetIntParameter(DummySensor.MaxRetriesKey, 100);
+        set => _entity.SetIntParameter(DummySensor.MaxRetriesKey, value);
+    }
+
     public DummySensorAddSettingsViewModel(ConfiguredEntity entity)
     {
         _entity = entity;

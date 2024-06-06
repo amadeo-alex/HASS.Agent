@@ -135,6 +135,12 @@
   <data name="Dialog_SensorDetail_DummySensor_MinNumberBox.Header" xml:space="preserve">
     <value>Min value</value>
   </data>
+  <data name="Dialog_SensorDetail_DummySensor_RetriesNumberBox.Header" xml:space="preserve">
+    <value>Max retries</value>
+  </data>
+  <data name="Dialog_SensorDetail_DummySensor_RetriesNumberBox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum retries in generating random value.</value>
+  </data>
   <data name="Dialog_SensorDetail_EditSensor" xml:space="preserve">
     <value>Edit Sensor</value>
   </data>

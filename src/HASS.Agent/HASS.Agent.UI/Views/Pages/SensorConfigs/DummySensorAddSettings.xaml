@@ -22,5 +22,10 @@
                                SpinButtonPlacementMode="Inline"
                                SmallChange="1"
                                LargeChange="10"/>
-    </StackPanel>
+		<NumberBox l:Uids.Uid="Dialog_SensorDetail_DummySensor_RetriesNumberBox"
+                               Value="{Binding MaxRetries, Mode=TwoWay}"
+                               SpinButtonPlacementMode="Inline"
+                               SmallChange="1"
+                               LargeChange="10"/>
+	</StackPanel>
 </Page>

@@ -23,7 +23,8 @@ public class DummySensor : AbstractSingleValueSensor
     public const string EnsureRandomKey = "ensureRandom";
     public const string MinValueKey = "min";
     public const string MaxValueKey = "max";
-
+    public const string MaxRetriesKey = "maxRetries";
+        
     public override string DefaultEntityIdName { get; } = "dummySensor";
 
     private MqttSensorDiscoveryConfigModel? _discoveryConfigModel;
@@ -56,11 +57,16 @@ public class DummySensor : AbstractSingleValueSensor
     {
         var start = _configuration.GetIntParameter(MinValueKey, 0);
         var end = _configuration.GetIntParameter(MaxValueKey, 100);
+        var maxRetries = _configuration.GetIntParameter(MaxRetriesKey, 100);
+
+        var retries = 0;
+
         string? someValue;
         do
         {
             someValue = Random.Shared.Next(start, end).ToString();
-        } while (_configuration.GetBoolParameter(EnsureRandomKey, false) && someValue == PreviousPublishedState);
+            retries++;
+        } while (_configuration.GetBoolParameter(EnsureRandomKey, false) && someValue == PreviousPublishedState && retries <= maxRetries);
 
         return someValue;
     }
