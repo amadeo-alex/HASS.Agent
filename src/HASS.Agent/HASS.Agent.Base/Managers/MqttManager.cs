@@ -12,7 +12,6 @@ using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Contracts.Models.MediaPlayer;
 using HASS.Agent.Base.Contracts.Models.Mqtt;
-using HASS.Agent.Base.Contracts.Models.Notification;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
@@ -31,6 +30,8 @@ namespace HASS.Agent.Base.Managers;
 public partial class MqttManager : ObservableObject, IMqttManager
 {
     public const string DefaultMqttDiscoveryPrefix = "homeassistant";
+    public const string PayloadOnline = "online";
+    public const string PayloadOffline = "offline";
 
     private readonly JsonSerializerSettings _jsonSerializerSettings = new()
     {
@@ -47,14 +48,14 @@ public partial class MqttManager : ObservableObject, IMqttManager
     private readonly IGuidManager _guidManager;
 
     private IManagedMqttClient _mqttClient;
-    private ManagedMqttClientOptions _mqttClientOptions;
+    private readonly ManagedMqttClientOptions _mqttClientOptions;
 
     private bool _connectionErrorLogged = false;
 
     private DateTime _lastAvailabilityAnnouncment = DateTime.MinValue;
     private DateTime _lastAvailabilityAnnouncmentFailed = DateTime.MinValue;
 
-    private Dictionary<string, IMqttMessageHandler> _mqttMessageHandlers = [];
+    private readonly Dictionary<string, IMqttMessageHandler> _mqttMessageHandlers = [];
 
     [ObservableProperty]
     public MqttStatus status = MqttStatus.NotInitialized;
@@ -165,7 +166,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
                 var topic = $"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/hass.agent/{_settingsManager.ApplicationSettings.DeviceName}/availability";
                 var availabilityMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
-                    .WithPayload(offline ? "offline" : "online")
+                    .WithPayload(offline ? PayloadOffline : PayloadOnline)
                     .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
                     .Build();
 
@@ -213,9 +214,10 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
         try
         {
-            if (_mqttMessageHandlers.TryGetValue(applicationMessage.Topic, out var mqttMessageHandler))
+            foreach(var (registeredTopic, handler) in _mqttMessageHandlers)
             {
-                await mqttMessageHandler.HandleMqttMessage(applicationMessage);
+                if(CheckTopicMatch(applicationMessage.Topic, registeredTopic))
+                    await handler.HandleMqttMessage(applicationMessage);
             }
         }
         catch (Exception ex)
@@ -233,7 +235,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
                 if (payload == null)
                     return;
 
-                var notification = JsonConvert.DeserializeObject<Notification>(payload, _jsonSerializerSettings);
+                //var notification = JsonConvert.DeserializeObject<Notification>(payload, _jsonSerializerSettings);
                 //_notificationManager.HandleReceivedNotification(notification);
                 //TODO(Amadeo): event/observable to show notification
 
@@ -342,7 +344,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
             .WithTcpServer(_settingsManager.ApplicationSettings.MqttAddress, _settingsManager.ApplicationSettings.MqttPort)
             .WithCleanSession()
             .WithWillTopic($"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
-            .WithWillPayload("offline")
+            .WithWillPayload(PayloadOffline)
             .WithWillRetain(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(15));
 
@@ -436,5 +438,33 @@ public partial class MqttManager : ObservableObject, IMqttManager
     {
 
         return;
+    }
+
+    /// Idea thanks to https://github.com/hobbyquaker/mqtt-wildcard implementation
+    private bool CheckTopicMatch(string messageTopic, string registeredTopic)
+    {
+        if (messageTopic == registeredTopic || registeredTopic == "#")
+            return true;
+
+        var splitTopic = messageTopic.Split('/');
+        var splitRegisteredTopic = registeredTopic.Split('/');
+        if(splitTopic.Length > splitRegisteredTopic.Length && splitRegisteredTopic.Last() != "#")
+            return false;
+
+        var index = 0;
+        for (; index < splitTopic.Length; index++)
+        {
+            if (splitRegisteredTopic[index] == "+") 
+                continue;
+            else if (splitRegisteredTopic[index] == "#")
+                return true;
+            else if (splitRegisteredTopic[index] != splitTopic[index])
+                return false;
+        }
+
+       if (splitRegisteredTopic.Length > index && splitRegisteredTopic[index] == "#")
+            index += 1;
+
+        return index == splitRegisteredTopic.Length;
     }
 }
