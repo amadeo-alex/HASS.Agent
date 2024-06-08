@@ -186,6 +186,9 @@
   <data name="Dialog_SensorDetail_UniqueIdTextBox.PlaceholderText" xml:space="preserve">
     <value>Sensor unique ID</value>
   </data>
+  <data name="General_Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
   <data name="General_Empty" xml:space="preserve">
     <value />
   </data>

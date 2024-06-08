@@ -125,6 +125,9 @@ public partial class App : Application
                 await commandsManager.Initialize();
                 _ = Task.Run(commandsManager.Process);
 
+                var notificationManager = GetService<INotificationManager>();
+                notificationManager.Initialize();
+
                 await Task.Run(async () =>
                 {
                     while (!mqtt.Ready)
@@ -220,6 +223,8 @@ public partial class App : Application
                 services.AddSingleton<IEntityTypeRegistry, EntityTypeRegistry>();
                 services.AddSingleton<ISensorManager, SensorManager>();
                 services.AddSingleton<ICommandsManager, CommandsManager>();
+
+                services.AddSingleton<INotificationManager, NotificationManager>();
 
                 services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 

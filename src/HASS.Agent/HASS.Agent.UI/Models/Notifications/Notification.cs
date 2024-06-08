@@ -9,11 +9,5 @@ public class Notification
 {
     public string Message { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
-    public string Image { get; set; } = string.Empty;
-
-    public int Duration { get; set; } = 8;
-
-    public List<NotificationAction> Actions { get; set; } = [];
-
-    public List<NotificationInput> Inputs { get; set; } = [];
+    public NotificationData Data { get; set; } = new NotificationData();
 }

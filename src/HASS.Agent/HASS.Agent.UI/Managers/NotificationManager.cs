@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -6,20 +7,25 @@ using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Managers;
 using HASS.Agent.UI.Contracts.Managers;
+using HASS.Agent.UI.Helpers;
 using HASS.Agent.UI.Models.Notifications;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using MQTTnet;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace HASS.Agent.UI.Managers;
-public class NotificationManager : INotificationManager
+public class NotificationManager : INotificationManager, IMqttMessageHandler
 {
     private const string ActionPrefix = "action=";
     private const string UriPrefix = "uri=";
+    private const string SpecialClear = "clear_notification";
 
     private readonly ISettingsManager _settingsManager;
+    private readonly IMqttManager _mqttManager;
 
     private readonly AppNotificationManager _notificationManager = AppNotificationManager.Default;
 
@@ -27,37 +33,32 @@ public class NotificationManager : INotificationManager
 
     public bool Ready { get; private set; }
 
-    public NotificationManager(ISettingsManager settingsManager)
+    public NotificationManager(ISettingsManager settingsManager, IMqttManager mqttManager)
     {
         _settingsManager = settingsManager;
+        _mqttManager = mqttManager;
     }
 
-    public async Task Initialize()
+    public void Initialize()
     {
         try
         {
             if (!_settingsManager.ApplicationSettings.NotificationsEnabled)
             {
                 Log.Information("[NOTIFICATIONS] Disabled");
-
                 return;
             }
 
             if (!_settingsManager.ApplicationSettings.LocalApiEnabled && !_settingsManager.ApplicationSettings.MqttEnabled)
             {
                 Log.Warning("[NOTIFICATIONS] Both local API and MQTT are disabled, unable to receive notifications");
-
                 return;
             }
 
             if (_settingsManager.ApplicationSettings.MqttEnabled)
-            {
-                //_ = Task.Run(Variables.MqttManager.SubscribeNotificationsAsync); //TODO(Amadeo)
-            }
+                _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_settingsManager.ApplicationSettings.DeviceName}", this);
             else
-            {
                 Log.Warning("[NOTIFICATIONS] MQTT is disabled, not all aspects of actions might work as expected");
-            }
 
             if (_notificationManager.Setting != AppNotificationSetting.Enabled)
                 Log.Warning("[NOTIFICATIONS] Showing notifications might fail, reason: {r}", _notificationManager.Setting.ToString());
@@ -81,7 +82,7 @@ public class NotificationManager : INotificationManager
 
     private async Task HandleNotificationInvoked(AppNotificationActivatedEventArgs args)
     {
-
+        //TODO(Amadeo): clickAction
     }
 
     private static string EncodeNotificationParameter(string parameter)
@@ -98,7 +99,7 @@ public class NotificationManager : INotificationManager
         return Encoding.UTF8.GetString(Convert.FromBase64String(urlDecodedParameter));
     }
 
-    public async Task ShowNotification(Notification notification, string handlerId)
+    public async Task ShowNotification(Notification notification)
     {
         if (!Ready)
             throw new Exception("NotificationManager is not initialized");
@@ -122,9 +123,9 @@ public class NotificationManager : INotificationManager
                         }*/
             //TODO(Amadeo): implement
 
-            if (notification.Actions.Count > 0)
+            if (notification.Data.Actions.Count > 0)
             {
-                foreach (var action in notification.Actions)
+                foreach (var action in notification.Data.Actions)
                 {
                     if (string.IsNullOrEmpty(action.Action))
                         continue;
@@ -139,9 +140,9 @@ public class NotificationManager : INotificationManager
                 }
             }
 
-            if (notification.Inputs.Count > 0)
+            if (notification.Data.Inputs.Count > 0)
             {
-                foreach (var input in notification.Inputs)
+                foreach (var input in notification.Data.Inputs)
                 {
                     if (string.IsNullOrEmpty(input.Id))
                         continue;
@@ -150,21 +151,37 @@ public class NotificationManager : INotificationManager
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(notification.Data.Group))
+                toastBuilder.SetGroup(notification.Data.Group);
+            if (!string.IsNullOrWhiteSpace(notification.Data.Tag))
+                toastBuilder.SetTag(notification.Data.Tag);
+
+            if (notification.Data.Sticky)
+            {
+                toastBuilder.SetScenario(AppNotificationScenario.Reminder);
+                if (notification.Data.Actions.Count == 0)
+                    toastBuilder.AddButton(new AppNotificationButton(LocalizerHelper.GetLocalizedString("General_Dismiss")));
+            }
+
+            if (AppNotificationBuilder.IsUrgentScenarioSupported() && notification.Data.Importance == NotificationData.ImportanceHigh)
+            {
+                toastBuilder.SetScenario(AppNotificationScenario.Urgent);
+                if (notification.Data.Sticky)
+                    Log.Warning("[NOTIFICATIONS] Notification importance overrides sticky", notification.Title);
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.Data.IconUrl))
+                toastBuilder.SetAppLogoOverride(new Uri(notification.Data.IconUrl));
+
             var toast = toastBuilder.BuildNotification();
 
-            if (notification.Duration > 0)
-            {
-                //TODO: unreliable
-                toast.Expiration = DateTime.Now.AddSeconds(notification.Duration);
-            }
+            if (notification.Data.Duration > 0)
+                toast.Expiration = DateTime.Now.AddSeconds(notification.Data.Duration);
 
             _notificationManager.Show(toast);
 
             if (toast.Id == 0)
-            {
                 Log.Error("[NOTIFICATIONS] Notification '{err}' failed to show", notification.Title);
-            }
-
         }
         catch (Exception ex)
         {
@@ -188,5 +205,32 @@ public class NotificationManager : INotificationManager
     public async Task HandleAppActivation(AppActivationArguments activationArguments)
     {
         //TODO(Amadeo): implement
+    }
+
+    public async Task HandleMqttMessage(MqttApplicationMessage message)
+    {
+        try
+        {
+            var notification = JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(message.PayloadSegment));
+            if (notification == null)
+                return;
+
+            if (notification.Message == SpecialClear) //NOTE(Amadeo): consider gathering all "groups" of notifications
+            {                                         // with given tag and then removing them sequentially.
+                if (!string.IsNullOrWhiteSpace(notification.Data.Tag) && !string.IsNullOrWhiteSpace(notification.Data.Group))
+                    await _notificationManager.RemoveByTagAndGroupAsync(notification.Data.Tag, notification.Data.Group);
+                else if (!string.IsNullOrWhiteSpace(notification.Data.Tag))
+                    await _notificationManager.RemoveByTagAsync(notification.Data.Tag);
+
+                return;
+            }
+
+            await ShowNotification(notification);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("[NOTIFICATIONS] Error handling MQTT notification: {msg}", ex.Message);
+        }
+
     }
 }

@@ -18,8 +18,8 @@ public interface INotificationActionHandler
 public interface INotificationManager
 {
     bool Ready { get; }
-    Task Initialize();
-    Task ShowNotification(Notification notification, string handlerId);
+    void Initialize();
+    Task ShowNotification(Notification notification);
     void RegisterNotificationActionHandler(string handlerId, INotificationActionHandler handler);
     void UnregisterNotificationActionHandler(string handlerId);
     Task HandleAppActivation(AppActivationArguments activationArguments);

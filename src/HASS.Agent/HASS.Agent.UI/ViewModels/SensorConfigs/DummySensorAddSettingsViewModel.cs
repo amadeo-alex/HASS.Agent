@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Sensors.SingleValue;
-using Microsoft.WindowsAppSDK.Runtime;
 
 namespace HASS.Agent.UI.ViewModels.SensorConfigs;
 public class DummySensorAddSettingsViewModel

@@ -14,6 +14,7 @@
     <AppxPackage>false</AppxPackage>
     <Nullable>enable</Nullable>
     <AssemblyName>HASS.Agent</AssemblyName>
+	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
