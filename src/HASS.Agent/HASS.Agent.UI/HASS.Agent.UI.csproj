@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
+    <None Remove="Views\Dialogs\TextInputDialogContent.xaml" />
     <None Remove="Views\Pages\CommandsPage.xaml" />
     <None Remove="Views\Pages\DebugPage.xaml" />
     <None Remove="Views\Pages\MainPage.xaml" />
@@ -26,6 +27,9 @@
     <None Remove="Views\Pages\SensorConfigs\DummySensorAddSettings.xaml" />
     <None Remove="Views\Pages\SensorsPage.xaml" />
     <None Remove="Views\Pages\SettingsPage.xaml" />
+    <None Remove="Views\Pages\Settings\GeneralSettingsPage.xaml" />
+    <None Remove="Views\Pages\Settings\MqttSettingsPage.xaml" />
+    <None Remove="Views\Pages\Settings\NotificationSettingsPage.xaml" />
     <None Remove="Views\Pages\ShellPage.xaml" />
   </ItemGroup>
 
@@ -78,6 +82,21 @@
     <ProjectReference Include="..\HASS.Agent.Base\HASS.Agent.Base.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\Dialogs\TextInputDialogContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Pages\Settings\NotificationSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Pages\Settings\MqttSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\Pages\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -126,7 +145,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Pages\Settings\" />
+    <Page Update="Views\Pages\Settings\GeneralSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 

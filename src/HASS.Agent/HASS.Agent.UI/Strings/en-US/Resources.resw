@@ -186,11 +186,53 @@
   <data name="Dialog_SensorDetail_UniqueIdTextBox.PlaceholderText" xml:space="preserve">
     <value>Sensor unique ID</value>
   </data>
+  <data name="General_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="General_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="General_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
   <data name="General_Dismiss" xml:space="preserve">
     <value>Dismiss</value>
   </data>
   <data name="General_Empty" xml:space="preserve">
     <value />
+  </data>
+  <data name="General_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="General_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Page_GeneralSettings_DeviceNameCard.Header" xml:space="preserve">
+    <value>Device name</value>
+  </data>
+  <data name="Page_GeneralSettings_DeviceNameCard_ChangeButton.Content" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Page_GeneralSettings_DeviceNameCard_Description.Text" xml:space="preserve">
+    <value>Current device name is:</value>
+  </data>
+  <data name="Page_GeneralSettings_NameDialog_Query" xml:space="preserve">
+    <value>Please provide new device name</value>
+  </data>
+  <data name="Page_GeneralSettings_NameDialog_Title" xml:space="preserve">
+    <value>Rename device</value>
+  </data>
+  <data name="Page_GeneralSettings_SanitizeNameCard.Header" xml:space="preserve">
+    <value>Sanitize device name</value>
+  </data>
+  <data name="Page_GeneralSettings_SanitizeNameCard_Description.Text" xml:space="preserve">
+    <value>Ensure device name doesn't contain invalid characters, recommended. Current sanitized device name is:</value>
+  </data>
+  <data name="Page_GeneralSettings_SanitizeNameCard_Switch.OffContent" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Page_GeneralSettings_SanitizeNameCard_Switch.OnContent" xml:space="preserve">
+    <value>On</value>
   </data>
   <data name="Sensor_Category_Debug" xml:space="preserve">
     <value>Debug</value>

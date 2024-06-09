@@ -17,23 +17,19 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace HASS.Agent.UI.Views.Pages.Settings;
+namespace HASS.Agent.UI.Views.Dialogs;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class SettingsPage : Page
+public sealed partial class TextInputDialogContent : Page
 {
-    private readonly SettingsPageViewModel _viewModel;
-
-
-
-    public SettingsPage()
+    public TextInputDialogContent(string queryTextResourceKey, string initialTextBoxContent)
     {
-        _viewModel = App.GetService<SettingsPageViewModel>();
+        DataContext = new TextInputDialogContentViewModel()
+        {
+            QueryTextResourceKey = queryTextResourceKey,
+            TextBoxContent = initialTextBoxContent
+        };
         this.InitializeComponent();
-        DataContext = _viewModel;
-
-        _viewModel.NavigationService.Frame = SettingsNavigationFrame;
-        _viewModel.NavigationViewService.Initialize(SettingsNavigationViewControl);
     }
 }

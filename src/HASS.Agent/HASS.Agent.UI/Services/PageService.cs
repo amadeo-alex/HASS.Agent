@@ -24,32 +24,12 @@ public class PageService : IPageService
     public BindingList<IMenuItem> Pages { get; private set; } = new BindingList<IMenuItem>();
     public BindingList<IMenuItem> FooterPages { get; private set; } = new BindingList<IMenuItem>();
 
-    public PageService()
+    public PageService(Dictionary<IMenuItem, Type?>? menuPages, Dictionary<IMenuItem, Type?>? footerPages)
     {
-        //TODO: localization
-        //TODO: move to App.xaml.cs for readability?
-        var pages = new Dictionary<IMenuItem, Type?>()
-        {
-            { new MenuItem { NavigateTo = "main", ViewModelType = typeof(MainPageViewModel), Title = "Main", Glyph = "\uE80F" }, typeof(MainPage) },
-
-            { new MenuItem { Type = MenuItemType.Separator }, null},
-            { new MenuItem { Type = MenuItemType.Header, Title = "HASS.Agent" }, null },
-            { new MenuItem { NavigateTo = "sensors", ViewModelType = typeof(SensorsPageViewModel), Title = "Sensors", Glyph = "\uE957" }, typeof(SensorsPage) },
-            { new MenuItem { NavigateTo = "commands", ViewModelType = typeof(CommandsPageViewModel), Title = "Commands", Glyph = "\uE756" }, typeof(CommandsPage) },
-
-            { new MenuItem { Type = MenuItemType.Separator }, null},
-            { new MenuItem { Type = MenuItemType.Header, Title = "Satellite Service" }, null },
-            { new MenuItem { NavigateTo = "sensors-sat", ViewModelType = typeof(SensorsPageViewModel), Title = "Sensors", Glyph = "\uE957"}, typeof(SatelliteSensorsPage) },
-            { new MenuItem { NavigateTo = "commands-sat", ViewModelType = typeof(CommandsPageViewModel), Title = "Commands", Glyph = "\uE756" }, typeof(SatelliteCommandsPage) },
-        };
-        ConfigurePages(pages);
-
-        var footerPages = new Dictionary<IMenuItem, Type?>()
-        {
-            { new MenuItem { NavigateTo = "debug", ViewModelType = typeof(DebugPageViewModel), Title = "Debug", Glyph = "\uEBE8" }, typeof(DebugPage) },
-            { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage) }
-        };
-        ConfigureFooterPages(footerPages);
+        if (menuPages != null)
+            ConfigurePages(menuPages);
+        if (footerPages != null)
+            ConfigureFooterPages(footerPages);
     }
 
     public IMenuItem GetMenuItem(string navigateTo)
@@ -75,7 +55,7 @@ public class PageService : IPageService
     {
         foreach (var menuItem in Pages)
         {
-            if(menuItem.InfoBadge != null)
+            if (menuItem.InfoBadge != null)
             {
                 menuItem.InfoBadge.Value++;
             }

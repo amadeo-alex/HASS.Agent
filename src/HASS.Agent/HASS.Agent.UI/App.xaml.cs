@@ -32,6 +32,8 @@ using System.IO;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Managers;
 using HASS.Agent.UI.Views.Pages.Settings;
+using HASS.Agent.UI.Contracts.ViewModels;
+using HASS.Agent.UI.ViewModels.Settings;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -196,6 +198,33 @@ public partial class App : Application
         }
     }
 
+    private PageService GetPageService()
+    {
+        //TODO(Amadeo): localization
+        var menuPages = new Dictionary<IMenuItem, Type?>()
+        {
+            { new MenuItem { NavigateTo = "main", ViewModelType = typeof(MainPageViewModel), Title = "Main", Glyph = "\uE80F" }, typeof(MainPage) },
+
+            { new MenuItem { Type = MenuItemType.Separator }, null},
+            { new MenuItem { Type = MenuItemType.Header, Title = "HASS.Agent" }, null },
+            { new MenuItem { NavigateTo = "sensors", ViewModelType = typeof(SensorsPageViewModel), Title = "Sensors", Glyph = "\uE957" }, typeof(SensorsPage) },
+            { new MenuItem { NavigateTo = "commands", ViewModelType = typeof(CommandsPageViewModel), Title = "Commands", Glyph = "\uE756" }, typeof(CommandsPage) },
+
+            { new MenuItem { Type = MenuItemType.Separator }, null},
+            { new MenuItem { Type = MenuItemType.Header, Title = "Satellite Service" }, null },
+            { new MenuItem { NavigateTo = "sensors-sat", ViewModelType = typeof(SensorsPageViewModel), Title = "Sensors", Glyph = "\uE957"}, typeof(SatelliteSensorsPage) },
+            { new MenuItem { NavigateTo = "commands-sat", ViewModelType = typeof(CommandsPageViewModel), Title = "Commands", Glyph = "\uE756" }, typeof(SatelliteCommandsPage) },
+        };
+
+        var footerPages = new Dictionary<IMenuItem, Type?>()
+        {
+            { new MenuItem { NavigateTo = "debug", ViewModelType = typeof(DebugPageViewModel), Title = "Debug", Glyph = "\uEBE8" }, typeof(DebugPage) },
+            { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage) }
+        };
+
+        return new PageService(menuPages, footerPages);
+    }
+
     private IHost ConfigureServices()
     {
         var uiDispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -227,11 +256,14 @@ public partial class App : Application
 
                 services.AddSingleton<INotificationManager, NotificationManager>();
 
-                services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
+                services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
 
-                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<IPageService, PageService>(sp =>
+                {
+                    return GetPageService();
+                });
                 services.AddSingleton<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IActivationService, ActivationService>();
@@ -253,8 +285,17 @@ public partial class App : Application
                 services.AddTransient<DebugPageViewModel>();
                 services.AddTransient<DebugPage>();
 
+                services.AddTransient<GeneralSettingsPage>();
+                services.AddTransient<GeneralSettingsPageViewModel>();
+                services.AddTransient<MqttSettingsPage>();
+                services.AddTransient<MqttSettingsPageViewModel>();
+                services.AddTransient<NotificationSettingsPage>();
+                services.AddTransient<NotificationSettingsPageViewModel>();
+
                 services.AddTransient<SettingsPageViewModel>();
                 services.AddTransient<SettingsPage>();
+
+
 
                 services.AddSingleton(uiDispatcherQueue);
 

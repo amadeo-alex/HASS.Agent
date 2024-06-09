@@ -24,7 +24,7 @@ public partial class ApplicationSettings
     public string InterfaceLanguage { get; set; } = string.Empty;
     public bool EnableStateNotifications { get; set; } = true;
 
-
+    public string Theme { get; set; } = "Default";
     
 
     public string ServiceAuthId { get; set; } = string.Empty;

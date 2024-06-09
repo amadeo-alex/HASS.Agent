@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="HASS.Agent.UI.Views.Pages.Settings.GeneralSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HASS.Agent.UI.Views.Pages.Settings"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+	xmlns:ui="using:CommunityToolkit.WinUI"
+	xmlns:l="using:WinUI3Localizer"
+	xmlns:vm="using:HASS.Agent.UI.ViewModels.Settings"
+    mc:Ignorable="d">
+
+    <Grid Margin="16">
+		<StackPanel Spacing="4">
+			<controls:SettingsCard l:Uids.Uid="Page_GeneralSettings_DeviceNameCard">
+				<controls:SettingsCard.Description>
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<TextBlock l:Uids.Uid="Page_GeneralSettings_DeviceNameCard_Description"/>
+						<TextBlock Text="{Binding ConfiguredDeviceName, Mode=OneWay}"/>
+					</StackPanel>
+				</controls:SettingsCard.Description>
+				<Button l:Uids.Uid="Page_GeneralSettings_DeviceNameCard_ChangeButton"
+						Style="{StaticResource AccentButtonStyle}"
+						Click="ChangeNameButton_Click"/>
+			</controls:SettingsCard>
+
+			<controls:SettingsCard l:Uids.Uid="Page_GeneralSettings_SanitizeNameCard">
+				<controls:SettingsCard.Description>
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<TextBlock l:Uids.Uid="Page_GeneralSettings_SanitizeNameCard_Description"/>
+						<TextBlock Text="{Binding DeviceName, Mode=OneWay}"/>
+					</StackPanel>
+				</controls:SettingsCard.Description>
+				<ToggleSwitch l:Uids.Uid="Page_GeneralSettings_SanitizeNameCard_Switch"
+							  IsOn="{Binding SanitizeName, Mode=TwoWay}"/>
+			</controls:SettingsCard>
+		</StackPanel>
+
+	</Grid>
+</Page>
