@@ -113,15 +113,10 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                 .AddText(notification.Title)
                 .AddText(notification.Message);
 
-            /*            if (!string.IsNullOrWhiteSpace(notification.Data?.Image))
-                        {
-                            var (success, localFile) = await StorageManager.DownloadImageAsync(notification.Data.Image);
-                            if (success)
-                                toastBuilder.SetInlineImage(new Uri(localFile));
-                            else
-                                Log.Error("[NOTIFIER] Image download failed, dropping: {img}", notification.Data.Image);
-                        }*/
-            //TODO(Amadeo): implement
+            //TODO(Amadeo): add configuration for optional hero image
+            //TODO(Amadeo): add option to disable caching of downloaded files
+            if (!string.IsNullOrEmpty(notification.Data.Image))
+                toastBuilder.SetInlineImage(new Uri(notification.Data.Image)); 
 
             if (notification.Data.Actions.Count > 0)
             {
