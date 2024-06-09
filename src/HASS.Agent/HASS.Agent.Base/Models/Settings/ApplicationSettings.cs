@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Windows.Foundation.Metadata;
 
@@ -18,6 +19,7 @@ public partial class ApplicationSettings
     public bool SanitizeName { get; set; } = true;
     [Obsolete("Configuration variable, please use DeviceName")]
     public string ConfiguredDeviceName { get; set; } = string.Empty;
+    [JsonIgnore]
     public string DeviceName => SanitizeName ? SanitizeRegex().Replace(ConfiguredDeviceName, "_") : ConfiguredDeviceName;
     public string InterfaceLanguage { get; set; } = string.Empty;
     public bool EnableStateNotifications { get; set; } = true;

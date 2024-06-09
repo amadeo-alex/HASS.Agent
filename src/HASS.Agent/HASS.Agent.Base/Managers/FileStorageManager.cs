@@ -35,9 +35,9 @@ public class FileStorageManager : IFileStorageManager
             Log.Error("[FILESTORAGE] Unsupported URI, only 'http/s' and 'file://' URIs are allowed, got: {uri}", uri);
             return string.Empty;
         }
-
+/*
         if (!Directory.Exists(_settingsManager.ApplicationSettings.))
-            Directory.CreateDirectory(Variables.ImageCachePath);
+            Directory.CreateDirectory(Variables.ImageCachePath);*/
 
         return "";
     }

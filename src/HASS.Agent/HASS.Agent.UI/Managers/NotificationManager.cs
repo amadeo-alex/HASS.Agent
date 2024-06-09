@@ -43,20 +43,20 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
     {
         try
         {
-            if (!_settingsManager.ApplicationSettings.NotificationsEnabled)
+            if (!_settingsManager.Settings.Notification.Enabled)
             {
                 Log.Information("[NOTIFICATIONS] Disabled");
                 return;
             }
 
-            if (!_settingsManager.ApplicationSettings.LocalApiEnabled && !_settingsManager.ApplicationSettings.MqttEnabled)
+            if (!_settingsManager.Settings.Application.LocalApiEnabled && !_settingsManager.Settings.Mqtt.Enabled)
             {
                 Log.Warning("[NOTIFICATIONS] Both local API and MQTT are disabled, unable to receive notifications");
                 return;
             }
 
-            if (_settingsManager.ApplicationSettings.MqttEnabled)
-                _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_settingsManager.ApplicationSettings.DeviceName}", this);
+            if (_settingsManager.Settings.Mqtt.Enabled)
+                _mqttManager.RegisterMessageHandler($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}", this);
             else
                 Log.Warning("[NOTIFICATIONS] MQTT is disabled, not all aspects of actions might work as expected");
 
@@ -106,7 +106,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
         try
         {
-            if (!_settingsManager.ApplicationSettings.NotificationsEnabled)
+            if (!_settingsManager.Settings.Notification.Enabled)
                 return;
 
             var toastBuilder = new AppNotificationBuilder()

@@ -24,6 +24,13 @@ public interface IVariableManager
     string LogPath { get; }
     string ConfigPath { get; }
     string ApplicationSettingsFile { get; }
+    string HomeAssistantSettingsFile { get; }
+    string NotificationSettingsFile { get; }
+    string MqttSettingsSettingsFile { get; }
+    string StorageCacheSettingsFile { get; }
+    string TraySettingsFile { get; }
+    string UpdateSettingsFile { get; }
+    string WebViewSettingsFile { get; }
     string QuickActionsFile { get; }
     string CommandsFile { get; }
     string SensorsFile { get; }

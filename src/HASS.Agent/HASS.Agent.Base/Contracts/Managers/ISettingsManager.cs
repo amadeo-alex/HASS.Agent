@@ -6,19 +6,22 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HASS.Agent.Base.Contracts.Models;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Settings;
 
 namespace HASS.Agent.Base.Contracts.Managers;
 public interface ISettingsManager
 {
-    ApplicationSettings ApplicationSettings { get; }
+    ISettings Settings { get; }
+
     ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; }
     ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; }
     ObservableCollection<IQuickAction> ConfiguredQuickActions { get; } //TODO(Amadeo): rethink
 
     bool StoreConfiguredEntities();
-    bool StoreApplicationSettings();
+    bool StoreSettings();
     bool GetExtendedLoggingSetting();
     void SetExtendedLoggingSetting(bool enabled);
     bool GetDpiWarningShown();

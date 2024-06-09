@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HASS.Agent.Base.Contracts.Managers;
+using HASS.Agent.Base.Contracts.Models;
 using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Models;
+using HASS.Agent.Base.Models.Settings;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Serilog;
@@ -18,7 +20,7 @@ public class SettingsManager : ISettingsManager
     private readonly IVariableManager _variableManager;
     private readonly IGuidManager _guidManager;
 
-    public ApplicationSettings ApplicationSettings { get; private set; }
+    public ISettings Settings { get; }
     public ObservableCollection<ConfiguredEntity> ConfiguredSensors { get; private set; }
     public ObservableCollection<ConfiguredEntity> ConfiguredCommands { get; private set; }
     public ObservableCollection<IQuickAction> ConfiguredQuickActions { get; private set; }
@@ -34,7 +36,7 @@ public class SettingsManager : ISettingsManager
             Directory.CreateDirectory(_variableManager.ConfigPath);
         }
 
-        ApplicationSettings = GetApplicationSettings();
+        Settings = GetSettings();
         ConfiguredSensors = GetConfiguredSensors();
         ConfiguredCommands = GetConfiguredCommands();
         ConfiguredQuickActions = GetConfiguredQuickActions();
@@ -210,44 +212,19 @@ public class SettingsManager : ISettingsManager
         return configuredCommands;
     }
 
-    private ApplicationSettings GetApplicationSettings()
+    private Settings GetSettings()
     {
-        Log.Debug("[SETTINGS] Loading application settings");
-
-        var applicationSettings = new ApplicationSettings();
+        Log.Debug("[SETTINGS] Loading settings");
 
         try
         {
-            if (File.Exists(_variableManager.ApplicationSettingsFile))
-            {
-                Log.Debug("[SETTINGS] Configuration file found, loading");
-
-                var applicationSettingsJson = File.ReadAllText(_variableManager.ApplicationSettingsFile);
-                var loadedApplicationSettings = JsonConvert.DeserializeObject<ApplicationSettings>(applicationSettingsJson);
-                if (loadedApplicationSettings != null)
-                {
-                    Log.Information("[SETTINGS] Application settings loaded");
-                    applicationSettings = loadedApplicationSettings;
-                }
-                else
-                {
-                    Log.Warning("[SETTINGS] Configuration file cannot be parsed, using default settings");
-                }
-            }
-            else
-            {
-                Log.Debug("[SETTINGS] Configuration file does not exist, creating default one");
-                var applicationSettingsJson = JsonConvert.SerializeObject(applicationSettings, Formatting.Indented);
-                File.WriteAllText(_variableManager.ApplicationSettingsFile, applicationSettingsJson);
-            }
+            return new Settings(_variableManager);
         }
         catch (Exception ex)
         {
             Log.Fatal("[SETTINGS] Exception loading application settings: {ex}", ex);
             throw;
         }
-
-        return applicationSettings;
     }
 
     public bool StoreConfiguredEntities()
@@ -317,14 +294,13 @@ public class SettingsManager : ISettingsManager
         return true;
     }
 
-    public bool StoreApplicationSettings()
+    public bool StoreSettings()
     {
-        Log.Debug("[SETTINGS] Storing application settings");
+        Log.Debug("[SETTINGS] Storing settings");
 
         try
         {
-            var applicationSettingsJson = JsonConvert.SerializeObject(ApplicationSettings, Formatting.Indented);
-            File.WriteAllText(_variableManager.ApplicationSettingsFile, applicationSettingsJson);
+            Settings.Store(_variableManager);
 
             Log.Information("[SETTINGS] Application settings stored");
         }

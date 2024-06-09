@@ -69,7 +69,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _applicationInfo = applicationInfo;
         _guidManager = guidManager;
 
-        var deviceName = _settingsManager.ApplicationSettings.DeviceName;
+        var deviceName = _settingsManager.Settings.Application.DeviceName;
         DeviceConfigModel = new MqttDeviceDiscoveryConfigModel()
         {
             Name = deviceName,
@@ -87,7 +87,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
     {
         Log.Information("[MQTT] Initializing");
 
-        if (!_settingsManager.ApplicationSettings.MqttEnabled)
+        if (!_settingsManager.Settings.Mqtt.Enabled)
         {
             Log.Information("[MQTT] Initialization stopped, disabled through settings");
             return new MqttFactory().CreateManagedMqttClient();
@@ -163,11 +163,11 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
             if (_mqttClient.IsConnected)
             {
-                var topic = $"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/hass.agent/{_settingsManager.ApplicationSettings.DeviceName}/availability";
+                var topic = $"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/hass.agent/{_settingsManager.Settings.Application.DeviceName}/availability";
                 var availabilityMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
                     .WithPayload(offline ? PayloadOffline : PayloadOnline)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
+                    .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag)
                     .Build();
 
                 await _mqttClient.EnqueueAsync(availabilityMessage);
@@ -323,7 +323,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
 
     private ManagedMqttClientOptions GetMqttClientOptions()
     {
-        if (string.IsNullOrWhiteSpace(_settingsManager.ApplicationSettings.MqttAddress))
+        if (string.IsNullOrWhiteSpace(_settingsManager.Settings.Mqtt.Address))
         {
             Log.Warning("[MQTT] Required configuration missing");
 
@@ -331,55 +331,55 @@ public partial class MqttManager : ObservableObject, IMqttManager
         }
 
         // id can be random, but we'll store it for consistency (unless user-defined)
-        if (string.IsNullOrWhiteSpace(_settingsManager.ApplicationSettings.MqttClientId))
+        if (string.IsNullOrWhiteSpace(_settingsManager.Settings.Mqtt.ClientId))
         {
             Log.Information("[MQTT] ClientId is empty, generating new one");
-            _settingsManager.ApplicationSettings.MqttClientId = _guidManager.GenerateShortGuid();
+            _settingsManager.Settings.Mqtt.ClientId = _guidManager.GenerateShortGuid();
             //TODO(Amadeo): save settings to file
             //SettingsManager.StoreAppSettings();
         }
 
         var clientOptionsBuilder = new MqttClientOptionsBuilder()
-            .WithClientId(_settingsManager.ApplicationSettings.MqttClientId)
-            .WithTcpServer(_settingsManager.ApplicationSettings.MqttAddress, _settingsManager.ApplicationSettings.MqttPort)
+            .WithClientId(_settingsManager.Settings.Mqtt.ClientId)
+            .WithTcpServer(_settingsManager.Settings.Mqtt.Address, _settingsManager.Settings.Mqtt.Port)
             .WithCleanSession()
-            .WithWillTopic($"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
+            .WithWillTopic($"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/sensor/{DeviceConfigModel.Name}/availability")
             .WithWillPayload(PayloadOffline)
-            .WithWillRetain(_settingsManager.ApplicationSettings.MqttUseRetainFlag)
+            .WithWillRetain(_settingsManager.Settings.Mqtt.UseRetainFlag)
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(15));
 
-        if (!string.IsNullOrEmpty(_settingsManager.ApplicationSettings.MqttUsername))
-            clientOptionsBuilder.WithCredentials(_settingsManager.ApplicationSettings.MqttUsername, _settingsManager.ApplicationSettings.MqttPassword);
+        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.Username))
+            clientOptionsBuilder.WithCredentials(_settingsManager.Settings.Mqtt.Username, _settingsManager.Settings.Mqtt.Password);
 
         var certificates = new List<X509Certificate>();
-        if (!string.IsNullOrEmpty(_settingsManager.ApplicationSettings.MqttRootCertificate))
+        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.RootCertificate))
         {
-            if (!File.Exists(_settingsManager.ApplicationSettings.MqttRootCertificate))
-                Log.Error("[MQTT] Provided root certificate not found: {cert}", _settingsManager.ApplicationSettings.MqttRootCertificate);
+            if (!File.Exists(_settingsManager.Settings.Mqtt.RootCertificate))
+                Log.Error("[MQTT] Provided root certificate not found: {cert}", _settingsManager.Settings.Mqtt.RootCertificate);
             else
-                certificates.Add(new X509Certificate2(_settingsManager.ApplicationSettings.MqttRootCertificate));
+                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.RootCertificate));
         }
 
-        if (!string.IsNullOrEmpty(_settingsManager.ApplicationSettings.MqttClientCertificate))
+        if (!string.IsNullOrEmpty(_settingsManager.Settings.Mqtt.ClientCertificate))
         {
-            if (!File.Exists(_settingsManager.ApplicationSettings.MqttClientCertificate))
-                Log.Error("[MQTT] Provided client certificate not found: {cert}", _settingsManager.ApplicationSettings.MqttClientCertificate);
+            if (!File.Exists(_settingsManager.Settings.Mqtt.ClientCertificate))
+                Log.Error("[MQTT] Provided client certificate not found: {cert}", _settingsManager.Settings.Mqtt.ClientCertificate);
             else
-                certificates.Add(new X509Certificate2(_settingsManager.ApplicationSettings.MqttClientCertificate));
+                certificates.Add(new X509Certificate2(_settingsManager.Settings.Mqtt.ClientCertificate));
         }
 
         var clientTlsOptions = new MqttClientTlsOptions()
         {
-            UseTls = _settingsManager.ApplicationSettings.MqttUseTls,
-            AllowUntrustedCertificates = _settingsManager.ApplicationSettings.MqttAllowUntrustedCertificates,
-            SslProtocol = _settingsManager.ApplicationSettings.MqttUseTls ? SslProtocols.Tls12 : SslProtocols.None,
+            UseTls = _settingsManager.Settings.Mqtt.UseTls,
+            AllowUntrustedCertificates = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates,
+            SslProtocol = _settingsManager.Settings.Mqtt.UseTls ? SslProtocols.Tls12 : SslProtocols.None,
         };
 
         //TODO(Amadeo): add more granular control to the UI
-        if (_settingsManager.ApplicationSettings.MqttAllowUntrustedCertificates)
+        if (_settingsManager.Settings.Mqtt.AllowUntrustedCertificates)
         {
-            clientTlsOptions.IgnoreCertificateChainErrors = _settingsManager.ApplicationSettings.MqttAllowUntrustedCertificates;
-            clientTlsOptions.IgnoreCertificateRevocationErrors = _settingsManager.ApplicationSettings.MqttAllowUntrustedCertificates;
+            clientTlsOptions.IgnoreCertificateChainErrors = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates;
+            clientTlsOptions.IgnoreCertificateRevocationErrors = _settingsManager.Settings.Mqtt.AllowUntrustedCertificates;
             clientTlsOptions.CertificateValidationHandler = delegate (MqttClientCertificateValidationEventArgs _)
             {
                 return true;

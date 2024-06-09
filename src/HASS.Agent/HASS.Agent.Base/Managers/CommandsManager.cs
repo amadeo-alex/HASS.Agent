@@ -10,6 +10,7 @@ using HASS.Agent.Base.Contracts.Models.Entity;
 using HASS.Agent.Base.Enums;
 using HASS.Agent.Base.Models;
 using HASS.Agent.Base.Models.Mqtt;
+using HASS.Agent.Base.Models.Settings;
 using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -61,7 +62,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     private async Task AddCommand(ConfiguredEntity configuredCommand)
     {
         var command = (AbstractDiscoverable)_entityTypeRegistry.CreateCommandInstance(configuredCommand);
-        command.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        command.ConfigureAutoDiscoveryConfig(_settingsManager.Settings.Mqtt.DiscoveryPrefix, _mqttManager.DeviceConfigModel);
 
         if (command.GetAutoDiscoveryConfig() is not MqttCommandDiscoveryConfigModel commandConfig)
             return;
@@ -118,11 +119,11 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
     {
         try
         {
-            var topic = $"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/{command.Domain}/{_settingsManager.ApplicationSettings.DeviceName}/{command.EntityIdName}/config";
+            var topic = $"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/{command.Domain}/{_settingsManager.Settings.Application.DeviceName}/{command.EntityIdName}/config";
 
             var messageBuilder = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
             if (clear)
             {
@@ -174,7 +175,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
 
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
-                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
             if (clear)
                 message.WithPayload(Array.Empty<byte>());
@@ -187,7 +188,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
             {
                 var attributesMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                    .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
                 if (clear)
                     attributesMessage.WithPayload(Array.Empty<byte>());

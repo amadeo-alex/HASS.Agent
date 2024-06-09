@@ -15,7 +15,6 @@ using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
-using Windows.AI.MachineLearning;
 
 namespace HASS.Agent.Base.Managers;
 
@@ -63,7 +62,7 @@ public class SensorManager : ISensorManager
     private async Task AddSensor(ConfiguredEntity configuredSensor)
     {
         var sensor = (AbstractDiscoverable)_entityTypeRegistry.CreateSensorInstance(configuredSensor);
-        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.ApplicationSettings.MqttDiscoveryPrefix, _mqttManager.DeviceConfigModel);
+        sensor.ConfigureAutoDiscoveryConfig(_settingsManager.Settings.Mqtt.DiscoveryPrefix, _mqttManager.DeviceConfigModel);
         await PublishSensorAutoDiscoveryConfigAsync(sensor);
         Sensors.Add(sensor);
     }
@@ -120,11 +119,11 @@ public class SensorManager : ISensorManager
     {
         try
         {
-            var topic = $"{_settingsManager.ApplicationSettings.MqttDiscoveryPrefix}/{sensor.Domain}/{_settingsManager.ApplicationSettings.DeviceName}/{sensor.EntityIdName}/config";
+            var topic = $"{_settingsManager.Settings.Mqtt.DiscoveryPrefix}/{sensor.Domain}/{_settingsManager.Settings.Application.DeviceName}/{sensor.EntityIdName}/config";
 
             var messageBuilder = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
             if (clear)
             {
@@ -189,7 +188,7 @@ public class SensorManager : ISensorManager
 
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(autodiscoveryConfig.StateTopic)
-                .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
             if (clear)
                 message.WithPayload(Array.Empty<byte>());
@@ -202,7 +201,7 @@ public class SensorManager : ISensorManager
             {
                 var attributesMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(autodiscoveryConfig.JsonAttributesTopic)
-                    .WithRetainFlag(_settingsManager.ApplicationSettings.MqttUseRetainFlag);
+                    .WithRetainFlag(_settingsManager.Settings.Mqtt.UseRetainFlag);
 
                 if (clear)
                     attributesMessage.WithPayload(Array.Empty<byte>());

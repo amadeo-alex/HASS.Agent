@@ -72,7 +72,7 @@ public partial class SettingsPageViewModel : ViewModelBase
         ButtonCommand4 = new RelayCommand(async () =>
         {
             _settingsManager.StoreConfiguredEntities();
-
+            _settingsManager.StoreSettings();
         });
 
         _mqttManager.PropertyChanged += OnMqttPropertyChanged; //Note(Amadeo): leaks

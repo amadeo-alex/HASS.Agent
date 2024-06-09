@@ -98,7 +98,7 @@ public partial class App : Application
             {
                 var settingsManager = GetService<ISettingsManager>();
                 var guidManager = GetService<IGuidManager>();
-                guidManager.MarkAsUsed(settingsManager.ApplicationSettings.MqttClientId);
+                guidManager.MarkAsUsed(settingsManager.Settings.Mqtt.ClientId);
 
                 if (settingsManager.ConfiguredSensors.Count == 0)
                 {
