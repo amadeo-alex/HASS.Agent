@@ -63,13 +63,13 @@ public class ActivationService : IActivationService
 
     private async Task InitializeAsync()
     {
-        await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
-        await Task.CompletedTask;
+        //await _themeSelectorService.InitializeAsync().ConfigureAwait(false); //TODO(Amadeo): cleanup
+        //await Task.CompletedTask;
     }
 
     private async Task StartupAsync()
     {
-        await _themeSelectorService.SetRequestedThemeAsync();
-        await Task.CompletedTask;
+        //await _themeSelectorService.SetRequestedThemeAsync(); //TODO(Amadeo): cleanup
+        //await Task.CompletedTask;
     }
 }

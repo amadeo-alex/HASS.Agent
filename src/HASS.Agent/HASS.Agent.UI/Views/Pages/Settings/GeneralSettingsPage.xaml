@@ -10,15 +10,20 @@
 	xmlns:ui="using:CommunityToolkit.WinUI"
 	xmlns:l="using:WinUI3Localizer"
 	xmlns:vm="using:HASS.Agent.UI.ViewModels.Settings"
+	xmlns:vc="using:HASS.Agent.UI.ValueConverters"
     mc:Ignorable="d">
 
+	<Page.Resources>
+		<vc:LocalizerResourceConverter x:Key="LocalizerResourceConverter" />
+	</Page.Resources>
+	
     <Grid Margin="16">
 		<StackPanel Spacing="4">
 			<controls:SettingsCard l:Uids.Uid="Page_GeneralSettings_DeviceNameCard">
 				<controls:SettingsCard.Description>
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<TextBlock l:Uids.Uid="Page_GeneralSettings_DeviceNameCard_Description"/>
-						<TextBlock Text="{Binding ConfiguredDeviceName, Mode=OneWay}"/>
+						<TextBlock Text="{Binding SettingsManager.Settings.Application.ConfiguredDeviceName, Mode=OneWay}"/>
 					</StackPanel>
 				</controls:SettingsCard.Description>
 				<Button l:Uids.Uid="Page_GeneralSettings_DeviceNameCard_ChangeButton"
@@ -30,11 +35,22 @@
 				<controls:SettingsCard.Description>
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<TextBlock l:Uids.Uid="Page_GeneralSettings_SanitizeNameCard_Description"/>
-						<TextBlock Text="{Binding DeviceName, Mode=OneWay}"/>
+						<TextBlock Text="{Binding SettingsManager.Settings.Application.DeviceName, Mode=OneWay}"/>
 					</StackPanel>
 				</controls:SettingsCard.Description>
 				<ToggleSwitch l:Uids.Uid="Page_GeneralSettings_SanitizeNameCard_Switch"
-							  IsOn="{Binding SanitizeName, Mode=TwoWay}"/>
+							  IsOn="{Binding SettingsManager.Settings.Application.SanitizeName, Mode=TwoWay}"/>
+			</controls:SettingsCard>
+
+			<controls:SettingsCard l:Uids.Uid="Page_GeneralSettings_ThemeCard">
+				<ComboBox ItemsSource="{Binding Themes}"
+						  SelectedItem="{Binding SettingsManager.Settings.Application.Theme, Mode=TwoWay}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Converter={StaticResource LocalizerResourceConverter}, ConverterParameter='General_{}'}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 			</controls:SettingsCard>
 		</StackPanel>
 

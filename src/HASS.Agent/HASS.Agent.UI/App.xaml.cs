@@ -34,6 +34,8 @@ using HASS.Agent.UI.Managers;
 using HASS.Agent.UI.Views.Pages.Settings;
 using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.ViewModels.Settings;
+using H.NotifyIcon.Core;
+using H.NotifyIcon;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -87,7 +89,6 @@ public partial class App : Application
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-
         await InitializeLocalizer();
 
         try

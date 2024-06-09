@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using HASS.Agent.UI.Contracts.Services;
 using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.Views.Pages;
@@ -32,6 +33,13 @@ public partial class ShellPageViewModel
 
     public BindingList<IMenuItem> MenuItems => _pageService.Pages;
     public BindingList<IMenuItem> FooterMenuItems => _pageService.FooterPages;
+
+    public RelayCommand TrayIconClick { get; set; } = new RelayCommand(() =>
+    {
+        var wnd = App.MainWindow;
+        var nl = wnd == null;
+        Console.WriteLine();
+    });
 
     public ShellPageViewModel(INavigationService navigationService, INavigationViewService navigationViewService, IPageService pageService)
     {

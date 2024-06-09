@@ -15,7 +15,6 @@ using MQTTnet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
-using Windows.AI.MachineLearning;
 
 namespace HASS.Agent.Base.Managers;
 public class CommandsManager : ICommandsManager, IMqttMessageHandler

@@ -28,6 +28,7 @@ public partial class DebugPageViewModel : ViewModelBase
     public RelayCommand ButtonCommand2 { get; set; }
     public RelayCommand ButtonCommand3 { get; set; }
     public RelayCommand ButtonCommand4 { get; set; }
+    public RelayCommand ButtonCommand5 { get; set; }
     public Base.Enums.MqttStatus MqttStatus => _mqttManager.Status;
 
     public List<SomeItem> SomeItems = new List<SomeItem>()
@@ -73,6 +74,11 @@ public partial class DebugPageViewModel : ViewModelBase
         {
             _settingsManager.StoreConfiguredEntities();
             _settingsManager.StoreSettings();
+        });
+
+        ButtonCommand5 = new RelayCommand(async () =>
+        {
+            App.MainWindow.Close();
         });
 
         _mqttManager.PropertyChanged += OnMqttPropertyChanged; //Note(Amadeo): leaks

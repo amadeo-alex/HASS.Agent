@@ -234,6 +234,9 @@
   <data name="Page_GeneralSettings_SanitizeNameCard_Switch.OnContent" xml:space="preserve">
     <value>On</value>
   </data>
+  <data name="Page_GeneralSettings_ThemeCard.Header" xml:space="preserve">
+    <value>Theme</value>
+  </data>
   <data name="Sensor_Category_Debug" xml:space="preserve">
     <value>Debug</value>
   </data>

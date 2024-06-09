@@ -8,24 +8,17 @@
     xmlns:test="using:HASS.Agent.UI.Views.Pages"
     mc:Ignorable="d">
 
-    <Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-		
-		<TextBlock Grid.Row="0" Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-		<TextBlock Grid.Row="1" Text="{Binding MqttStatus, Mode=OneWay}"/>
-		<Button Grid.Row="2" Content="plus" Command="{Binding ButtonCommand}"/>
-		<Button Grid.Row="3" Content="stop mqtt" Command="{Binding ButtonCommand2}"/>
-        <Button Grid.Row="4" Content="show dialog" Click="Button_Click"/>
-		<Button Grid.Row="5" Content="GC" Command="{Binding ButtonCommand3}"/>
-		<Button Grid.Row="6" Content="Save" Command="{Binding ButtonCommand4}"/>
+	<Grid>
+		<StackPanel>
+			<TextBlock Text="Dummy Settings Page" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			<TextBlock Text="{Binding MqttStatus, Mode=OneWay}"/>
+			<Button Content="plus" Command="{Binding ButtonCommand}"/>
+			<Button Content="stop mqtt" Command="{Binding ButtonCommand2}"/>
+			<Button Content="show dialog" Click="Button_Click"/>
+			<Button Content="GC" Command="{Binding ButtonCommand3}"/>
+			<Button Content="Save" Command="{Binding ButtonCommand4}"/>
+			<Button Content="close main window" Command="{Binding ButtonCommand5}"/>
+		</StackPanel>
 
-    </Grid>
+	</Grid>
 </Page>

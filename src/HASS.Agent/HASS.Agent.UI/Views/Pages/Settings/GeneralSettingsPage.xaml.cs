@@ -44,7 +44,7 @@ public sealed partial class GeneralSettingsPage : Page
             PrimaryButtonText = LocalizerHelper.GetLocalizedString("General_Save"),
             CloseButtonText = LocalizerHelper.GetLocalizedString("General_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
-            Content = new TextInputDialogContent("Page_GeneralSettings_NameDialog_Query", _viewModel.ConfiguredDeviceName)
+            Content = new TextInputDialogContent("Page_GeneralSettings_NameDialog_Query", _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName)
         };
 
         var result = await dialog.ShowAsync();
@@ -52,7 +52,7 @@ public sealed partial class GeneralSettingsPage : Page
         {
             var newDeviceName = ((dialog.Content as TextInputDialogContent)?.DataContext as TextInputDialogContentViewModel)?.TextBoxContent;
             if (newDeviceName != null)
-                _viewModel.ConfiguredDeviceName = newDeviceName;
+                _viewModel.SettingsManager.Settings.Application.ConfiguredDeviceName = newDeviceName;
         }
     }
 }
