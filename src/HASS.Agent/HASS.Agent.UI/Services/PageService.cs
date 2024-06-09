@@ -10,6 +10,7 @@ using HASS.Agent.UI.Contracts.Services;
 using HASS.Agent.UI.Contracts.ViewModels;
 using HASS.Agent.UI.ViewModels;
 using HASS.Agent.UI.Views.Pages;
+using HASS.Agent.UI.Views.Pages.Settings;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Windows.ApplicationModel.VoiceCommands;
@@ -45,6 +46,7 @@ public class PageService : IPageService
 
         var footerPages = new Dictionary<IMenuItem, Type?>()
         {
+            { new MenuItem { NavigateTo = "debug", ViewModelType = typeof(DebugPageViewModel), Title = "Debug", Glyph = "\uEBE8" }, typeof(DebugPage) },
             { new MenuItem { NavigateTo = "settings", ViewModelType = typeof(SettingsPageViewModel), Title = "Settings", Glyph = "\uE713" }, typeof(SettingsPage) }
         };
         ConfigureFooterPages(footerPages);

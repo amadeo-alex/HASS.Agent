@@ -31,6 +31,7 @@ using WinUI3Localizer;
 using System.IO;
 using HASS.Agent.UI.Contracts.Managers;
 using HASS.Agent.UI.Managers;
+using HASS.Agent.UI.Views.Pages.Settings;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -248,6 +249,9 @@ public partial class App : Application
 
                 services.AddTransient<CommandsPageViewModel>();
                 services.AddTransient<CommandsPage>();
+
+                services.AddTransient<DebugPageViewModel>();
+                services.AddTransient<DebugPage>();
 
                 services.AddTransient<SettingsPageViewModel>();
                 services.AddTransient<SettingsPage>();
