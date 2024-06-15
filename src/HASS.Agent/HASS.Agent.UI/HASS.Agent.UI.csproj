@@ -17,6 +17,7 @@
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\modern-tray-icon.ico" />
     <None Remove="Views\Dialogs\EntityContentDialog.xaml" />
     <None Remove="Views\Dialogs\TextInputDialogContent.xaml" />
     <None Remove="Views\Pages\CommandsPage.xaml" />
@@ -31,6 +32,7 @@
     <None Remove="Views\Pages\Settings\MqttSettingsPage.xaml" />
     <None Remove="Views\Pages\Settings\NotificationSettingsPage.xaml" />
     <None Remove="Views\Pages\ShellPage.xaml" />
+    <None Remove="Views\TrayIconView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,9 +85,9 @@
     <ProjectReference Include="..\HASS.Agent.Base\HASS.Agent.Base.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Resources\modern-tray-icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Page Update="Views\TrayIconView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\TextInputDialogContent.xaml">

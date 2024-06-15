@@ -18,6 +18,8 @@ public class ActivationService : IActivationService
     private readonly IThemeSelectorService _themeSelectorService;
     private UIElement? _shell = null;
 
+    public bool HandleClosedEvents { get; set; }
+
     public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
     {
         _defaultHandler = defaultHandler;
@@ -39,6 +41,15 @@ public class ActivationService : IActivationService
 
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
+
+        App.MainWindow.Closed += (sender, args) =>
+         {
+             if (HandleClosedEvents)
+             {
+                 args.Handled = true;
+                 App.MainWindow.Hide();
+             }
+         };
 
         // Activate the MainWindow.
         App.MainWindow.Activate();
@@ -71,5 +82,10 @@ public class ActivationService : IActivationService
     {
         //await _themeSelectorService.SetRequestedThemeAsync(); //TODO(Amadeo): cleanup
         //await Task.CompletedTask;
+    }
+
+    public void Shutdown()
+    {
+
     }
 }

@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:helpers="using:HASS.Agent.UI.Helpers"
 	xmlns:vm="using:HASS.Agent.UI.ViewModels"
-	xmlns:tb="using:H.NotifyIcon"
+	xmlns:views="using:HASS.Agent.UI.Views"
     mc:Ignorable="d"
     Loaded="OnLoaded">
 
@@ -100,26 +100,6 @@
 			</Grid>
 		</NavigationView>
 
-		<tb:TaskbarIcon
-        x:Name="TrayIcon"
-        x:FieldModifier="public"
-        ContextMenuMode="SecondWindow"
-        IconSource="\Resources\modern-tray-icon.ico"
-        NoLeftClickDelay="True"
-		LeftClickCommand="{x:Bind ViewModel.TrayIconClick}"
-        ToolTipText="ToolTip">
-			<tb:TaskbarIcon.ContextFlyout>
-				<MenuFlyout AreOpenCloseAnimationsEnabled="False">
-					<MenuFlyoutItem
-                    Text="Show/Hide Window"
-					Command="{x:Bind ViewModel.TrayIconClick}"
-                    />
-					<MenuFlyoutSeparator />
-					<MenuFlyoutItem
-                    Text="Exit"
-                    />
-				</MenuFlyout>
-			</tb:TaskbarIcon.ContextFlyout>
-		</tb:TaskbarIcon>
+		<views:TrayIconView x:Name="TrayIconView" />
 	</Grid>
 </Page>

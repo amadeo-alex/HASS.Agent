@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace HASS.Agent.UI.Contracts.Services;
 public interface IActivationService
 {
+    bool HandleClosedEvents { get; set;}
     Task ActivateAsync(object activationArgs);
 }
 
