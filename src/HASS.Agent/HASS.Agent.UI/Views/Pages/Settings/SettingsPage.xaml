@@ -16,7 +16,7 @@
 			PaneDisplayMode="Top"
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="False"
-            SelectedItem="{Binding Selected, Mode=OneWay}"
+            SelectedItem="{Binding Selected, Mode=TwoWay}"
             IsSettingsVisible="False"
 			MenuItemsSource="{Binding MenuItems, Mode=OneWay}">
 

@@ -49,7 +49,7 @@ public partial class ShellPageViewModel
 
         _pageService = pageService;
 
-        _pageService.Pages.ListChanged += Pages_ListChanged;
+        _pageService.Pages.ListChanged += Pages_ListChanged; //TODO(Amadeo): leak
         _pageService.FooterPages.ListChanged += Pages_ListChanged;
     }
 

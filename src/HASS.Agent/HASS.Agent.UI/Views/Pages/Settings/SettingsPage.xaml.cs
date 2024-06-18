@@ -25,8 +25,6 @@ public sealed partial class SettingsPage : Page
 {
     private readonly SettingsPageViewModel _viewModel;
 
-
-
     public SettingsPage()
     {
         _viewModel = App.GetService<SettingsPageViewModel>();
@@ -35,5 +33,12 @@ public sealed partial class SettingsPage : Page
 
         _viewModel.NavigationService.Frame = SettingsNavigationFrame;
         _viewModel.NavigationViewService.Initialize(SettingsNavigationViewControl);
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+
+        _viewModel.NavigationService.NavigateTo("settingsGeneral");
     }
 }

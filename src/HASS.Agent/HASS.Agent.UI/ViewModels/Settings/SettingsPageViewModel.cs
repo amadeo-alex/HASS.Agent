@@ -22,7 +22,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace HASS.Agent.UI.ViewModels;
-public partial class SettingsPageViewModel : ViewModelBase
+public partial class SettingsPageViewModel : ViewModelBase, INavigationAware
 {
     private readonly IPageService _pageService;
 
@@ -48,5 +48,21 @@ public partial class SettingsPageViewModel : ViewModelBase
 
         NavigationService = new NavigationService(_pageService);
         NavigationViewService = new NavigationViewService(NavigationService, _pageService);
+    }
+
+    private void NavigationService_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
+        if (selectedItem != null)
+            Selected = selectedItem;
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        NavigationService.Navigated += NavigationService_Navigated;
+    }
+    public void OnNavigatedFrom()
+    {
+        NavigationService.Navigated -= NavigationService_Navigated;
     }
 }
