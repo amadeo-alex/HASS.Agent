@@ -95,7 +95,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                 //TODO(Amadeo): lauch url?
             }
 
-            if (_settingsManager.Settings.Mqtt.Enabled)
+/*            if (_settingsManager.Settings.Mqtt.Enabled)
             {
                 var messageBuilder = new MqttApplicationMessageBuilder()
                     .WithTopic($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}/actions")
@@ -107,7 +107,9 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                     }));
 
                 await _mqttManager.PublishAsync(messageBuilder.Build());
-            }
+            }*/
+
+
         }
         catch (Exception ex)
         {
