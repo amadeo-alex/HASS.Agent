@@ -109,6 +109,8 @@ public partial class SensorsPageViewModel : ViewModelBase, IInfoBadgeAware, INav
             };
             NewSensorEventHandler?.Invoke(this, newSensor);
         });
+
+        RaiseOnPropertyChanged(nameof(InfoBadge));
     }
 
     public void AddUpdateConfiguredSensor(ConfiguredEntity sensor)

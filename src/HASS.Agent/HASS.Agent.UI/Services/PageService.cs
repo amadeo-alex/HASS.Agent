@@ -51,7 +51,7 @@ public class PageService : IPageService
         return pageType;
     }
 
-    public void Test()
+    public void RefreshPageData()
     {
         foreach (var menuItem in Pages)
         {

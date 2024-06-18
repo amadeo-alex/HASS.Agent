@@ -15,4 +15,5 @@ public interface IPageService
     public BindingList<IMenuItem> FooterPages { get; }
     IMenuItem GetMenuItem(string navigateTo);
     Type GetPageType(string key);
+    void RefreshPageData();
 }

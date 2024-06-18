@@ -97,7 +97,7 @@ public class NavigationService : INavigationService
             var navigated = _frame.Navigate(pageType, parameter);
             if (navigated)
             {
-                //(_pageService as PageService).Test();
+                _pageService.RefreshPageData(); //TODO(Amadeo): optimization?
                 _lastParameterUsed = parameter;
                 if (vmBeforeNavigation is INavigationAware navigationAware)
                 {
