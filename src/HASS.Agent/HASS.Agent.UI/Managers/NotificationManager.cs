@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -23,6 +24,8 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
     private const string ActionPrefix = "action=";
     private const string UriPrefix = "uri=";
     private const string SpecialClear = "clear_notification";
+
+    public const string NotificationLaunchArgument = "----AppNotificationActivated:";
 
     private readonly ISettingsManager _settingsManager;
     private readonly IMqttManager _mqttManager;
@@ -82,7 +85,50 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
     private async Task HandleNotificationInvoked(AppNotificationActivatedEventArgs args)
     {
-        //TODO(Amadeo): clickAction
+        try
+        {
+            var action = GetValueFromEventArgs(args, ActionPrefix);
+            var input = GetInputFromEventArgs(args);
+            var uri = GetValueFromEventArgs(args, UriPrefix);
+
+            if (uri != null) { 
+                //TODO(Amadeo): lauch url?
+            }
+
+            if (_settingsManager.Settings.Mqtt.Enabled)
+            {
+                var messageBuilder = new MqttApplicationMessageBuilder()
+                    .WithTopic($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}/actions")
+                    .WithPayload(JsonConvert.SerializeObject(new
+                    {
+                        action,
+                        input,
+                        uri
+                    }));
+
+                await _mqttManager.PublishAsync(messageBuilder.Build());
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "[NOTIFICATIONS] Unable to process notification action: {err}", ex.Message);
+        }
+    }
+
+    private string GetValueFromEventArgs(AppNotificationActivatedEventArgs args, string startText)
+    {
+        var start = args.Argument.IndexOf(startText) + startText.Length;
+        if (start < startText.Length)
+            return string.Empty;
+
+        var separatorIndex = args.Argument.IndexOf(";", start);
+        var end = separatorIndex < 0 ? args.Argument.Length : separatorIndex;
+        return DecodeNotificationParameter(args.Argument[start..end]);
+    }
+
+    private static IDictionary<string, string> GetInputFromEventArgs(AppNotificationActivatedEventArgs args)
+    {
+        return args.UserInput.Count > 0 ? args.UserInput : new Dictionary<string, string>();
     }
 
     private static string EncodeNotificationParameter(string parameter)
@@ -116,7 +162,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             //TODO(Amadeo): add configuration for optional hero image
             //TODO(Amadeo): add option to disable caching of downloaded files
             if (!string.IsNullOrEmpty(notification.Data.Image))
-                toastBuilder.SetInlineImage(new Uri(notification.Data.Image)); 
+                toastBuilder.SetInlineImage(new Uri(notification.Data.Image));
 
             if (notification.Data.Actions.Count > 0)
             {
@@ -199,7 +245,11 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
     public async Task HandleAppActivation(AppActivationArguments activationArguments)
     {
-        //TODO(Amadeo): implement
+        var appNotificationArgs = activationArguments.Data as AppNotificationActivatedEventArgs;
+        if (appNotificationArgs == null || appNotificationArgs.Argument == null)
+            return;
+
+        await HandleNotificationInvoked(appNotificationArgs);
     }
 
     public async Task HandleMqttMessage(MqttApplicationMessage message)

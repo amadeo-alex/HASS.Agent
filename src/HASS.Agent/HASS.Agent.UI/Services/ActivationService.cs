@@ -15,16 +15,14 @@ public class ActivationService : IActivationService
 {
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
-    private readonly IThemeSelectorService _themeSelectorService;
     private UIElement? _shell = null;
 
     public bool HandleClosedEvents { get; set; }
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
+    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers)
     {
         _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
-        _themeSelectorService = themeSelectorService;
     }
 
     public async Task ActivateAsync(object activationArgs)
