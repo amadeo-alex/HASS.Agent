@@ -1,5 +1,6 @@
-﻿using CoreAudio;
-using HASS.Agent.Shared.Enums;
+﻿using HASS.Agent.Shared.Enums;
+using HASS.Agent.Shared.Managers;
+using HASS.Agent.Shared.Managers.Audio;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -35,25 +36,28 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.InternalCommands
             TurnOnWithAction(OutputDevice);
         }
 
-        private MMDevice GetAudioDeviceOrDefault(string playbackDeviceName)
-        {
-            var devices = Variables.AudioDeviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
-            var playbackDevice = devices.Where(d => d.DeviceFriendlyName == playbackDeviceName).FirstOrDefault();
-
-            return playbackDevice ?? Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-        }
-
         public override void TurnOnWithAction(string action)
         {
             State = "ON";
  
             try
             {
-                var outputDevice = GetAudioDeviceOrDefault(action);
-                if (outputDevice == Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
+                var audioDevices = AudioManager.GetDevices();
+                var outputDevice = audioDevices
+                    .Where(d => d.Type == DeviceType.Output)
+                    .Where(d => d.FriendlyName == action)
+                    .FirstOrDefault();
+
+                if (outputDevice == null)
+                {
+                    Log.Warning("[SETAUDIOOUT] No input device {device} found", action);
+                    return;
+                }
+
+                if (outputDevice.Default)
                     return;
 
-                outputDevice.Selected = true;
+                AudioManager.Activate(outputDevice);
             }
             catch (Exception ex)
             {

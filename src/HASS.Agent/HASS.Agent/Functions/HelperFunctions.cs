@@ -236,10 +236,7 @@ namespace HASS.Agent.Functions
             {
                 // any value?
                 if (string.IsNullOrWhiteSpace(keyString))
-                {
-                    errorMsg = Languages.HelperFunctions_ParseMultipleKeys_ErrorMsg1;
-                    return false;
-                }
+                    return true;
 
                 // any brackets?
                 if (!keyString.Contains('[') || !keyString.Contains(']'))
@@ -546,13 +543,24 @@ namespace HASS.Agent.Functions
             var inputLanguage = InputLanguage.CurrentInputLanguage.Handle;
 
             // check for known OK languages
-            if (KnownOkInputLanguage.ContainsKey(inputLanguage)) return false;
-
+            if (KnownOkInputLanguage.ContainsKey(inputLanguage))
+                return false;
+            
             // check for known NOT OK languages
-            if (KnownNotOkInputLanguage.ContainsKey(inputLanguage))
+            var germanLayoutDetected = false;
+            foreach(InputLanguage language in InputLanguage.InstalledInputLanguages)
+            {
+                if(language.Culture.TwoLetterISOLanguageName == "de")
+                {
+                    germanLayoutDetected = true;
+                    break;
+                }
+            }
+
+            if (KnownNotOkInputLanguage.ContainsKey(inputLanguage) || germanLayoutDetected)
             {
                 // get human-readable name
-                var langName = KnownNotOkInputLanguage[inputLanguage];
+                var langName = germanLayoutDetected ? "German" : KnownNotOkInputLanguage[inputLanguage];
 
                 message = string.Format(Languages.HelperFunctions_InputLanguageCheckDiffers_ErrorMsg1, langName);
                 return true;

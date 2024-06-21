@@ -1,5 +1,6 @@
-﻿using CoreAudio;
-using HASS.Agent.Shared.Enums;
+﻿using HASS.Agent.Shared.Enums;
+using HASS.Agent.Shared.Managers;
+using HASS.Agent.Shared.Managers.Audio;
 using Newtonsoft.Json;
 using Serilog;
 using System;
@@ -35,25 +36,28 @@ public class SetAudioInputCommand : InternalCommand
         TurnOnWithAction(InputDevice);
     }
 
-    private MMDevice GetAudioDeviceOrDefault(string playbackDeviceName)
-    {
-        var devices = Variables.AudioDeviceEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-        var playbackDevice = devices.Where(d => d.DeviceFriendlyName == playbackDeviceName).FirstOrDefault();
-
-        return playbackDevice ?? Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
-    }
-
     public override void TurnOnWithAction(string action)
     {
         State = "ON";
 
         try
         {
-            var outputDevice = GetAudioDeviceOrDefault(action);
-            if (outputDevice == Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications))
+            var audioDevices = AudioManager.GetDevices();
+            var inputDevice = audioDevices
+                .Where(d => d.Type == DeviceType.Input)
+                .Where(d => d.FriendlyName == action)
+                .FirstOrDefault();
+
+            if (inputDevice == null)
+            {
+                Log.Warning("[SETAUDIOIN] No input device {device} found", action);
+                return;
+            }
+
+            if(inputDevice.Default)
                 return;
 
-            outputDevice.Selected = true;
+            AudioManager.Activate(inputDevice);
         }
         catch (Exception ex)
         {

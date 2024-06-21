@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoreAudio;
+using HASS.Agent.Shared.Managers;
+using HASS.Agent.Shared.Managers.Audio;
 using Serilog;
 
 namespace HASS.Agent.Media
@@ -18,16 +19,12 @@ namespace HASS.Agent.Media
         {
             try
             {
-                // get the default audio device
-                using var audioDevice = Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                var defaultDeviceId = AudioManager.GetDefaultDeviceId(DeviceType.Output, DeviceRole.Multimedia);
+                var audioDevice = AudioManager.GetDevices().Where(d => d.Id == defaultDeviceId).FirstOrDefault();
+                if (audioDevice == null)
+                    return 0;
 
-                // get default device volume
-                var volume = Convert.ToInt32(Math.Round(audioDevice.AudioEndpointVolume?.MasterVolumeLevelScalar * 100 ?? 0, 0));
-
-                // Log.Debug("[MEDIA] Current volume: {vol}", volume);
-
-                // return it
-                return volume;
+                return audioDevice.Volume;
             }
             catch (Exception ex)
             {
@@ -44,16 +41,12 @@ namespace HASS.Agent.Media
         {
             try
             {
-                // get the default audio device
-                using var audioDevice = Variables.AudioDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                var defaultDeviceId = AudioManager.GetDefaultDeviceId(DeviceType.Output, DeviceRole.Multimedia);
+                var audioDevice = AudioManager.GetDevices().Where(d => d.Id == defaultDeviceId).FirstOrDefault();
+                if (audioDevice == null)
+                    return false;
 
-                // get mute state
-                var muted = audioDevice.AudioEndpointVolume?.Mute ?? false;
-
-                // Log.Debug("[MEDIA] Muted: {mute}", muted);
-
-                // return it
-                return muted;
+                return audioDevice.Muted;
             }
             catch (Exception ex)
             {
