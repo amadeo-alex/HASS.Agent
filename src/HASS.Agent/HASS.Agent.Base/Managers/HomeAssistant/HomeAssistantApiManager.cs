@@ -15,6 +15,7 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
     private readonly ISettingsManager _settingsManager;
 
     private ServiceClient? _serviceClient;
+    private EventClient? _eventClient;
 
     public HomeAssistantApiManager(ISettingsManager settingsManager)
     {
@@ -50,6 +51,7 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
             ClientFactory.Initialize(uri, _settingsManager.Settings.HomeAssistant.HassToken, httpClientHandler);
 
             _serviceClient = ClientFactory.GetClient<ServiceClient>();
+            _eventClient = ClientFactory.GetClient<EventClient>();
 
             Log.Information("[HAAPI] Initialized");
         }
@@ -61,7 +63,9 @@ public class HomeAssistantApiManager : IHomeAssistantApiManager
 
     public async Task FireEventAsync(string eventName, object eventData)
     {
-        if (_serviceClient != null)
-            await _serviceClient.CallService(eventName, eventData);
+        if (_eventClient != null) { 
+
+            var result = await _eventClient.FireEvent(eventName, eventData);
+        }
     }
 }

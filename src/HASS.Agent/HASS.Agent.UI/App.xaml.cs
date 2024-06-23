@@ -122,17 +122,17 @@ public partial class App : Application
                 }
 
                 var mqtt = GetService<IMqttManager>();
-                await mqtt.StartClient();
+                await mqtt.StartClientAsync();
 
                 var haapi = GetService<IHomeAssistantApiManager>();
                 await haapi.InitializeAsync();
 
                 var sensorManager = GetService<ISensorManager>();
-                await sensorManager.Initialize();
+                await sensorManager.InitializeAsync();
                 _ = Task.Run(sensorManager.Process);
 
                 var commandsManager = GetService<ICommandsManager>();
-                await commandsManager.Initialize();
+                await commandsManager.InitializeAsync();
                 _ = Task.Run(commandsManager.Process);
 
                 var notificationManager = GetService<INotificationManager>();

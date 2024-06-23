@@ -48,7 +48,7 @@ public class CommandsManager : ICommandsManager, IMqttMessageHandler
         _mqttManager = mqttManager;
     }
 
-    public async Task Initialize()
+    public async Task InitializeAsync()
     {
         _settingsManager.ConfiguredCommands.CollectionChanged -= ConfiguredCommands_CollectionChanged;
 

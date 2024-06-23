@@ -49,7 +49,7 @@ public class SensorManager : ISensorManager
         _mqttManager = mqttManager;
     }
 
-    public async Task Initialize()
+    public async Task InitializeAsync()
     {
         _settingsManager.ConfiguredSensors.CollectionChanged -= ConfiguredSensors_CollectionChanged;
 

@@ -25,7 +25,7 @@ public interface IMqttManager : INotifyPropertyChanged
 
     void RegisterMessageHandler(string topic, IMqttMessageHandler handler);
     void UnregisterMessageHandler(string topic);
-    Task StartClient();
+    Task StartClientAsync();
     Task PublishAsync(MqttApplicationMessage message);
     Task AnnounceDeviceConfigModelAsync();
     Task ClearDeviceConfigModelAsync();

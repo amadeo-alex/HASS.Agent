@@ -119,7 +119,7 @@ public partial class MqttManager : ObservableObject, IMqttManager
         _mqttMessageHandlers.Remove(topic);
     }
 
-    public async Task StartClient()
+    public async Task StartClientAsync()
     {
         try
         {
