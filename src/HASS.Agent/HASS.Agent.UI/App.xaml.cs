@@ -37,6 +37,8 @@ using HASS.Agent.UI.ViewModels.Settings;
 using H.NotifyIcon.Core;
 using H.NotifyIcon;
 using HASS.Agent.UI.Contracts;
+using HASS.Agent.Base.Contracts.Managers.HomeAssistant;
+using HASS.Agent.Base.Managers.HomeAssistant;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -121,6 +123,9 @@ public partial class App : Application
 
                 var mqtt = GetService<IMqttManager>();
                 await mqtt.StartClient();
+
+                var haapi = GetService<IHomeAssistantApiManager>();
+                await haapi.InitializeAsync();
 
                 var sensorManager = GetService<ISensorManager>();
                 await sensorManager.Initialize();
@@ -257,6 +262,8 @@ public partial class App : Application
                 services.AddSingleton<ICommandsManager, CommandsManager>();
 
                 services.AddSingleton<INotificationManager, NotificationManager>();
+
+                services.AddSingleton<IHomeAssistantApiManager, HomeAssistantApiManager>();
 
                 services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
                 services.AddTransient<IActivationHandler, NotificationActivationHandler>();

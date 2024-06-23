@@ -24,11 +24,13 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
     private const string ActionPrefix = "action=";
     private const string UriPrefix = "uri=";
     private const string SpecialClear = "clear_notification";
+    private const string HomeAssistantNotificationEvent = "hass_agent_notifications";
 
     public const string NotificationLaunchArgument = "----AppNotificationActivated:";
 
     private readonly ISettingsManager _settingsManager;
     private readonly IMqttManager _mqttManager;
+    private readonly IHomeAssistantApiManager _homeAssistantApiManager;
 
     private readonly AppNotificationManager _notificationManager = AppNotificationManager.Default;
 
@@ -36,10 +38,11 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
     public bool Ready { get; private set; }
 
-    public NotificationManager(ISettingsManager settingsManager, IMqttManager mqttManager)
+    public NotificationManager(ISettingsManager settingsManager, IMqttManager mqttManager, IHomeAssistantApiManager homeAssistantApiManager)
     {
         _settingsManager = settingsManager;
         _mqttManager = mqttManager;
+        _homeAssistantApiManager = homeAssistantApiManager;
     }
 
     public void Initialize()
@@ -108,7 +111,14 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
 
                 await _mqttManager.PublishAsync(messageBuilder.Build());
             }*/
-
+            
+            await _homeAssistantApiManager.FireEventAsync(HomeAssistantNotificationEvent, new
+            {
+                device_name = _settingsManager.Settings.Application.DeviceName,
+                action,
+                input,
+                uri
+            });
 
         }
         catch (Exception ex)

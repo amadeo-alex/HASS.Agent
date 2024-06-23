@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HASS.Agent.Base.Contracts.Managers;
-internal interface IHomeAssistantApiManager
+public interface IHomeAssistantApiManager
 {
-    public const string EVENT_NOTIFICATION = "hass_agent_notifications";
-
     public Task InitializeAsync();
-    public Task FireEventAsync();
+    public Task FireEventAsync(string eventName, object eventData);
 }
