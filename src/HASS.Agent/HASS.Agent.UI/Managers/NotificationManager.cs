@@ -21,8 +21,14 @@ using Serilog;
 namespace HASS.Agent.UI.Managers;
 public class NotificationManager : INotificationManager, IMqttMessageHandler
 {
-    private const string ActionPrefix = "action=";
-    private const string UriPrefix = "uri=";
+    private const string ActionKey = "action";
+    private const string UriKey = "uri";
+    private const string ClickActionKey = "clickAction";
+
+    private const string ActionPrefix = $"{ActionKey}=";
+    private const string UriPrefix = $"{UriKey}=";
+    private const string ClickActionPrefix = $"{ClickActionKey}=";
+
     private const string SpecialClear = "clear_notification";
     private const string HomeAssistantNotificationEvent = "hass_agent_notifications";
 
@@ -93,9 +99,12 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             var action = GetValueFromEventArgs(args, ActionPrefix);
             var input = GetInputFromEventArgs(args);
             var uri = GetValueFromEventArgs(args, UriPrefix);
+            var clickAction = GetValueFromEventArgs(args, ClickActionPrefix);
 
-            if (uri != null)
+            if (!string.IsNullOrWhiteSpace(uri))
                 BrowserHelper.OpenUrl(uri);
+            else if (!string.IsNullOrWhiteSpace(clickAction))
+                BrowserHelper.OpenUrl(clickAction);
 
             await _homeAssistantApiManager.FireEventAsync(HomeAssistantNotificationEvent, new
             {
@@ -156,8 +165,12 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                 .AddText(notification.Title)
                 .AddText(notification.Message);
 
+            if (notification.Data.ClickAction != NotificationData.NoAction)
+                toastBuilder.AddArgument(ClickActionKey, EncodeNotificationParameter(notification.Data.ClickAction));
+
             //TODO(Amadeo): add configuration for optional hero image
             //TODO(Amadeo): add option to disable caching of downloaded files
+            //TODO(Amadeo): finish storage manager and use it to retrieve the image
             if (!string.IsNullOrEmpty(notification.Data.Image))
                 toastBuilder.SetInlineImage(new Uri(notification.Data.Image));
 
@@ -169,10 +182,10 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
                         continue;
 
                     var button = new AppNotificationButton(action.Title)
-                        .AddArgument("action", EncodeNotificationParameter(action.Action));
+                        .AddArgument(ActionKey, EncodeNotificationParameter(action.Action));
 
                     if (action.Uri != null)
-                        button.AddArgument("uri", EncodeNotificationParameter(action.Uri));
+                        button.AddArgument(UriKey, EncodeNotificationParameter(action.Uri));
 
                     toastBuilder.AddButton(button);
                 }
@@ -198,7 +211,7 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             {
                 toastBuilder.SetScenario(AppNotificationScenario.Reminder);
                 if (notification.Data.Actions.Count == 0)
-                    toastBuilder.AddButton(new AppNotificationButton(LocalizerHelper.GetLocalizedString("General_Dismiss")));
+                    toastBuilder.AddButton(new AppNotificationButton(LocalizerHelper.GetLocalizedString("General_Dismiss"))); //Note(Amadeo): required for reminder scenario
             }
 
             if (AppNotificationBuilder.IsUrgentScenarioSupported() && notification.Data.Importance == NotificationData.ImportanceHigh)
