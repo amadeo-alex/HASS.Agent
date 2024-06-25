@@ -94,24 +94,9 @@ public class NotificationManager : INotificationManager, IMqttMessageHandler
             var input = GetInputFromEventArgs(args);
             var uri = GetValueFromEventArgs(args, UriPrefix);
 
-            if (uri != null) { 
-                //TODO(Amadeo): lauch url?
-            }
+            if (uri != null)
+                BrowserHelper.OpenUrl(uri);
 
-/*            if (_settingsManager.Settings.Mqtt.Enabled)
-            {
-                var messageBuilder = new MqttApplicationMessageBuilder()
-                    .WithTopic($"hass.agent/notifications/{_settingsManager.Settings.Application.DeviceName}/actions")
-                    .WithPayload(JsonConvert.SerializeObject(new
-                    {
-                        action,
-                        input,
-                        uri
-                    }));
-
-                await _mqttManager.PublishAsync(messageBuilder.Build());
-            }*/
-            
             await _homeAssistantApiManager.FireEventAsync(HomeAssistantNotificationEvent, new
             {
                 device_name = _settingsManager.Settings.Application.DeviceName,
