@@ -62,6 +62,11 @@ namespace HASS.Agent.Shared.Enums
         [LocalizedDescription("HassDomain_Button", typeof(Languages))]
         [Category("button")]
         [EnumMember(Value = "Button")]
-        Button
+        Button,
+
+        [LocalizedDescription("HassDomain_Fan", typeof(Languages))]
+        [Category("fan")]
+        [EnumMember(Value = "Fan")]
+        Fan
     }
 }
