@@ -182,7 +182,7 @@ namespace HASS.Agent.Forms
                 await Task.Delay(250);
 
                 // disconnect mqtt so we don't get announced again
-                await Task.Run(Variables.MqttManager.Disconnect);
+                await Variables.MqttManager.DisconnectAsync();
                 
                 forceRestart = true;
             }

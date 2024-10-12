@@ -21,7 +21,7 @@ namespace HASS.Agent.Shared.Mqtt
         MqttStatus GetStatus();
         Task AnnounceAvailabilityAsync(bool offline = false);
         Task ClearDeviceConfigAsync();
-        void Disconnect();
+        Task DisconnectAsync();
         Task SubscribeAsync(AbstractCommand command);
         Task UnsubscribeAsync(AbstractCommand command);
 

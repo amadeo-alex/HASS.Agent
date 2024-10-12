@@ -61,7 +61,7 @@ namespace HASS.Agent.Satellite.Service.Functions
 
                 // stop mqtt
                 await Variables.MqttManager.AnnounceAvailabilityAsync(true);
-                Variables.MqttManager.Disconnect();
+                await Variables.MqttManager.DisconnectAsync();
 
                 // stop rpc
                 Variables.RpcServer?.Dispose();

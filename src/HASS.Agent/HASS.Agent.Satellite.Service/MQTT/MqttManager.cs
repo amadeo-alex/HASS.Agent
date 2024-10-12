@@ -520,14 +520,14 @@ namespace HASS.Agent.Satellite.Service.MQTT
         /// <summary>
         /// Disconnect from the broker (if connected)
         /// </summary>
-        public void Disconnect()
+        public async Task DisconnectAsync()
         {
             if (_mqttClient == null)
                 return;
 
             if (IsConnected())
             {
-                _mqttClient.InternalClient.DisconnectAsync();
+                await _mqttClient.StopAsync();
                 _mqttClient.Dispose();
             }
 

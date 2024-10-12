@@ -165,7 +165,7 @@ namespace HASS.Agent.Functions
                 {
                     // stop mqtt
                     await Variables.MqttManager.AnnounceAvailabilityAsync(true);
-                    Variables.MqttManager.Disconnect();
+                    await Variables.MqttManager.DisconnectAsync();
 
                     // remove tray icon
                     Variables.MainForm?.HideTrayIcon();

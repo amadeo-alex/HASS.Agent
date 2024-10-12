@@ -611,15 +611,18 @@ namespace HASS.Agent.MQTT
         /// <summary>
         /// Disconnect from the broker (if connected)
         /// </summary>
-        public void Disconnect()
+        public async Task DisconnectAsync()
         {
             if (!Variables.AppSettings.MqttEnabled)
                 return;
 
+            if (_mqttClient == null)
+                return;
+
             if (IsConnected())
             {
-                _mqttClient?.InternalClient?.DisconnectAsync();
-                _mqttClient?.Dispose();
+                await _mqttClient.StopAsync();
+                _mqttClient.Dispose();
             }
 
             Log.Information("[MQTT] Disconnected");
