@@ -27,6 +27,7 @@ using MediaManager = HASS.Agent.Media.MediaManager;
 using HASS.Agent.Shared.Managers;
 using Newtonsoft.Json.Serialization;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace HASS.Agent.Functions
 {
@@ -545,10 +546,50 @@ namespace HASS.Agent.Functions
             { new IntPtr(-268368877), "United States-International" }
         };
 
-        private static readonly Dictionary<IntPtr, string> KnownNotOkInputLanguage = new()
+        //Note(Amadeo): data from https://learn.microsoft.com/en-us/globalization/windows-keyboard-layouts
+        private static readonly Dictionary<int, string> KnownNotOkKeyboardLayouts = new()
         {
-            { new IntPtr(67568647), "German" }
+            { 0x407, "German" }
         };
+
+        //Note(Amadeo): based on https://github.com/dotnet/winforms/issues/4345
+        private static string GetKeyboardLayoutIdForHandle(IntPtr handle)
+        {
+            int language = (ushort)(((uint)handle) & 0xffff);
+            int device = (ushort)((((uint)handle) >> 16) & 0xffff);
+
+            if ((device & 0xF000) == 0xF000)
+            {
+                var layoutId = device & 0x0FFF;
+
+                using var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Keyboard Layouts");
+                if (key is not null)
+                {
+                    foreach (var subKeyName in key.GetSubKeyNames())
+                    {
+                        using var subKey = key.OpenSubKey(subKeyName);
+                        if (subKey is null || subKey.GetValue("Layout Id") is not string subKeyLayoutId)
+                        {
+                            continue;
+                        }
+
+                        if (layoutId == Convert.ToInt32(subKeyLayoutId, 16))
+                        {
+                            return subKeyName;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (device != 0)
+                {
+                    language = device;
+                }
+            }
+
+            return language.ToString("x8");
+        }
 
         /// <summary>
         /// Checks to see if the system's input language works with the default hotkey
@@ -561,10 +602,10 @@ namespace HASS.Agent.Functions
             message = string.Empty;
             knownToCollide = true;
 
-            var inputLanguage = InputLanguage.CurrentInputLanguage.Handle;
+            var inputLanguageHandle = InputLanguage.CurrentInputLanguage.Handle;
 
             // check for known OK languages
-            if (KnownOkInputLanguage.ContainsKey(inputLanguage))
+            if (KnownOkInputLanguage.ContainsKey(inputLanguageHandle))
                 return false;
 
             // check for known NOT OK languages
@@ -578,10 +619,12 @@ namespace HASS.Agent.Functions
                 }
             }
 
-            if (KnownNotOkInputLanguage.ContainsKey(inputLanguage) || germanLayoutDetected)
+            var keyboardLayoutIdName = GetKeyboardLayoutIdForHandle(inputLanguageHandle);
+            var keyboardLayoutLanguageId = Convert.ToInt32(keyboardLayoutIdName[^4..], 16);
+            if (KnownNotOkKeyboardLayouts.ContainsKey(keyboardLayoutLanguageId) || germanLayoutDetected)
             {
                 // get human-readable name
-                var langName = germanLayoutDetected ? "German" : KnownNotOkInputLanguage[inputLanguage];
+                var langName = germanLayoutDetected ? "German" : KnownNotOkKeyboardLayouts[keyboardLayoutLanguageId];
 
                 message = string.Format(Languages.HelperFunctions_InputLanguageCheckDiffers_ErrorMsg1, langName);
                 return true;
