@@ -57,10 +57,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2365.46">
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51">
       <Aliases>WV2</Aliases>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.240211001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.241107002" />
     <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.3.952" />
     <PackageReference Include="NdefLibrary" Version="4.1.0" />
