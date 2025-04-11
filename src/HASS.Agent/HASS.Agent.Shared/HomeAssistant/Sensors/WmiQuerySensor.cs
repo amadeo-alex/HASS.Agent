@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -6,6 +7,7 @@ using HASS.Agent.Shared.Models.HomeAssistant;
 using HASS.Agent.Shared.Models.Internal;
 using Newtonsoft.Json;
 using Serilog;
+using Windows.Foundation;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace HASS.Agent.Shared.HomeAssistant.Sensors
@@ -80,14 +82,29 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
                 {
                     try
                     {
-                        if (!string.IsNullOrEmpty(retValue))
-                            continue;
+                        //if (!string.IsNullOrEmpty(retValue))
+                        //    continue;
 
                         using var managementObject = (ManagementObject)managementBaseObject;
                         foreach (var property in managementObject.Properties)
                         {
-                            retValue = property?.Value?.ToString() ?? string.Empty;
-                            break;
+                            var propValue = string.Empty;
+
+                            if (property?.Value is string[] propertyArray)
+                            {
+                                propValue = string.Join(",", propertyArray);
+                            }
+                            else
+                            {
+                                propValue = property?.Value?.ToString() ?? string.Empty;
+                            }
+
+
+                            if (!string.IsNullOrWhiteSpace(propValue))
+                            {
+                                retValue += string.IsNullOrWhiteSpace(retValue) ? propValue : $",{propValue}";
+                            }
+                            //break;
                         }
                     }
                     finally
