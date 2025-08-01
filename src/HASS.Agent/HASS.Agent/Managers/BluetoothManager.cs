@@ -27,7 +27,7 @@ namespace HASS.Agent.Managers
             {
                 // first get all paired devices
                 var pairedBluetoothDevices = await DeviceInformation.FindAllAsync(WindowsBluetoothDevice.GetDeviceSelectorFromPairingState(true));
-                var devices = pairedBluetoothDevices.Select(pairedDevice => new BluetoothDevice { Id = pairedDevice.Id, Name = pairedDevice.Name, Paired = pairedDevice.Pairing.IsPaired, Connected = false, Kind = pairedDevice.Kind.ToString(), LastSeenUtc = DateTime.UtcNow}).ToList();
+                var devices = pairedBluetoothDevices.Select(pairedDevice => new BluetoothDevice { Id = pairedDevice.Id, Name = pairedDevice.Name, Paired = pairedDevice.Pairing.IsPaired, Connected = false, Kind = pairedDevice.Kind.ToString(), LastSeenUtc = DateTime.UtcNow }).ToList();
 
                 // then get all connected devices
                 var connectedBluetoothDevices = await DeviceInformation.FindAllAsync(WindowsBluetoothDevice.GetDeviceSelectorFromConnectionStatus(BluetoothConnectionStatus.Connected));
@@ -68,7 +68,10 @@ namespace HASS.Agent.Managers
         /// </summary>
         internal static void StartWatchingForLeDevices()
         {
-            if (_isWatchingLeDevices) return;
+            if (_isWatchingLeDevices)
+            {
+                return;
+            }
 
             try
             {
@@ -97,7 +100,10 @@ namespace HASS.Agent.Managers
         /// </summary>
         internal static void StopLeScan()
         {
-            if (!_isWatchingLeDevices) return;
+            if (!_isWatchingLeDevices)
+            {
+                return;
+            }
 
             try
             {
@@ -126,7 +132,10 @@ namespace HASS.Agent.Managers
                 var deviceList = DetectedLeDevices.ToList();
 
                 // if requested, clear the current list
-                if (clearList) DetectedLeDevices.Clear();
+                if (clearList)
+                {
+                    DetectedLeDevices.Clear();
+                }
 
                 // release our semaphore
                 Semaphore?.Release();
@@ -152,7 +161,10 @@ namespace HASS.Agent.Managers
             {
                 // fetch the device based on its address
                 using var device = await BluetoothLEDevice.FromBluetoothAddressAsync(args.BluetoothAddress);
-                if (device == null) return;
+                if (device == null)
+                {
+                    return;
+                }
 
                 // do we already have it?
                 if (DetectedLeDevices.Any(x => x.Id == device.DeviceId))
