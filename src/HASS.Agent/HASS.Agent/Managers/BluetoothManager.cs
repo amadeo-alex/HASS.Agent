@@ -6,15 +6,14 @@ using WindowsBluetoothDevice = Windows.Devices.Bluetooth.BluetoothDevice;
 using Windows.Devices.Bluetooth.Advertisement;
 using HASS.Agent.Models.Internal;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace HASS.Agent.Managers
 {
     internal static class BluetoothManager
     {
-        private static readonly SemaphoreSlim Semaphore = new(1, 1);
-
         private static BluetoothLEAdvertisementWatcher _leWatcher;
-        private static readonly List<BluetoothLeDevice> DetectedLeDevices = new();
+        private static readonly ConcurrentBag<BluetoothLeDevice> DetectedLeDevices = new();
         private static bool _isWatchingLeDevices;
 
         /// <summary>
@@ -121,13 +120,10 @@ namespace HASS.Agent.Managers
         /// </summary>
         /// <param name="clearList"></param>
         /// <returns></returns>
-        internal static async Task<List<BluetoothLeDevice>> GetDetectedLeDevicesAsync(bool clearList = true)
+        internal static List<BluetoothLeDevice> GetDetectedLeDevices(bool clearList = true)
         {
             try
             {
-                // wait for the semaphore
-                await Semaphore.WaitAsync(TimeSpan.FromSeconds(5));
-
                 // make a copy of the devices
                 var deviceList = DetectedLeDevices.ToList();
 
@@ -137,16 +133,13 @@ namespace HASS.Agent.Managers
                     DetectedLeDevices.Clear();
                 }
 
-                // release our semaphore
-                Semaphore?.Release();
-
                 // done
                 return deviceList;
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "[BLUETOOTH] Error retrieving LE devices: {err}", ex.Message);
-                return new List<BluetoothLeDevice>();
+                return [];
             }
         }
 
@@ -167,10 +160,11 @@ namespace HASS.Agent.Managers
                 }
 
                 // do we already have it?
-                if (DetectedLeDevices.Any(x => x.Id == device.DeviceId))
+                var alreadyDiscoveredDevice = DetectedLeDevices.FirstOrDefault(x => x.Id == device.DeviceId);
+                if(alreadyDiscoveredDevice != null)
                 {
                     // just update lastseen
-                    DetectedLeDevices.Find(x => x.Id == device.DeviceId)!.LastSeenUtc = DateTime.UtcNow;
+                    alreadyDiscoveredDevice.LastSeenUtc = DateTime.UtcNow;
                     return;
                 }
 
@@ -183,14 +177,8 @@ namespace HASS.Agent.Managers
                     LastSeenUtc = DateTime.UtcNow
                 };
 
-                // wait for the semaphore
-                await Semaphore.WaitAsync(TimeSpan.FromSeconds(5));
-
                 // add it to the list
                 DetectedLeDevices.Add(leDevice);
-
-                // done, release our semaphore
-                Semaphore?.Release();
             }
             catch (Exception ex)
             {

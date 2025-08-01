@@ -45,8 +45,8 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.SingleValue
 
         public override string GetState()
         {
-            var devices = BluetoothManager.GetDetectedLeDevicesAsync().GetAwaiter().GetResult();
-            if (!devices.Any())
+            var devices = BluetoothManager.GetDetectedLeDevices();
+            if (devices.Count == 0)
             {
                 _attributes = "{}";
                 return "0";
