@@ -141,7 +141,7 @@ namespace HASS.Agent.MQTT
                 var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
                 if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
                 {
-                    Log.Information("[MQTT] System resumed less than {gracePeriod} seconds ago, ignoring grace period on disconnection");
+                    Log.Information("[MQTT] System resumed less than {gracePeriod} seconds ago, ignoring grace period on disconnection", gracePeriod);
                     gracePeriodIgnored = true;
                 }
             }
@@ -201,7 +201,7 @@ namespace HASS.Agent.MQTT
                 var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
                 if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
                 {
-                    Log.Information("[MQTT] System resumed more than {gracePeriod} seconds ago, ignoring grace period on connection failed");
+                    Log.Information("[MQTT] System resumed more than {gracePeriod} seconds ago, ignoring grace period on connection failed", gracePeriod);
                     gracePeriodIgnored = true;
                 }
             }
