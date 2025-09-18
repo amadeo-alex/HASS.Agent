@@ -135,34 +135,37 @@ namespace HASS.Agent.MQTT
             Variables.MainForm?.SetMqttStatus(ComponentStatus.Connecting);
 
             var gracePeriod = Variables.AppSettings.DisconnectedGracePeriodSeconds;
-
-            // give the connection the grace period to recover
-            var runningTimer = Stopwatch.StartNew();
-            while (runningTimer.Elapsed.TotalSeconds < gracePeriod)
+            var gracePeriodIgnored = false;
+            if (Variables.AppSettings.MqttIgnoreGracePeriod)
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
-
-                if (IsConnected())
+                var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
+                if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
                 {
-                    _isReady = true;
-
-                    if (_status == MqttStatus.Connected)
-                        return;
-
-                    _status = MqttStatus.Connected;
-                    Variables.MainForm?.SetMqttStatus(ComponentStatus.Ok);
-                    Log.Information("[MQTT] Reconnected from disconnection");
-
-                    return;
+                    Log.Information("[MQTT] System resumed less than {gracePeriod} seconds ago, ignoring grace period on disconnection");
+                    gracePeriodIgnored = true;
                 }
+            }
 
-                if (Variables.AppSettings.MqttIgnoreGracePeriod)
+            if (!gracePeriodIgnored)
+            {
+                // give the connection the grace period to recover
+                var runningTimer = Stopwatch.StartNew();
+                while (runningTimer.Elapsed.TotalSeconds < gracePeriod)
                 {
-                    var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
-                    if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+
+                    if (IsConnected())
                     {
-                        Log.Information("[MQTT] System resumed less than {gracePeriod} seconds ago, ignoring grace period on disconnection");
-                        break;
+                        _isReady = true;
+
+                        if (_status == MqttStatus.Connected)
+                            return;
+
+                        _status = MqttStatus.Connected;
+                        Variables.MainForm?.SetMqttStatus(ComponentStatus.Ok);
+                        Log.Information("[MQTT] Reconnected from disconnection");
+
+                        return;
                     }
                 }
             }
@@ -175,9 +178,12 @@ namespace HASS.Agent.MQTT
             if (Variables.ShuttingDown || _disconnectionNotified)
                 return;
 
-            _disconnectionNotified = true;
+            if (!gracePeriodIgnored)
+            {
+                Variables.MainForm?.ShowToolTip(Languages.MqttManager_ToolTip_Disconnected, true);
+                _disconnectionNotified = true;
+            }
 
-            Variables.MainForm?.ShowToolTip(Languages.MqttManager_ToolTip_Disconnected, true);
             Log.Warning("[MQTT] Disconnected: {reason}", arg.Reason.ToString());
         }
 
@@ -189,33 +195,36 @@ namespace HASS.Agent.MQTT
             Variables.MainForm?.SetMqttStatus(ComponentStatus.Connecting);
 
             var gracePeriod = Variables.AppSettings.DisconnectedGracePeriodSeconds;
-
-            // give the connection the grace period to recover
-            var runningTimer = Stopwatch.StartNew();
-            while (runningTimer.Elapsed.TotalSeconds < gracePeriod)
+            var gracePeriodIgnored = false;
+            if (Variables.AppSettings.MqttIgnoreGracePeriod)
             {
-                await Task.Delay(TimeSpan.FromSeconds(5));
-
-                if (IsConnected())
+                var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
+                if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
                 {
-                    // recovered
-                    if (_status == MqttStatus.Connected)
-                        return;
-
-                    _status = MqttStatus.Connected;
-                    Variables.MainForm?.SetMqttStatus(ComponentStatus.Ok);
-                    Log.Information("[MQTT] Reconnected from failed connection");
-
-                    return;
+                    Log.Information("[MQTT] System resumed more than {gracePeriod} seconds ago, ignoring grace period on connection failed");
+                    gracePeriodIgnored = true;
                 }
+            }
 
-                if (Variables.AppSettings.MqttIgnoreGracePeriod)
+            if (!gracePeriodIgnored)
+            {
+                // give the connection the grace period to recover
+                var runningTimer = Stopwatch.StartNew();
+                while (runningTimer.Elapsed.TotalSeconds < gracePeriod)
                 {
-                    var lastResumed = SystemStateManager.LastEventOccurrence.TryGetValue(SystemStateEvent.Resume, out var lastResumeEventDate);
-                    if (lastResumed && DateTime.Now < lastResumeEventDate.AddSeconds(gracePeriod))
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+
+                    if (IsConnected())
                     {
-                        Log.Information("[MQTT] System resumed more than {gracePeriod} seconds ago, ignoring grace period on connection failed");
-                        break;
+                        // recovered
+                        if (_status == MqttStatus.Connected)
+                            return;
+
+                        _status = MqttStatus.Connected;
+                        Variables.MainForm?.SetMqttStatus(ComponentStatus.Ok);
+                        Log.Information("[MQTT] Reconnected from failed connection");
+
+                        return;
                     }
                 }
             }
@@ -228,7 +237,11 @@ namespace HASS.Agent.MQTT
             if (_connectingFailureNotified)
                 return;
 
-            _connectingFailureNotified = true;
+            if (!gracePeriodIgnored)
+            {
+                Variables.MainForm?.ShowToolTip(Languages.MqttManager_ToolTip_ConnectionFailed, true);
+                _connectingFailureNotified = true;
+            }
 
             var excMsg = arg.Exception.ToString();
             if (excMsg.Contains("SocketException"))
@@ -239,8 +252,6 @@ namespace HASS.Agent.MQTT
                 Log.Error("[MQTT] Error while connecting: {err}", "Not authorized, check your credentials.");
             else
                 Log.Fatal(arg.Exception, "[MQTT] Error while connecting: {err}", arg.Exception.Message);
-
-            Variables.MainForm?.ShowToolTip(Languages.MqttManager_ToolTip_ConnectionFailed, true);
         }
 
         private Task OnMqttConnected(MqttClientConnectedEventArgs arg)
