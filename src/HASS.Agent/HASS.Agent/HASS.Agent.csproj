@@ -39,6 +39,7 @@
 	<WindowsSdkPackageVersion>10.0.22621.38</WindowsSdkPackageVersion>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>  
   </PropertyGroup>
 
   <ItemGroup>

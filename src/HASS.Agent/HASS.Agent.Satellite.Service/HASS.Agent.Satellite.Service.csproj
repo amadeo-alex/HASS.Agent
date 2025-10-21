@@ -22,6 +22,7 @@
     <FileVersion>2.2.0</FileVersion>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>  
   </PropertyGroup>
 
   <ItemGroup>
