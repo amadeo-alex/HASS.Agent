@@ -520,7 +520,8 @@ namespace HASS.Agent.MQTT
                             {
                                 notifications = Variables.AppSettings.NotificationsEnabled,
                                 media_player = Variables.AppSettings.MediaPlayerEnabled
-                            }
+                            },
+                            timestamp = DateTime.Now
                         }, JsonSerializerSettings))
                         .WithRetainFlag(Variables.AppSettings.MqttUseRetainFlag);
 
