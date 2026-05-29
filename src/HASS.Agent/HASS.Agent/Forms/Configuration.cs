@@ -466,6 +466,9 @@ namespace HASS.Agent.Forms
             _mediaPlayer.CbEnableMediaPlayer.CheckState = Variables.AppSettings.MediaPlayerEnabled
                 ? CheckState.Checked
                 : CheckState.Unchecked;
+            _mediaPlayer.CbEnableExclusivePlayback.CheckState = Variables.AppSettings.MediaPlayerExclusiveModeEnabled
+                ? CheckState.Checked
+                : CheckState.Unchecked;
 
             // tray icon
             _trayIcon.CbUseModernIcon.CheckState =
@@ -598,6 +601,8 @@ namespace HASS.Agent.Forms
             // mediaplayer
             Variables.AppSettings.MediaPlayerEnabled =
                 _mediaPlayer.CbEnableMediaPlayer.CheckState == CheckState.Checked;
+            Variables.AppSettings.MediaPlayerExclusiveModeEnabled =
+                _mediaPlayer.CbEnableExclusivePlayback.CheckState == CheckState.Checked;
 
             // tray icon
             Variables.AppSettings.TrayIconUseModern = _trayIcon.CbUseModernIcon.CheckState == CheckState.Checked;

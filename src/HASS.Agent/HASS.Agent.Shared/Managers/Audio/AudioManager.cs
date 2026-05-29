@@ -11,8 +11,10 @@ using HASS.Agent.Shared.Managers.Audio.Internal;
 using Serilog;
 using NAudio.CoreAudioApi.Interfaces;
 using Microsoft.VisualBasic.ApplicationServices;
+using NAudio.Wave;
 
 namespace HASS.Agent.Shared.Managers.Audio;
+
 public static class AudioManager
 {
     private static bool _initialized = false;
@@ -26,6 +28,8 @@ public static class AudioManager
 
     private static bool _noDefaultInputLogged = false;
     private static bool _noDefaultOutputLogged = false;
+
+    private static WasapiOut _exclusiveOut = null;
 
     private static void InitializeDevices()
     {
@@ -71,6 +75,7 @@ public static class AudioManager
             Log.Error($"[AUDIOMGR] failed to remove device: {e.DeviceId}");
         }
     }
+
     private static void DeviceAdded(object sender, DeviceNotificationEventArgs e)
     {
         try
@@ -89,6 +94,7 @@ public static class AudioManager
         {
             case DeviceState.Active:
                 AddDevice(e.DeviceId);
+                ClearExclusiveOut();
                 break;
 
             case DeviceState.NotPresent:
@@ -113,6 +119,12 @@ public static class AudioManager
         return true;
     }
 
+    private static void ClearExclusiveOut()
+    {
+        _exclusiveOut?.Dispose();
+        _exclusiveOut = null;
+    }
+
     private static string GetSessionDisplayName(InternalAudioSession session)
     {
         var procId = session.ProcessId;
@@ -135,7 +147,8 @@ public static class AudioManager
         return GetDeviceSessions(_devices[mmDevice.ID], internalAudioSessionManager);
     }
 
-    private static List<AudioSession> GetDeviceSessions(string deviceName, InternalAudioSessionManager internalAudioSessionManager)
+    private static List<AudioSession> GetDeviceSessions(string deviceName,
+        InternalAudioSessionManager internalAudioSessionManager)
     {
         var audioSessions = new List<AudioSession>();
 
@@ -143,7 +156,9 @@ public static class AudioManager
         {
             try
             {
-                var displayName = string.IsNullOrWhiteSpace(session.DisplayName) ? GetSessionDisplayName(session) : session.DisplayName;
+                var displayName = string.IsNullOrWhiteSpace(session.DisplayName)
+                    ? GetSessionDisplayName(session)
+                    : session.DisplayName;
                 if (displayName == "audiodg")
                     continue;
 
@@ -247,7 +262,8 @@ public static class AudioManager
             {
                 Log.Information("[AUDIOMGR] no default output device detected");
                 _noDefaultOutputLogged = true;
-            }else if (defaultOutputDevice != null)
+            }
+            else if (defaultOutputDevice != null)
             {
                 _noDefaultOutputLogged = false;
             }
@@ -431,7 +447,8 @@ public static class AudioManager
         }
     }
 
-    public static void SetApplicationProperties(string deviceName, string applicationName, string sessionId, int volume, bool mute)
+    public static void SetApplicationProperties(string deviceName, string applicationName, string sessionId, int volume,
+        bool mute)
     {
         if (!CheckInitialization())
             return;
@@ -473,23 +490,57 @@ public static class AudioManager
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "[AUDIOMGR] failed to set application properties '{appName}': {msg}", applicationName, ex.Message);
+            Log.Error(ex, "[AUDIOMGR] failed to set application properties '{appName}': {msg}", applicationName,
+                ex.Message);
         }
     }
 
     private static void SetSessionProperties(InternalAudioSession internalAudioSession, int volume, bool mute)
     {
-        var displayName = string.IsNullOrWhiteSpace(internalAudioSession.DisplayName) ? GetSessionDisplayName(internalAudioSession) : internalAudioSession.DisplayName;
+        var displayName = string.IsNullOrWhiteSpace(internalAudioSession.DisplayName)
+            ? GetSessionDisplayName(internalAudioSession)
+            : internalAudioSession.DisplayName;
 
         internalAudioSession.Volume.Mute = mute;
-        Log.Debug("[AUDIOMGR] mute for '{sessionName}' ({sessionId}) set to '{mute}'", displayName, internalAudioSession.Control.GetSessionInstanceIdentifier, mute);
+        Log.Debug("[AUDIOMGR] mute for '{sessionName}' ({sessionId}) set to '{mute}'", displayName,
+            internalAudioSession.Control.GetSessionInstanceIdentifier, mute);
 
         if (volume == -1)
             return;
 
         var volumeScalar = Math.Clamp(volume / 100f, 0, 1);
         internalAudioSession.Volume.Volume = volumeScalar;
-        Log.Debug("[AUDIOMGR] volume for '{sessionName}' ({sessionId}) set to '{vol}'/'{volScal}'", displayName, internalAudioSession.Control.GetSessionInstanceIdentifier, volume, volumeScalar);
+        Log.Debug("[AUDIOMGR] volume for '{sessionName}' ({sessionId}) set to '{vol}'/'{volScal}'", displayName,
+            internalAudioSession.Control.GetSessionInstanceIdentifier, volume, volumeScalar);
+    }
+
+    public static void PlayExclusive(string mediaUri)
+    {
+        if (!CheckInitialization())
+            return;
+
+        try
+        {
+            if (_exclusiveOut == null)
+            {
+                var device = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Shared, false, 200);
+            }
+            else
+            {
+                _exclusiveOut.Stop();
+            }
+
+            var reader = new MediaFoundationReader(mediaUri);
+            
+            _exclusiveOut.Init(reader);
+            _exclusiveOut.Play();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[AUDIOMGR] failed to play exclusive media '{mediaPath}': {msg}", mediaUri,
+                ex.Message);
+        }
     }
 
     public static void Shutdown()
@@ -497,12 +548,14 @@ public static class AudioManager
         Log.Debug("[AUDIOMGR] shutting down");
         try
         {
+            ClearExclusiveOut();
             CleanupDevices();
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "[AUDIOMGR] shutdown fatal error: {ex}", ex.Message);
         }
+
         Log.Debug("[AUDIOMGR] shutdown completed");
     }
 }

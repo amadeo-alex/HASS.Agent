@@ -35,6 +35,7 @@ namespace HASS.Agent.Controls.Configuration
             this.LblInfo1 = new System.Windows.Forms.Label();
             this.BtnMediaPlayerReadme = new Syncfusion.WinForms.Controls.SfButton();
             this.CbEnableMediaPlayer = new System.Windows.Forms.CheckBox();
+            this.CbEnableExclusivePlayback = new System.Windows.Forms.CheckBox();
             this.LblConnectivityDisabled = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -99,6 +100,20 @@ namespace HASS.Agent.Controls.Configuration
             this.CbEnableMediaPlayer.Text = Languages.ConfigMediaPlayer_CbEnableMediaPlayer;
             this.CbEnableMediaPlayer.UseVisualStyleBackColor = true;
             // 
+            // CbEnableExclusivePlayback
+            // 
+            this.CbEnableExclusivePlayback.AccessibleDescription = "Play media by exclusive output device usage.";
+            this.CbEnableExclusivePlayback.AccessibleName = "Exclusive MediaPlayer";
+            this.CbEnableExclusivePlayback.AccessibleRole = System.Windows.Forms.AccessibleRole.CheckButton;
+            this.CbEnableExclusivePlayback.AutoSize = true;
+            this.CbEnableExclusivePlayback.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.CbEnableExclusivePlayback.Location = new System.Drawing.Point(232, 212);
+            this.CbEnableExclusivePlayback.Name = "CbEnableExclusivePlayback";
+            this.CbEnableExclusivePlayback.Size = new System.Drawing.Size(229, 23);
+            this.CbEnableExclusivePlayback.TabIndex = 24;
+            this.CbEnableExclusivePlayback.Text = "Exclusive playback";
+            this.CbEnableExclusivePlayback.UseVisualStyleBackColor = true;
+            // 
             // LblConnectivityDisabled
             // 
             this.LblConnectivityDisabled.AccessibleDescription = "Warns that the local api or mqtt needs to be enabled for this to work.";
@@ -126,6 +141,7 @@ namespace HASS.Agent.Controls.Configuration
             this.Controls.Add(this.LblInfo1);
             this.Controls.Add(this.BtnMediaPlayerReadme);
             this.Controls.Add(this.CbEnableMediaPlayer);
+            this.Controls.Add(this.CbEnableExclusivePlayback);
             this.Controls.Add(this.LblInfo2);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -143,6 +159,7 @@ namespace HASS.Agent.Controls.Configuration
         private System.Windows.Forms.Label LblInfo1;
         internal Syncfusion.WinForms.Controls.SfButton BtnMediaPlayerReadme;
         internal System.Windows.Forms.CheckBox CbEnableMediaPlayer;
+        internal System.Windows.Forms.CheckBox CbEnableExclusivePlayback;
         private Label LblConnectivityDisabled;
     }
 }

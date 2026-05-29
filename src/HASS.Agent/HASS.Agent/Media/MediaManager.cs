@@ -416,19 +416,30 @@ namespace HASS.Agent.Media
                     }
                 }
 
-                // pause if we're playing
-                if (Variables.MediaPlayer.CurrentState == Windows.Media.Playback.MediaPlayerState.Playing)
+                if (Variables.AppSettings.MediaPlayerExclusiveModeEnabled)
                 {
-                    Variables.MediaPlayer.Pause();
+                    if (Variables.ExtendedLogging)
+                        Log.Information("[MEDIA] Playing exclusive: {file}", Path.GetFileName(audioUri));
+                    
+                    AudioManager.PlayExclusive(audioUri);
                 }
+                else
+                {
+                    // pause if we're playing
+                    if (Variables.MediaPlayer.CurrentState == Windows.Media.Playback.MediaPlayerState.Playing)
+                    {
+                        Variables.MediaPlayer.Pause();
+                    }
 
-                // set the uri source
-                Variables.MediaPlayer.Source = MediaSource.CreateFromUri(new Uri(audioUri));
-
-                if (Variables.ExtendedLogging) Log.Information("[MEDIA] Playing: {file}", Path.GetFileName(audioUri));
-
-                // play it
-                Variables.MediaPlayer.Play();
+                    // set the uri source
+                    Variables.MediaPlayer.Source = MediaSource.CreateFromUri(new Uri(audioUri));
+                    
+                    if (Variables.ExtendedLogging)
+                        Log.Information("[MEDIA] Playing: {file}", Path.GetFileName(audioUri));
+                    
+                    // play it
+                    Variables.MediaPlayer.Play();
+                }
             }
             catch (Exception ex)
             {

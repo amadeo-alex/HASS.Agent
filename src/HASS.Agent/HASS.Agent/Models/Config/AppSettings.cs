@@ -58,6 +58,7 @@ namespace HASS.Agent.Models.Config
 
 
         public bool MediaPlayerEnabled { get; set; } = true;
+        public bool MediaPlayerExclusiveModeEnabled { get; set; } = false;
 
         public string HassUri { get; set; } = "http://homeassistant.local:8123";
         public string HassToken { get; set; } = string.Empty;
