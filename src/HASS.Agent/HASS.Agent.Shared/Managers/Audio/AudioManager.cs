@@ -531,14 +531,19 @@ public static class AudioManager
         {
             ClearExclusiveOut();
 
+            _exclusiveReader = new MediaFoundationReader(mediaUri);
+            
             using var device = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            var resampled = new MediaFoundationResampler(_exclusiveReader, device.AudioClient.MixFormat)
+            {
+                ResamplerQuality = 60
+            };
 
-            _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Exclusive, false, 200);
+            _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Shared, false, 200);
             if (_exclusiveOut != null)
                 _exclusiveOut.PlaybackStopped += ExclusiveOutOnPlaybackStopped;
             
-            _exclusiveReader = new MediaFoundationReader(mediaUri);
-            _exclusiveOut.Init(_exclusiveReader);
+            _exclusiveOut.Init(resampled);
             _exclusiveOut.Play();
         }
         catch (Exception ex)
