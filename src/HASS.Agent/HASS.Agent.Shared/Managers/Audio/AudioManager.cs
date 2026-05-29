@@ -30,6 +30,7 @@ public static class AudioManager
     private static bool _noDefaultOutputLogged = false;
 
     private static WasapiOut _exclusiveOut = null;
+    private static MediaFoundationReader _exclusiveReader = null;
 
     private static void InitializeDevices()
     {
@@ -121,6 +122,13 @@ public static class AudioManager
 
     private static void ClearExclusiveOut()
     {
+        _exclusiveOut?.Stop();
+        
+        if (_exclusiveOut != null)
+            _exclusiveOut.PlaybackStopped -= ExclusiveOutOnPlaybackStopped;
+        
+        _exclusiveReader?.Dispose();
+        _exclusiveReader = null;
         _exclusiveOut?.Dispose();
         _exclusiveOut = null;
     }
@@ -521,19 +529,16 @@ public static class AudioManager
 
         try
         {
-            if (_exclusiveOut == null)
-            {
-                var device = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-                _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Shared, false, 200);
-            }
-            else
-            {
-                _exclusiveOut.Stop();
-            }
+            ClearExclusiveOut();
 
-            var reader = new MediaFoundationReader(mediaUri);
+            using var device = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+            _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Exclusive, false, 200);
+            if (_exclusiveOut != null)
+                _exclusiveOut.PlaybackStopped += ExclusiveOutOnPlaybackStopped;
             
-            _exclusiveOut.Init(reader);
+            _exclusiveReader = new MediaFoundationReader(mediaUri);
+            _exclusiveOut.Init(_exclusiveReader);
             _exclusiveOut.Play();
         }
         catch (Exception ex)
@@ -541,6 +546,11 @@ public static class AudioManager
             Log.Error(ex, "[AUDIOMGR] failed to play exclusive media '{mediaPath}': {msg}", mediaUri,
                 ex.Message);
         }
+    }
+
+    private static void ExclusiveOutOnPlaybackStopped(object sender, StoppedEventArgs e)
+    {
+        ClearExclusiveOut();
     }
 
     public static void Shutdown()
