@@ -29,8 +29,9 @@ public static class AudioManager
     private static bool _noDefaultInputLogged = false;
     private static bool _noDefaultOutputLogged = false;
 
-    private static WasapiOut _exclusiveOut = null;
-    private static MediaFoundationReader _exclusiveReader = null;
+    private static MMDevice _wasapiDevice = null;
+    private static WasapiOut _wasapiOut = null;
+    private static MediaFoundationReader _wasapiReader = null;
 
     private static void InitializeDevices()
     {
@@ -95,7 +96,7 @@ public static class AudioManager
         {
             case DeviceState.Active:
                 AddDevice(e.DeviceId);
-                ClearExclusiveOut();
+                ClearWasapiOut();
                 break;
 
             case DeviceState.NotPresent:
@@ -120,17 +121,15 @@ public static class AudioManager
         return true;
     }
 
-    private static void ClearExclusiveOut()
+    private static void ClearWasapiOut()
     {
-        _exclusiveOut?.Stop();
-        
-        if (_exclusiveOut != null)
-            _exclusiveOut.PlaybackStopped -= ExclusiveOutOnPlaybackStopped;
-        
-        _exclusiveReader?.Dispose();
-        _exclusiveReader = null;
-        _exclusiveOut?.Dispose();
-        _exclusiveOut = null;
+        _wasapiOut?.Stop();
+        _wasapiReader?.Dispose();
+        _wasapiReader = null;
+        _wasapiOut?.Dispose();
+        _wasapiOut = null;
+        _wasapiDevice?.Dispose();
+        _wasapiDevice = null;
     }
 
     private static string GetSessionDisplayName(InternalAudioSession session)
@@ -522,40 +521,33 @@ public static class AudioManager
             internalAudioSession.Control.GetSessionInstanceIdentifier, volume, volumeScalar);
     }
 
-    public static void PlayExclusive(string mediaUri)
+    public static void PlayWithWasapi(string mediaUri)
     {
         if (!CheckInitialization())
             return;
 
         try
         {
-            ClearExclusiveOut();
+            ClearWasapiOut();
 
-            _exclusiveReader = new MediaFoundationReader(mediaUri);
+            _wasapiReader = new MediaFoundationReader(mediaUri);
             
-            using var device = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            var resampled = new MediaFoundationResampler(_exclusiveReader, device.AudioClient.MixFormat)
+            _wasapiDevice = _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            var resampled = new MediaFoundationResampler(_wasapiReader, _wasapiDevice.AudioClient.MixFormat)
             {
                 ResamplerQuality = 60
             };
 
-            _exclusiveOut = new WasapiOut(device, AudioClientShareMode.Shared, false, 200);
-            if (_exclusiveOut != null)
-                _exclusiveOut.PlaybackStopped += ExclusiveOutOnPlaybackStopped;
-            
-            _exclusiveOut.Init(resampled);
-            _exclusiveOut.Play();
+            _wasapiOut = new WasapiOut(_wasapiDevice, AudioClientShareMode.Shared, false, 200);
+
+            _wasapiOut.Init(resampled);
+            _wasapiOut.Play();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "[AUDIOMGR] failed to play exclusive media '{mediaPath}': {msg}", mediaUri,
+            Log.Error(ex, "[AUDIOMGR] failed to play WASAPI media '{mediaPath}': {msg}", mediaUri,
                 ex.Message);
         }
-    }
-
-    private static void ExclusiveOutOnPlaybackStopped(object sender, StoppedEventArgs e)
-    {
-        ClearExclusiveOut();
     }
 
     public static void Shutdown()
@@ -563,7 +555,7 @@ public static class AudioManager
         Log.Debug("[AUDIOMGR] shutting down");
         try
         {
-            ClearExclusiveOut();
+            ClearWasapiOut();
             CleanupDevices();
         }
         catch (Exception ex)

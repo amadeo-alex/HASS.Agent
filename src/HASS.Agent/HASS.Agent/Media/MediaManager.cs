@@ -416,12 +416,12 @@ namespace HASS.Agent.Media
                     }
                 }
 
-                if (Variables.AppSettings.MediaPlayerExclusiveModeEnabled)
+                if (Variables.AppSettings.MediaPlayerWasapiModeEnabled)
                 {
                     if (Variables.ExtendedLogging)
-                        Log.Information("[MEDIA] Playing exclusive: {file}", Path.GetFileName(audioUri));
+                        Log.Information("[MEDIA] Playing WASAPI: {file}", Path.GetFileName(audioUri));
                     
-                    AudioManager.PlayExclusive(audioUri);
+                    AudioManager.PlayWithWasapi(audioUri);
                 }
                 else
                 {
