@@ -17,7 +17,7 @@
 #define ServiceDescription "Satellite service for HASS.Agent: a Windows based Home Assistant client. This service processes commands and sensors without the requirement of a logged-in user."
 
 [Setup]
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64compatible or arm64
 ;SetupMutex=Global\HASS.Agent.Setup.Satellite.Mutex,HASS.Agent.Satellite.Setup.Mutex
 AppMutex=Global\\HASS.Agent.Service.Mutex
 AppId={{4004588E-F411-41C2-ABD8-A898B0A14B93}
