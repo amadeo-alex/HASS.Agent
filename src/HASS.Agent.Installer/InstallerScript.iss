@@ -99,14 +99,14 @@ begin
   AfterID := CreateOutputMsgMemoPage(AfterID, 'Configuration migration', 'Please read carefully before proceeding.', 'Ignoring below message might cause you to loose your configuration.' , MigrationNotice).ID  
 
   ExtractTemporaryFile('{#DotNetNotice}');
-  LoadStringFromFile(ExpandConstant('{tmp}\{#DotNetNotice}'), DotNet8Notice);
+  LoadStringFromFile(ExpandConstant('{tmp}\{#DotNetNotice}'), DotNetNotice);
   AfterID := CreateOutputMsgMemoPage(AfterID, '.NET', 'New .NET version required with this HASS.Agent version.', '' , DotNetNotice).ID   
 end;
 
 function InitializeSetup: Boolean;
 begin
   Dependency_ForceX86 := False;
-  Dependency_AddDotNet80Desktop;
+  Dependency_AddDotNet100Desktop;
   Result := True;
 end;
 
