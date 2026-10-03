@@ -40,7 +40,7 @@
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
   </PropertyGroup>
-
+    
   <ItemGroup>
     <Content Include="hassagent.ico" />
   </ItemGroup>
@@ -69,7 +69,7 @@
       <Aliases></Aliases>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
     <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.3.952" />
     <PackageReference Include="NdefLibrary" Version="4.1.0" />
@@ -1861,5 +1861,5 @@
   <ItemGroup>
     <Protobuf Include="Service\Protos\hassagentsatellite.proto" GrpcServices="Client" />
   </ItemGroup>
-
+    
 </Project>
