@@ -1,4 +1,5 @@
-﻿using HASS.Agent.Functions;
+﻿using System.ComponentModel;
+using HASS.Agent.Functions;
 using HASS.Agent.Models.Internal;
 using Syncfusion.Windows.Forms.Tools;
 
@@ -6,6 +7,7 @@ namespace HASS.Agent.Controls.Configuration
 {
     public partial class ConfigTrayIcon : UserControl
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal int SelectedScreen { get; set; }
 
         public ConfigTrayIcon()
