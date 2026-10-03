@@ -4,7 +4,6 @@
 
 ; InnoDependencyInstaller
 ; Thanks to https://github.com/DomGries/InnoDependencyInstaller for the amazing work!
-#define public Dependency_Path_NetCoreCheck "dependencies\"
 #include "CodeDependencies.iss"
 
 ; Standard installation constants
