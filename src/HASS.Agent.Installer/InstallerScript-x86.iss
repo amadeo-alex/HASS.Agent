@@ -15,7 +15,7 @@
 #define MyAppExeName "HASS.Agent.exe"
 
 #define MigrationNotice "MigrationNotice.rtf"
-#define DotNet8Notice "DotNet8Notice.rtf"
+#define DotNetNotice "DotNet10Notice.rtf"
 
 [Setup]
 SetupMutex=Global\HASS.Agent.Setup.Mutex,HASS.Agent.Setup.Mutex
@@ -57,7 +57,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Client files
 Source: "..\HASS.Agent\HASS.Agent\bin\Publish-x86\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#MigrationNotice}"; Flags: dontcopy
-Source: "{#DotNet8Notice}"; Flags: dontcopy
+Source: "{#DotNetNotice}"; Flags: dontcopy
 ; Service installer
 Source: ".\bin\HASS.Agent.Service.Installer.x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 
@@ -83,7 +83,7 @@ procedure InitializeWizard;
 var
   AfterID: Integer;
   MigrationNotice: AnsiString;
-  DotNet8Notice: AnsiString;
+  DotNetNotice: AnsiString;
 begin
   OriginalCmdLine := GetCmdTail;
 
@@ -93,15 +93,15 @@ begin
   LoadStringFromFile(ExpandConstant('{tmp}\{#MigrationNotice}'), MigrationNotice);
   AfterID := CreateOutputMsgMemoPage(AfterID, 'Configuration migration', 'Please read carefully before proceeding.', 'Ignoring below message might cause you to loose your configuration.' , MigrationNotice).ID  
 
-  ExtractTemporaryFile('{#DotNet8Notice}');
-  LoadStringFromFile(ExpandConstant('{tmp}\{#DotNet8Notice}'), DotNet8Notice);
-  AfterID := CreateOutputMsgMemoPage(AfterID, '.NET 8', 'New .NET version required with this HASS.Agent version.', '' , DotNet8Notice).ID   
+  ExtractTemporaryFile('{#DotNetNotice}');
+  LoadStringFromFile(ExpandConstant('{tmp}\{#DotNetNotice}'), DotNetNotice);
+  AfterID := CreateOutputMsgMemoPage(AfterID, '.NET', 'New .NET version required with this HASS.Agent version.', '' , DotNetNotice).ID   
 end;
 
 function InitializeSetup: Boolean;
 begin
   Dependency_ForceX86 := True;
-  Dependency_AddDotNet80Desktop;
+  Dependency_AddDotNet100Desktop;
   Result := True;
 end;
 

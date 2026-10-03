@@ -82,7 +82,7 @@ Filename: "{sys}\timeout.exe"; Parameters: "5"; RunOnceId: Delay2; Flags:runhidd
 function InitializeSetup: Boolean;
 begin
   Dependency_ForceX86 := True;
-  Dependency_AddDotNet80Desktop;
+  Dependency_AddDotNet100Desktop;
   Result := True;
 end;
 
