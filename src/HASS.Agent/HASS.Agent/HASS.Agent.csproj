@@ -65,11 +65,11 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3296.44">
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31">
       <Aliases></Aliases>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
     <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.3.952" />
     <PackageReference Include="NdefLibrary" Version="4.1.0" />
