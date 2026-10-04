@@ -34,7 +34,6 @@
     <PackageReference Include="ByteSize" Version="2.1.2" />
     <PackageReference Include="Cassia.NetStandard" Version="1.0.0" />
     <PackageReference Include="CliWrap" Version="3.10.5" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.12" />
     <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -46,7 +45,6 @@
     <PackageReference Include="System.Management" Version="10.0.12" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.12" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.12" />
     <PackageReference Include="Vanara.PInvoke.NetListMgr" Version="5.0.7" />
     <PackageReference Include="Vanara.PInvoke.PowrProf" Version="5.0.7" />
   </ItemGroup>
