@@ -10,7 +10,7 @@ namespace HASS.Agent.Controls.Service
 {
     public partial class ServiceSensors : UserControl
     {
-        private string _deviceName;
+        private string? _deviceName;
         private readonly List<ConfiguredSensor> _sensors = new();
 
         private bool _storing = false;

@@ -13,7 +13,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.InternalCommands
     {
         private const string DefaultName = "customexecutor";
 
-        public CustomExecutorCommand(string entityName = DefaultName, string name = DefaultName, string command = "", CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, command, entityType, id)
+        public CustomExecutorCommand(string entityName = DefaultName, string? name = DefaultName, string command = "", CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, command, entityType, id)
         {
             CommandConfig = command;
             State = "OFF";

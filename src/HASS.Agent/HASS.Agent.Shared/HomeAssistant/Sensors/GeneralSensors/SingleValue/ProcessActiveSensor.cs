@@ -13,7 +13,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         private const string DefaultName = "processactive";
         public string ProcessName { get; protected set; }
 
-        public ProcessActiveSensor(string processName, int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, advancedSettings: advancedSettings)
+        public ProcessActiveSensor(string processName, int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, advancedSettings: advancedSettings)
         {
             ProcessName = processName;
 
@@ -22,7 +22,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
             if (procLc.EndsWith(".exe") || procLc.EndsWith(".cmd") || procLc.EndsWith(".dll")) ProcessName = ProcessName[..^4];
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

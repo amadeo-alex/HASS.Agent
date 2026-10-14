@@ -22,7 +22,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.InternalCommands
         private const string DefaultName = "setvolume";
         private readonly int _volume = -1;
 
-        public SetVolumeCommand(string entityName = DefaultName, string name = DefaultName, string volume = "", CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(entityName ?? DefaultName, name ?? null, volume, entityType, id)
+        public SetVolumeCommand(string entityName = DefaultName, string? name = DefaultName, string volume = "", CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(entityName ?? DefaultName, name, volume, entityType, id)
         {
             if (!string.IsNullOrWhiteSpace(volume))
             {

@@ -14,12 +14,12 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.SingleValue
         private const string DefaultName = "bluetoothdevices";
         private string _attributes = "{}";
 
-        public BluetoothDevicesSensor(int? updateInterval = 30, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id, advancedSettings: advancedSettings)
+        public BluetoothDevicesSensor(int? updateInterval = 30, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id, advancedSettings: advancedSettings)
         {
             UseAttributes = true;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

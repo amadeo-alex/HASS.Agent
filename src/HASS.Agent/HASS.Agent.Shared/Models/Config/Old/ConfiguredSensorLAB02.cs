@@ -15,7 +15,7 @@ namespace HASS.Agent.Shared.Models.Config.Old
         public Guid Id { get; set; } = Guid.Empty;
         public int? UpdateInterval { get; set; }
         public string Query { get; set; } = string.Empty;
-        public string Scope { get; set; }
+        public string Scope { get; set; } = string.Empty;
         public string WindowName { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Counter { get; set; } = string.Empty;

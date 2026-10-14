@@ -26,7 +26,7 @@ public class AudioSensors : AbstractMultiValueSensor
 
     public override sealed Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public AudioSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 20, id)
+    public AudioSensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 20, id)
     {
         _updateInterval = updateInterval ?? 20;
 
@@ -174,5 +174,5 @@ public class AudioSensors : AbstractMultiValueSensor
         }
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
 }

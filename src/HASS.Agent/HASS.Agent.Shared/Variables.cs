@@ -8,7 +8,7 @@ namespace HASS.Agent.Shared
         /// <summary>
         /// Device info
         /// </summary>
-        internal static string DeviceName { get; set; } = string.Empty;
+        internal static string? DeviceName { get; set; }
 
         /// <summary>
         /// public references
@@ -18,7 +18,7 @@ namespace HASS.Agent.Shared
         /// <summary>
         /// MQTT
         /// </summary>
-        internal static IMqttManager MqttManager { get; set; }
+        internal static IMqttManager? MqttManager { get; set; }
 
         /// <summary>
         /// Settings

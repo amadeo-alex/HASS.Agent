@@ -14,7 +14,7 @@ namespace HASS.Agent.HomeAssistant.Commands.InternalCommands
         private readonly string _url = string.Empty;
         private readonly bool _incognito;
 
-        internal LaunchUrlCommand(string entityName = DefaultName, string name = DefaultName, string urlInfo = "", CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, urlInfo, entityType, id)
+        internal LaunchUrlCommand(string entityName = DefaultName, string? name = DefaultName, string urlInfo = "", CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, urlInfo, entityType, id)
         {
             CommandConfig = urlInfo;
             State = "OFF";

@@ -400,6 +400,11 @@ namespace HASS.Agent.Satellite.Service.MQTT
                 else
                 {
                     var payload = discoverable.GetAutoDiscoveryConfig();
+                    if (payload == null)
+                    {
+                        throw new NullReferenceException("auto discovery config payload cannot be null");
+                    }
+                    
                     if (discoverable.IgnoreAvailability)
                     {
                         payload.Availability_topic = null;
@@ -440,7 +445,7 @@ namespace HASS.Agent.Satellite.Service.MQTT
         /// </summary>
         public async Task AnnounceAvailabilityAsync(bool offline = false)
         {
-            if (!IsConnected())
+            if (!IsConnected() || _mqttClient == null)
                 return;
 
             try
@@ -492,7 +497,7 @@ namespace HASS.Agent.Satellite.Service.MQTT
         /// <returns></returns>
         public async Task ClearDeviceConfigAsync()
         {
-            if (!IsConnected())
+            if (!IsConnected() || _mqttClient == null)
             {
                 Log.Warning("[MQTT] Not connected, clearing device config failed");
 
@@ -564,8 +569,11 @@ namespace HASS.Agent.Satellite.Service.MQTT
                 while (!IsConnected())
                     await Task.Delay(250);
 
-                await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Command_topic);
-                await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Action_topic);
+                if (command.GetAutoDiscoveryConfig() is CommandDiscoveryConfigModel commandDiscoveryConfigModel)
+                {
+                    await _mqttClient.SubscribeAsync(commandDiscoveryConfigModel.Command_topic);
+                    await _mqttClient.SubscribeAsync(commandDiscoveryConfigModel.Action_topic);
+                }
             }
             catch (Exception ex)
             {
@@ -588,8 +596,11 @@ namespace HASS.Agent.Satellite.Service.MQTT
                 while (!IsConnected())
                     await Task.Delay(250);
 
-                await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Command_topic);
-                await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Action_topic);
+                if (command.GetAutoDiscoveryConfig() is CommandDiscoveryConfigModel commandDiscoveryConfigModel)
+                {
+                    await _mqttClient.UnsubscribeAsync(commandDiscoveryConfigModel.Command_topic);
+                    await _mqttClient.UnsubscribeAsync(commandDiscoveryConfigModel.Action_topic);
+                }
             }
             catch (Exception ex)
             {
@@ -694,8 +705,12 @@ namespace HASS.Agent.Satellite.Service.MQTT
 
                 foreach (var command in Variables.Commands)
                 {
-                    var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
-
+                    var commandConfig = command.GetAutoDiscoveryConfig() as CommandDiscoveryConfigModel;
+                    if (commandConfig == null)
+                    {
+                        continue;
+                    }
+                    
                     if (commandConfig.Command_topic == applicationMessage.Topic)
                         HandleCommandReceived(applicationMessage, command);
                     else if (commandConfig.Action_topic == applicationMessage.Topic)

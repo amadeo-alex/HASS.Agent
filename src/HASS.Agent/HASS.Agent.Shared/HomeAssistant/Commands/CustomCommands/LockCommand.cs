@@ -9,6 +9,6 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.CustomCommands
     {
         private const string DefaultName = "lock";
 
-        public LockCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base("Rundll32.exe user32.dll,LockWorkStation", false, entityName ?? DefaultName, name ?? null, entityType, id) => State = "OFF";
+        public LockCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base("Rundll32.exe user32.dll,LockWorkStation", false, entityName ?? DefaultName, name, entityType, id) => State = "OFF";
     }
 }

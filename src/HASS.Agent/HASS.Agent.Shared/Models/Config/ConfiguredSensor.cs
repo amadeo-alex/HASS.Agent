@@ -17,7 +17,7 @@ namespace HASS.Agent.Shared.Models.Config
         public string Name { get; set; } = string.Empty;
         public int? UpdateInterval { get; set; }
         public string Query { get; set; } = string.Empty;
-        public string Scope { get; set; }
+        public string Scope { get; set; } = string.Empty;
         public string WindowName { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Counter { get; set; } = string.Empty;
@@ -26,7 +26,7 @@ namespace HASS.Agent.Shared.Models.Config
         public bool IgnoreAvailability { get; set; } = false;
         public bool ApplyRounding { get; set; } = false;
         public int? Round { get; set; }
-        public string AdvancedSettings { get; set; } = string.Empty;
+        public string? AdvancedSettings { get; set; }
 
         public static ConfiguredSensor FromLAB02(ConfiguredSensorLAB02 oldConfig)
         {

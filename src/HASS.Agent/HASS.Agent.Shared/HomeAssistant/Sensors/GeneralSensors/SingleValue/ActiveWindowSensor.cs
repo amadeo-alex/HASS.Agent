@@ -16,9 +16,9 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
 
         private string _processName = string.Empty;
 
-        public ActiveWindowSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 15, id, useAttributes: true, advancedSettings: advancedSettings) { }
+        public ActiveWindowSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 15, id, useAttributes: true, advancedSettings: advancedSettings) { }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null)
                 return null;

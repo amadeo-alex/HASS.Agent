@@ -36,6 +36,10 @@ namespace HASS.Agent.Shared.Functions
         public static string GetLocalizedDescription(this Enum enumValue)
         {
             var fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            if (fieldInfo == null)
+            {
+                throw new ArgumentException($"cannot get localized description for {enumValue.ToString()}");
+            }
 
             var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
@@ -45,13 +49,17 @@ namespace HASS.Agent.Shared.Functions
         public static (int key, string description) GetLocalizedDescriptionAndKey(this Enum enumValue)
         {
             var fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            if (fieldInfo == null)
+            {
+                throw new ArgumentException($"cannot get localized description and key for {enumValue.ToString()}");
+            }
 
             var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
             var description = attributes.Length > 0 ? attributes[0].Description : enumValue.ToString();
 
             var enumIndex = Array.IndexOf(Enum.GetValues(enumValue.GetType()), enumValue);
-            var key = (int)Enum.GetValues(enumValue.GetType()).GetValue(enumIndex);
+            var key = (int)(Enum.GetValues(enumValue.GetType()).GetValue(enumIndex) ?? throw new InvalidOperationException($"cannot get localized description key for {enumValue.ToString()}"));
 
             return (key, description);
         }

@@ -17,10 +17,10 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.WmiSensors.SingleValue
         private protected DateTime LastFetched = DateTime.MinValue;
         private protected string LastValue = string.Empty;
 
-        public CurrentClockSpeedSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, bool applyRounding = false, int? round = null, string advancedSettings = default) : base(string.Empty, string.Empty, applyRounding, round, updateInterval ?? 300, entityName ?? DefaultName, name ?? null, id, advancedSettings: advancedSettings) 
+        public CurrentClockSpeedSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, bool applyRounding = false, int? round = null, string? advancedSettings = null) : base(string.Empty, string.Empty, applyRounding, round, updateInterval ?? 300, entityName ?? DefaultName, name, id, advancedSettings: advancedSettings) 
             => _managementObject = new ManagementObject("Win32_Processor.DeviceID='CPU0'");
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

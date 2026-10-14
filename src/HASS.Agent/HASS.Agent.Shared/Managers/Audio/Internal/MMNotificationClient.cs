@@ -10,11 +10,11 @@ namespace HASS.Agent.Shared.Managers.Audio.Internal;
 
 internal class MMNotificationClient : IMMNotificationClient
 {
-    public event EventHandler<DeviceStateChangedEventArgs> DeviceStateChanged;
-    public event EventHandler<DeviceNotificationEventArgs> DeviceAdded;
-    public event EventHandler<DeviceNotificationEventArgs> DeviceRemoved;
-    public event EventHandler<DefaultDeviceChangedEventArgs> DefaultDeviceChanged;
-    public event EventHandler<DevicePropertyChangedEventArgs> DevicePropertyChanged;
+    public event EventHandler<DeviceStateChangedEventArgs>? DeviceStateChanged;
+    public event EventHandler<DeviceNotificationEventArgs>? DeviceAdded;
+    public event EventHandler<DeviceNotificationEventArgs>? DeviceRemoved;
+    public event EventHandler<DefaultDeviceChangedEventArgs>? DefaultDeviceChanged;
+    public event EventHandler<DevicePropertyChangedEventArgs>? DevicePropertyChanged;
 
     void IMMNotificationClient.OnDeviceStateChanged(string deviceId, DeviceState deviceState)
     {

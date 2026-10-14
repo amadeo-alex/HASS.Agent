@@ -118,14 +118,16 @@ namespace HASS.Agent.Settings
                 if (string.IsNullOrWhiteSpace(appSettingsRaw)) return true;
 
                 // get the global settings
-                Variables.AppSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsRaw);
-                if (Variables.AppSettings == null)
+                var deserializedSettings = JsonConvert.DeserializeObject<AppSettings>(appSettingsRaw);
+                if (deserializedSettings == null)
                 {
                     // something went wrong, but we're not saving new ones, user might want to recover values
                     Log.Error("[SETTINGS] Error loading settings: returned null object");
                     return false;
                 }
 
+                Variables.AppSettings = deserializedSettings;
+                
                 // fix onboarding status for backwards compat.
                 if (Variables.AppSettings.OnboardingStatus == OnboardingStatus.NeverDone)
                 {

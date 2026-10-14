@@ -108,7 +108,7 @@ namespace HASS.Agent.Compatibility
 
             var source = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\LAB02Research\HASSAgent");
             var destination = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\HASSAgent\Client", true);
-            if(source == null)
+            if (source == null)
             {
                 Log.Information("[COMPATTASK] No source registry keys found");
                 return;
@@ -122,7 +122,7 @@ namespace HASS.Agent.Compatibility
             try
             {
                 var hassAgentProcess = Process.GetProcessesByName("HASS.Agent")
-                    .FirstOrDefault(p => p.MainModule.FileName.Contains("LAB02 Research"));
+                    .FirstOrDefault(p => p.MainModule != null && p.MainModule.FileName.Contains("LAB02 Research"));
                 if (hassAgentProcess != null)
                 {
                     Log.Information("[COMPATTASK] Detected running instance of original HASS.Agent, stopping");
@@ -143,20 +143,20 @@ namespace HASS.Agent.Compatibility
             }
         }
 
-        private List<ConfiguredSensor> GetConfiguredSensors(string jsonData)
+        private List<ConfiguredSensor>? GetConfiguredSensors(string jsonData)
         {
-            List<ConfiguredSensor> sensors = null;
+            List<ConfiguredSensor>? sensors = null;
             if (ConfiguredSensorLAB02.InJsonData(jsonData))
             {
                 Log.Warning("[COMPATTASK] Migrating sensors from LAB02 version");
                 var lab02Sensors = JsonConvert.DeserializeObject<List<ConfiguredSensorLAB02>>(jsonData);
-                sensors = lab02Sensors.Select(s => ConfiguredSensor.FromLAB02(s)).ToList();
+                sensors = lab02Sensors?.Select(s => ConfiguredSensor.FromLAB02(s)).ToList();
             }
             else if (ConfiguredSensor2023Beta.InJsonData(jsonData))
             {
                 Log.Warning("[COMPATTASK] Migrating sensors from 2023Beta version");
                 var beta2023Sensors = JsonConvert.DeserializeObject<List<ConfiguredSensor2023Beta>>(jsonData);
-                sensors = beta2023Sensors.Select(s => ConfiguredSensor.From2023Beta(s)).ToList();
+                sensors = beta2023Sensors?.Select(s => ConfiguredSensor.From2023Beta(s)).ToList();
             }
             else
             {
@@ -199,20 +199,20 @@ namespace HASS.Agent.Compatibility
             Log.Information("[COMPATTASK] Sensors configuration migrated");
         }
 
-        private List<ConfiguredCommand> GetConfiguredCommands(string jsonData)
+        private List<ConfiguredCommand>? GetConfiguredCommands(string jsonData)
         {
-            List<ConfiguredCommand> commands = null;
+            List<ConfiguredCommand>? commands = null;
             if (ConfiguredCommandLAB02.InJsonData(jsonData))
             {
                 Log.Warning("[COMPATTASK] Migrating sensors from LAB02 version");
                 var lab02Commands = JsonConvert.DeserializeObject<List<ConfiguredCommandLAB02>>(jsonData);
-                commands = lab02Commands.Select(c => ConfiguredCommand.FromLAB02(c)).ToList();
+                commands = lab02Commands?.Select(c => ConfiguredCommand.FromLAB02(c)).ToList();
             }
             else if (ConfiguredCommand2023Beta.InJsonData(jsonData))
             {
                 Log.Warning("[COMPATTASK] Migrating sensors from 2023Beta version");
                 var beta2023Commands = JsonConvert.DeserializeObject<List<ConfiguredCommand2023Beta>>(jsonData);
-                commands = beta2023Commands.Select(c => ConfiguredCommand.From2023Beta(c)).ToList();
+                commands = beta2023Commands?.Select(c => ConfiguredCommand.From2023Beta(c)).ToList();
             }
             else
             {
@@ -317,11 +317,24 @@ namespace HASS.Agent.Compatibility
         private void CopyRegistryKey(RegistryKey source, RegistryKey destination)
         {
             foreach (var valueName in source.GetValueNames())
-                destination.SetValue(valueName, source.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames), source.GetValueKind(valueName));
+            {
+                var sourceValue = source.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                if (sourceValue == null)
+                {
+                    return;
+                }
+                
+                destination.SetValue(valueName, sourceValue, source.GetValueKind(valueName));
+            }
 
             foreach (var name in source.GetSubKeyNames())
             {
                 using var sourceSubKey = source.OpenSubKey(name, false);
+                if (sourceSubKey == null)
+                {
+                    return;
+                }
+                
                 var destinationSubKey = destination.CreateSubKey(name);
                 CopyRegistryKey(sourceSubKey, destinationSubKey);
             }

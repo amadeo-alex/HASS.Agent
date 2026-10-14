@@ -26,8 +26,8 @@ public class NetworkSensors : AbstractMultiValueSensor
 
     public sealed override Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public NetworkSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string networkCard = "*", string id = default) : base(entityName ?? DefaultName,
-        name ?? null, updateInterval ?? 30, id)
+    public NetworkSensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string networkCard = "*", string? id = null) : base(entityName ?? DefaultName,
+        name, updateInterval ?? 30, id)
     {
         _updateInterval = updateInterval ?? 30;
 
@@ -145,5 +145,5 @@ public class NetworkSensors : AbstractMultiValueSensor
         AddUpdateSensor(nicCountId, nicCountSensor);
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
 }

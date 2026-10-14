@@ -18,9 +18,9 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.SingleValue
 
         private string _attributesJson = string.Empty;
 
-        public AccentColorSensor(int? updateInterval = 120, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 120, id, true, advancedSettings) { }
+        public AccentColorSensor(int? updateInterval = 120, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 120, id, true, advancedSettings) { }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

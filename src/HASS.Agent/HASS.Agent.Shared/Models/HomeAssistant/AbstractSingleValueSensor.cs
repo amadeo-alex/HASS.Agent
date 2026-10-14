@@ -12,7 +12,7 @@ namespace HASS.Agent.Shared.Models.HomeAssistant;
 /// </summary>
 public abstract class AbstractSingleValueSensor : AbstractDiscoverable
 {
-    private SensorAdvancedSettings _advancedInfo;
+    private SensorAdvancedSettings? _advancedInfo;
 
     public int UpdateIntervalSeconds { get; protected set; }
     public DateTime? LastUpdated { get; protected set; }
@@ -20,13 +20,13 @@ public abstract class AbstractSingleValueSensor : AbstractDiscoverable
     public string PreviousPublishedState { get; protected set; } = string.Empty;
     public string PreviousPublishedAttributes { get; protected set; } = string.Empty;
 
-    public string AdvancedSettings { get; private set; }
+    public string? AdvancedSettings { get; private set; }
 
-    protected AbstractSingleValueSensor(string entityName, string name, int updateIntervalSeconds = 10, string id = default, bool useAttributes = false, string advancedSettings = default)
+    protected AbstractSingleValueSensor(string entityName, string? name, int updateIntervalSeconds = 10, string? id = null, bool useAttributes = false, string? advancedSettings = null)
     {
         Id = id == null || id == Guid.Empty.ToString() ? Guid.NewGuid().ToString() : id;
         EntityName = entityName;
-        Name = name;
+        Name = name ?? string.Empty;
         UpdateIntervalSeconds = updateIntervalSeconds;
         Domain = "sensor";
         UseAttributes = useAttributes;
@@ -38,7 +38,7 @@ public abstract class AbstractSingleValueSensor : AbstractDiscoverable
         }
     }
 
-    protected SensorDiscoveryConfigModel AutoDiscoveryConfigModel;
+    protected SensorDiscoveryConfigModel? AutoDiscoveryConfigModel;
     protected SensorDiscoveryConfigModel SetAutoDiscoveryConfigModel(SensorDiscoveryConfigModel config)
     {
         AutoDiscoveryConfigModel = config;
@@ -105,7 +105,7 @@ public abstract class AbstractSingleValueSensor : AbstractDiscoverable
             }
 
             // fetch the autodiscovery config
-            var autoDiscoConfig = (SensorDiscoveryConfigModel)GetAutoDiscoveryConfig();
+            var autoDiscoConfig = GetAutoDiscoveryConfig() as SensorDiscoveryConfigModel;
             if (autoDiscoConfig == null)
                 return;
 

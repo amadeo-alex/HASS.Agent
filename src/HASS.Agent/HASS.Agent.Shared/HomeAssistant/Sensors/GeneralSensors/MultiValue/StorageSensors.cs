@@ -23,7 +23,7 @@ public class StorageSensors : AbstractMultiValueSensor
 
     public override sealed Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public StorageSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id)
+    public StorageSensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id)
     {
         _updateInterval = updateInterval ?? 30;
 
@@ -123,5 +123,5 @@ public class StorageSensors : AbstractMultiValueSensor
         AddUpdateSensor(driveCountId, driveCountSensor);
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
 }

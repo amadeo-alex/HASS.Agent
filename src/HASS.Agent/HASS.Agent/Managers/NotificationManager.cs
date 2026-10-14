@@ -98,8 +98,11 @@ namespace HASS.Agent.Managers
         /// Show a notification object as a toast message
         /// </summary>
         /// <param name="notification"></param>
-        internal static async void ShowNotification(Notification notification)
+        internal static async void ShowNotification(Notification? notification)
         {
+            if(notification == null)
+                return;
+            
             if (!Ready)
                 throw new Exception("NotificationManager is not initialized");
 

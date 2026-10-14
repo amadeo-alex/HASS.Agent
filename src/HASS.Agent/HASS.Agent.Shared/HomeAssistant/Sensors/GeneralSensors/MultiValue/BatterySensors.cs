@@ -17,7 +17,7 @@ public class BatterySensors : AbstractMultiValueSensor
 
     public sealed override Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public BatterySensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id)
+    public BatterySensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id)
     {
         _updateInterval = updateInterval ?? 30;
 
@@ -81,5 +81,5 @@ public class BatterySensors : AbstractMultiValueSensor
         AddUpdateSensor(powerlineStatusId, powerlineStatusSensor);
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
 }

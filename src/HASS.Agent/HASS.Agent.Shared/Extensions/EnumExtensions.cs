@@ -23,7 +23,7 @@ namespace HASS.Agent.Shared.Extensions
                 .DeclaredMembers
                 .SingleOrDefault(x => x.Name == value.ToString())
                 ?.GetCustomAttribute<EnumMemberAttribute>(false)
-                ?.Value;
+                ?.Value ?? throw new ArgumentException($"cannot get member value for {nameof(value)}");
         }
 
         /// <summary>
@@ -34,8 +34,12 @@ namespace HASS.Agent.Shared.Extensions
         internal static string GetDescription(this Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.ToString());
-            if (fieldInfo == null) return null;
-            var attribute = (DescriptionAttribute)fieldInfo.GetCustomAttribute(typeof(DescriptionAttribute));
+            if (fieldInfo == null)
+            {
+                return "?";
+            }
+
+            var attribute = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
             return attribute?.Description ?? "?";
         }
     }

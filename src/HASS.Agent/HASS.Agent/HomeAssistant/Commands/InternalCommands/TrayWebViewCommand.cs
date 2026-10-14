@@ -13,7 +13,7 @@ namespace HASS.Agent.HomeAssistant.Commands.InternalCommands
     {
         private const string DefaultName = "traywebview";
 
-        internal TrayWebViewCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, string.Empty, entityType, id)
+        internal TrayWebViewCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, string.Empty, entityType, id)
         {
             State = "OFF";
         }

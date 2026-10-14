@@ -9,9 +9,9 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.PerfCounterSensors.SingleValue
     {
         private const string DefaultName = "cpuload";
 
-        public CpuLoadSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, bool applyRounding = false, int? round = null, string advancedSettings = default) : base("Processor", "% Processor Time", "_Total", applyRounding, round, updateInterval ?? 30, entityName ?? DefaultName, name ?? null, id, advancedSettings: advancedSettings) { }
+        public CpuLoadSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, bool applyRounding = false, int? round = null, string? advancedSettings = null) : base("Processor", "% Processor Time", "_Total", applyRounding, round, updateInterval ?? 30, entityName ?? DefaultName, name, id, advancedSettings: advancedSettings) { }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

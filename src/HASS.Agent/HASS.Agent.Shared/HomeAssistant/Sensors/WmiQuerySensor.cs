@@ -25,7 +25,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
         protected readonly ObjectQuery ObjectQuery;
         protected ManagementObjectSearcher Searcher;
 
-        public WmiQuerySensor(string query, string scope = "", bool applyRounding = false, int? round = null, int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, false, advancedSettings)
+        public WmiQuerySensor(string query, string scope = "", bool applyRounding = false, int? round = null, int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, false, advancedSettings)
         {
             Query = query;
             Scope = scope;
@@ -49,7 +49,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
 
         public void Dispose() => Searcher?.Dispose();
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null)
                 return null;
@@ -69,7 +69,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
             });
         }
 
-        public override string GetState()
+        public override string? GetState()
         {
             try
             {

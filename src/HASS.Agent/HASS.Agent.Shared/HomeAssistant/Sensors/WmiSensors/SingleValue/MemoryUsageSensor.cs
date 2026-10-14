@@ -11,9 +11,9 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.WmiSensors.SingleValue
     {
         private const string DefaultName = "memoryusage";
 
-        public MemoryUsageSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, bool applyRounding = false, int? round = null, string advancedSettings = default) : base("SELECT FreePhysicalMemory,TotalVisibleMemorySize FROM Win32_OperatingSystem", string.Empty, applyRounding, round, updateInterval ?? 30, entityName ?? DefaultName, name ?? null, id, advancedSettings: advancedSettings) { }
+        public MemoryUsageSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, bool applyRounding = false, int? round = null, string? advancedSettings = null) : base("SELECT FreePhysicalMemory,TotalVisibleMemorySize FROM Win32_OperatingSystem", string.Empty, applyRounding, round, updateInterval ?? 30, entityName ?? DefaultName, name, id, advancedSettings: advancedSettings) { }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 
@@ -37,8 +37,8 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.WmiSensors.SingleValue
         public override string GetState()
         {
             using var collection = Searcher.Get();
-            ulong? totalMemory = null;
-            ulong? freeMemory = null;
+            ulong totalMemory = 0;
+            ulong freeMemory = 0;
 
             foreach (var o in collection)
             {
@@ -56,11 +56,11 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.WmiSensors.SingleValue
 
             if (totalMemory == null) return string.Empty;
 
-            decimal totalMemoryDec = totalMemory.Value;
-            decimal freeMemoryDec = freeMemory.Value;
-
-            var precentageUsed = 100 - (freeMemoryDec / totalMemoryDec) * 100;
-            return precentageUsed.ToString("#.##", CultureInfo.InvariantCulture);
+            decimal totalMemoryDec = totalMemory; //NOTE(Amadeo): no idea why, check at some point if this is even required
+            decimal freeMemoryDec = freeMemory;
+            
+            var percentageUsed = 100 - (freeMemoryDec / totalMemoryDec) * 100;
+            return percentageUsed.ToString("#.##", CultureInfo.InvariantCulture);
         }
     }
 }

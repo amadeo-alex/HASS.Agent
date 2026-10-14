@@ -24,7 +24,7 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.MultiValue
 
         public sealed override Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new();
 
-        public PrintersSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 20, id)
+        public PrintersSensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 20, id)
         {
             _updateInterval = updateInterval ?? 20;
 
@@ -244,6 +244,6 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.MultiValue
             return printerInfo;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
     }
 }

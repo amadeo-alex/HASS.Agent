@@ -15,12 +15,12 @@ namespace HASS.Agent.API
             PropertyNameCaseInsensitive = true
         };
 
-        public static async Task<T> DeserializeAsync<T>(Stream stream)
+        public static async Task<T?> DeserializeAsync<T>(Stream stream)
         {
             return await DeserializeAsync<T>(stream, CancellationToken.None);
         }
 
-        public static async Task<T> DeserializeAsync<T>(Stream stream, CancellationToken token)
+        public static async Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken token)
         {
             return await JsonSerializer.DeserializeAsync<T>(stream, SerializerOptions, token);
         }

@@ -181,9 +181,9 @@ public static class PowershellManager
         }
     }
 
-    private static Encoding TryParseCodePage(int codePage)
+    private static Encoding? TryParseCodePage(int codePage)
     {
-        Encoding encoding = null;
+        Encoding? encoding = null;
         try
         {
             encoding = Encoding.GetEncoding(codePage);

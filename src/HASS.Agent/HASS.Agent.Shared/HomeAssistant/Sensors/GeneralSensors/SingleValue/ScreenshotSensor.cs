@@ -27,13 +27,13 @@ public class ScreenshotSensor : AbstractSingleValueSensor
 
     public int ScreenIndex;
 
-    public ScreenshotSensor(string screenIndex = "0", int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 15, id, advancedSettings: advancedSettings)
+    public ScreenshotSensor(string screenIndex = "0", int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 15, id, advancedSettings: advancedSettings)
     {
         ScreenIndex = int.TryParse(screenIndex, out var parsedScreenIndex) ? parsedScreenIndex : 0;
         Domain = "camera";
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
     {
         if (Variables.MqttManager == null)
             return null;

@@ -12,13 +12,13 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         private const string DefaultName = "namedwindow";
         public string WindowName { get; protected set; }
 
-        public NamedWindowSensor(string windowName, string entityName = DefaultName, string name = DefaultName, int? updateInterval = 10, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id, advancedSettings: advancedSettings)
+        public NamedWindowSensor(string windowName, string entityName = DefaultName, string? name = DefaultName, int? updateInterval = 10, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id, advancedSettings: advancedSettings)
         {
             Domain = "binary_sensor";
             WindowName = windowName;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

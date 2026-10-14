@@ -27,20 +27,8 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.MultiValue.Data
 
             ObjectId = id;
         }
-
-        [Obsolete("Deprecated due to HA 2023.8 MQTT changes in favor of method specifying entityName")]
-        public DataTypeIntSensor(int? updateInterval, string name, string id, string deviceClass, string icon, string unitOfMeasurement, string multiValueSensorName, bool useAttributes = false) : base(name, name, updateInterval ?? 30, id, useAttributes)
-        {
-            TopicName = multiValueSensorName;
-
-            _deviceClass = deviceClass;
-            _unitOfMeasurement = unitOfMeasurement;
-            _icon = icon;
-
-            ObjectId = id;
-        }
-
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (AutoDiscoveryConfigModel != null) return AutoDiscoveryConfigModel;
 

@@ -14,12 +14,12 @@ public class GpuLoadSensor : AbstractSingleValueSensor
 {
     private const string DefaultName = "gpuload";
 
-    public GpuLoadSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id, advancedSettings: advancedSettings)
+    public GpuLoadSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id, advancedSettings: advancedSettings)
     {
 
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
     {
         if (Variables.MqttManager == null)
             return null;

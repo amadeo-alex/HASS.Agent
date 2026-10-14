@@ -16,7 +16,7 @@ public class SwitchDesktopCommand : InternalCommand
 {
     private const string DefaultName = "switchdesktop";
 
-    public SwitchDesktopCommand(string entityName = DefaultName, string name = DefaultName, string desktopId = "", CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, desktopId, entityType, id)
+    public SwitchDesktopCommand(string entityName = DefaultName, string? name = DefaultName, string desktopId = "", CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, desktopId, entityType, id)
     {
         CommandConfig = desktopId;
         State = "OFF";

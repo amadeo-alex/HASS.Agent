@@ -295,7 +295,7 @@ namespace HASS.Agent.Sensors
         /// <param name="sensors"></param>
         /// <param name="toBeDeletedSensors"></param>
         /// <returns></returns>
-        internal static async Task<bool> StoreAsync(List<ConfiguredSensor> sensors, List<ConfiguredSensor> toBeDeletedSensors = null)
+        internal static async Task<bool> StoreAsync(List<ConfiguredSensor> sensors, List<ConfiguredSensor>? toBeDeletedSensors = null)
         {
             toBeDeletedSensors ??= new List<ConfiguredSensor>();
 

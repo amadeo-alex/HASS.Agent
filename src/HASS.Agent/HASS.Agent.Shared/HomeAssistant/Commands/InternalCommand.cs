@@ -13,7 +13,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands
         public string State { get; protected set; }
         public string CommandConfig { get; protected set; }
 
-        public InternalCommand(string entityName = DefaultName, string name = DefaultName, string commandConfig = "", CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, entityType, id)
+        public InternalCommand(string entityName = DefaultName, string? name = DefaultName, string commandConfig = "", CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, entityType, id)
         {
             State = "OFF";
             CommandConfig = commandConfig;
@@ -37,7 +37,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands
             State = "OFF";
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

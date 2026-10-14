@@ -19,7 +19,7 @@ public class SetAudioInputCommand : InternalCommand
 
     private string InputDevice { get => CommandConfig; }
 
-    public SetAudioInputCommand(string entityName = DefaultName, string name = DefaultName, string audioDevice = "", CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(entityName ?? DefaultName, name ?? null, audioDevice, entityType, id)
+    public SetAudioInputCommand(string entityName = DefaultName, string? name = DefaultName, string audioDevice = "", CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(entityName ?? DefaultName, name, audioDevice, entityType, id)
     {
         State = "OFF";
     }

@@ -13,7 +13,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         private const string DefaultName = "gputemperature";
         //private readonly IHardware _gpu;
 
-        public GpuTemperatureSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id, advancedSettings: advancedSettings)
+        public GpuTemperatureSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id, advancedSettings: advancedSettings)
         {
 /*			_gpu = HardwareManager.Hardware.FirstOrDefault(
 				h => h.HardwareType == HardwareType.GpuAmd ||
@@ -22,7 +22,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
 			);*/
 		}
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

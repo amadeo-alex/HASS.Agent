@@ -323,8 +323,8 @@ namespace HASS.Agent.Shared.Managers
         /// <exception cref="Win32Exception"></exception>
         public static void LaunchAsLowIntegrity(string commandLine)
         {
-            SafeTokenHandle hToken = null;
-            SafeTokenHandle hNewToken = null;
+            SafeTokenHandle? hToken = null;
+            SafeTokenHandle? hNewToken = null;
             var pIntegritySid = IntPtr.Zero;
             var pTokenInfo = IntPtr.Zero;
             var si = new STARTUPINFO();
@@ -1037,14 +1037,14 @@ namespace HASS.Agent.Shared.Managers
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool CreateProcessAsUser(
             SafeTokenHandle hToken,
-            string applicationName,
+            string? applicationName,
             string commandLine,
             IntPtr pProcessAttributes,
             IntPtr pThreadAttributes,
             bool bInheritHandles,
             uint dwCreationFlags,
             IntPtr pEnvironment,
-            string currentDirectory,
+            string? currentDirectory,
             ref STARTUPINFO startupInfo,
             out PROCESS_INFORMATION processInformation);
 
@@ -1068,10 +1068,10 @@ namespace HASS.Agent.Shared.Managers
     internal class KnownFolder
     {
         private static readonly Guid LocalAppDataGuid = new Guid("F1B32785-6FBA-4FCF-9D55-7B8E7F157091");
-        internal static string LocalAppData => SHGetKnownFolderPath(LocalAppDataGuid);
+        internal static string? LocalAppData => SHGetKnownFolderPath(LocalAppDataGuid);
 
         private static readonly Guid LocalAppDataLowGuid = new Guid("A520A1A4-1780-4FF6-BD18-167343C5AF16");
-        internal static string LocalAppDataLow => SHGetKnownFolderPath(LocalAppDataLowGuid);
+        internal static string? LocalAppDataLow => SHGetKnownFolderPath(LocalAppDataLowGuid);
 
         /// <summary>
         /// Retrieves the full path of a known folder identified by the 
@@ -1081,14 +1081,14 @@ namespace HASS.Agent.Shared.Managers
         /// A reference to the KNOWNFOLDERID that identifies the folder.
         /// </param>
         /// <returns></returns>
-        internal static string SHGetKnownFolderPath(Guid rfid)
+        internal static string? SHGetKnownFolderPath(Guid rfid)
         {
             var pPath = IntPtr.Zero;
-            string path;
+            string? path;
             try
             {
                 var hr = SHGetKnownFolderPath(rfid, 0, IntPtr.Zero, out pPath);
-                if (hr != 0) throw Marshal.GetExceptionForHR(hr);
+                if (hr != 0) throw Marshal.GetExceptionForHR(hr) ?? throw new ArgumentException("cannot get exception for HR");
                 path = Marshal.PtrToStringUni(pPath);
             }
             finally

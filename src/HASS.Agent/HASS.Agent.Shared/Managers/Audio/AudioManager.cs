@@ -18,8 +18,8 @@ public static class AudioManager
 {
     private static bool _initialized = false;
 
-    private static MMDeviceEnumerator _enumerator = null;
-    private static MMNotificationClient _notificationClient = null;
+    private static MMDeviceEnumerator? _enumerator = null;
+    private static MMNotificationClient? _notificationClient = null;
 
     private static readonly ConcurrentDictionary<string, string> _devices = new();
     private static readonly ConcurrentDictionary<string, DeviceType> _devicesType = new();
@@ -53,7 +53,7 @@ public static class AudioManager
         if (_devices.ContainsKey(deviceId))
             return;
 
-        using var device = _enumerator.GetDevice(deviceId);
+        using var device = _enumerator?.GetDevice(deviceId) ?? throw new ArgumentException("cannot get device");
         _devices[deviceId] = device.FriendlyName;
         _devicesType[device.ID] = device.DataFlow == DataFlow.Capture ? DeviceType.Input : DeviceType.Output;
         Log.Debug($"[AUDIOMGR] added device: {_devices[deviceId]}");
@@ -67,7 +67,7 @@ public static class AudioManager
             Log.Debug($"[AUDIOMGR] removed device: {removedDeviceName}");
     }
 
-    private static void DeviceRemoved(object sender, DeviceNotificationEventArgs e)
+    private static void DeviceRemoved(object? sender, DeviceNotificationEventArgs e)
     {
         try
         {
@@ -79,7 +79,7 @@ public static class AudioManager
         }
     }
 
-    private static void DeviceAdded(object sender, DeviceNotificationEventArgs e)
+    private static void DeviceAdded(object? sender, DeviceNotificationEventArgs e)
     {
         try
         {
@@ -91,7 +91,7 @@ public static class AudioManager
         }
     }
 
-    private static void DeviceStateChanged(object sender, DeviceStateChangedEventArgs e)
+    private static void DeviceStateChanged(object? sender, DeviceStateChangedEventArgs e)
     {
         switch (e.DeviceState)
         {
@@ -207,24 +207,24 @@ public static class AudioManager
         Log.Debug("[AUDIOMGR] starting cleanup");
         _initialized = false;
 
-        _notificationClient.DeviceAdded -= DeviceAdded;
-        _notificationClient.DeviceRemoved -= DeviceRemoved;
-        _notificationClient.DeviceStateChanged -= DeviceStateChanged;
-        _enumerator.UnregisterEndpointNotificationCallback(_notificationClient);
+        _notificationClient?.DeviceAdded -= DeviceAdded;
+        _notificationClient?.DeviceRemoved -= DeviceRemoved;
+        _notificationClient?.DeviceStateChanged -= DeviceStateChanged;
+        _enumerator?.UnregisterEndpointNotificationCallback(_notificationClient);
 
-        _enumerator.Dispose();
+        _enumerator?.Dispose();
 
         _devices.Clear();
         _devicesType.Clear();
         Log.Debug("[AUDIOMGR] cleanup completed");
     }
 
-    private static MMDevice GetDefaultMultimediaDevice(DataFlow dataFlow)
+    private static MMDevice? GetDefaultMultimediaDevice(DataFlow dataFlow)
     {
-        MMDevice device = null;
+        MMDevice? device = null;
         try
         {
-            device = _enumerator.GetDefaultAudioEndpoint(dataFlow, Role.Multimedia);
+            device = _enumerator?.GetDefaultAudioEndpoint(dataFlow, Role.Multimedia);
         }
         catch { }
 
@@ -267,7 +267,11 @@ public static class AudioManager
 
             foreach (var (deviceId, deviceName) in _devices)
             {
-                using var device = _enumerator.GetDevice(deviceId);
+                using var device = _enumerator?.GetDevice(deviceId);
+                if (device == null)
+                {
+                    continue;
+                }
 
                 var audioSessions = GetDeviceSessions(device);
                 var loudestSession = audioSessions.MaxBy(s => s.PeakVolume);
@@ -308,7 +312,7 @@ public static class AudioManager
             var dataFlow = deviceType == DeviceType.Input ? DataFlow.Capture : DataFlow.Render;
             var role = (Role)deviceRole;
 
-            using var defaultDevice = _enumerator.GetDefaultAudioEndpoint(dataFlow, role);
+            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role) ?? throw new ArgumentException("cannot retrieve default device id");
 
             deviceId = defaultDevice.ID;
         }
@@ -332,7 +336,7 @@ public static class AudioManager
             var dataFlow = deviceType == DeviceType.Input ? DataFlow.Capture : DataFlow.Render;
             var role = (Role)deviceRole;
 
-            using var defaultDevice = _enumerator.GetDefaultAudioEndpoint(dataFlow, role);
+            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role)  ?? throw new ArgumentException("cannot retrieve default device volume");
 
             volume = Convert.ToInt32(Math.Round(defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100, 0));
         }
@@ -356,7 +360,7 @@ public static class AudioManager
             var dataFlow = deviceType == DeviceType.Input ? DataFlow.Capture : DataFlow.Render;
             var role = (Role)deviceRole;
 
-            using var defaultDevice = _enumerator.GetDefaultAudioEndpoint(dataFlow, role);
+            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role)  ?? throw new ArgumentException("cannot retrieve default device mute");
 
             mute = defaultDevice.AudioEndpointVolume.Mute;
         }
@@ -404,7 +408,7 @@ public static class AudioManager
             if (string.IsNullOrWhiteSpace(deviceId))
                 return;
 
-            using var device = _enumerator.GetDevice(deviceId);
+            using var device = _enumerator?.GetDevice(deviceId)  ?? throw new ArgumentException("cannot get device");
             SetDeviceProperties(device, volume, mute);
         }
         catch (Exception ex)
@@ -435,7 +439,7 @@ public static class AudioManager
         {
             var flow = type == DeviceType.Output ? DataFlow.Render : DataFlow.Capture;
             var role = (Role)deviceRole;
-            using var device = _enumerator.GetDefaultAudioEndpoint(flow, role);
+            using var device = _enumerator?.GetDefaultAudioEndpoint(flow, role)  ?? throw new ArgumentException("cannot retrieve default device endpoint");
             SetDeviceProperties(device, volume, mute);
         }
         catch (Exception ex)
@@ -455,7 +459,7 @@ public static class AudioManager
             if (string.IsNullOrWhiteSpace(deviceId))
                 return;
 
-            using var device = _enumerator.GetDevice(deviceId);
+            using var device = _enumerator?.GetDevice(deviceId)  ?? throw new ArgumentException("cannot get device");
             using var sessionManager = new InternalAudioSessionManager(device.AudioSessionManager);
             var sessions = GetDeviceSessions(deviceName, sessionManager);
 

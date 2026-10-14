@@ -40,7 +40,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.MultiValue.Data
             ObjectId = id;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (AutoDiscoveryConfigModel != null) return AutoDiscoveryConfigModel;
 

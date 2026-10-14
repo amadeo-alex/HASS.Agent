@@ -15,12 +15,12 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands
 
         public string Command { get; protected set; }
         public string State { get; protected set; }
-        public Process Process { get; set; }
+        public Process? Process { get; set; }
 
         private readonly bool _isScript = false;
         private readonly string _descriptor = "command";
 
-        public PowershellCommand(string command, string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, entityType, id)
+        public PowershellCommand(string command, string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, entityType, id)
         {
             Command = command;
             if (Command.ToLower().EndsWith(".ps1"))
@@ -66,7 +66,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands
             State = "OFF";
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

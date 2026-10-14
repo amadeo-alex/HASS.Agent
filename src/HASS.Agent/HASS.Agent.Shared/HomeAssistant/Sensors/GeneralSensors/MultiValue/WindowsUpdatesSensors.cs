@@ -18,7 +18,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.MultiValue
 
         public override sealed Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-        public WindowsUpdatesSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 900, id)
+        public WindowsUpdatesSensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 900, id)
         {
             _updateInterval = updateInterval ?? 900;
 
@@ -74,6 +74,6 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.MultiValue
             AddUpdateSensor(softwareUpdatesId, softwareUpdatesSensor);
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
     }
 }

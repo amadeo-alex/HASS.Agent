@@ -26,12 +26,12 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         private string _desktopName = string.Empty;
         private string _attributes = string.Empty;
 
-        public ActiveDesktopSensor(int? updateInterval = null, string entityName = _defaultName, string name = _defaultName, string id = default, string advancedSettings = default) : base(entityName ?? _defaultName, name ?? null, updateInterval ?? 15, id, advancedSettings: advancedSettings)
+        public ActiveDesktopSensor(int? updateInterval = null, string entityName = _defaultName, string name = _defaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? _defaultName, name, updateInterval ?? 15, id, advancedSettings: advancedSettings)
         {
             UseAttributes = true;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null)
             {

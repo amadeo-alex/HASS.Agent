@@ -16,11 +16,11 @@ namespace HASS.Agent.Shared.Models.HomeAssistant
 
         public abstract Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; }
 
-        protected AbstractMultiValueSensor(string entityName, string name, int updateIntervalSeconds = 10, string id = default)
+        protected AbstractMultiValueSensor(string entityName, string? name, int updateIntervalSeconds = 10, string? id = null)
         {
             Id = id == null || id == Guid.Empty.ToString() ? Guid.NewGuid().ToString() : id;
             EntityName = entityName;
-            Name = name;
+            Name = name ?? string.Empty;
             UpdateIntervalSeconds = updateIntervalSeconds;
             Domain = "sensor";
         }

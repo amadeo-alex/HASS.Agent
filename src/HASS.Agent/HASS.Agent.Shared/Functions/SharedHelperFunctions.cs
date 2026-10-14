@@ -109,8 +109,12 @@ namespace HASS.Agent.Shared.Functions
         public static string GetCategory(this Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.ToString());
-            if (fieldInfo == null) return null;
-            var attribute = (CategoryAttribute)fieldInfo.GetCustomAttribute(typeof(CategoryAttribute));
+            if (fieldInfo == null)
+            {
+                return "?";
+            }
+
+            var attribute = fieldInfo.GetCustomAttribute<CategoryAttribute>();
             return attribute?.Category ?? "?";
         }
 

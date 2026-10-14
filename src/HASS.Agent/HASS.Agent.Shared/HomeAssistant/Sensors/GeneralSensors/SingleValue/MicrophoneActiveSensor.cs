@@ -11,14 +11,14 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
     {
         private const string DefaultName = "microphoneactive";
 
-        public MicrophoneActiveSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, advancedSettings: advancedSettings)
+        public MicrophoneActiveSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, advancedSettings: advancedSettings)
         {
             Domain = "binary_sensor";
         }
 
         public override string GetState() => IsMicrophoneInUse() ? "ON" : "OFF";
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 
@@ -62,7 +62,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
             return false;
         }
 
-        private static bool CheckRegForMicrophoneInUse(RegistryKey key)
+        private static bool CheckRegForMicrophoneInUse(RegistryKey? key)
         {
             if (key == null) return false;
 

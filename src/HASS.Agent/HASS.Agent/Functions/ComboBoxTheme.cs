@@ -20,7 +20,7 @@ namespace HASS.Agent.Functions
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        internal static void DrawItem(object sender, DrawItemEventArgs e)
+        internal static void DrawItem(object? sender, DrawItemEventArgs e)
         {
             // only relevant for listviews in detail mode
             if (sender is not ComboBox comboBox)
@@ -55,7 +55,8 @@ namespace HASS.Agent.Functions
                 var brush = (e.State & DrawItemState.Selected) > 0
                     ? new SolidBrush(Color.FromArgb(63, 63, 70))
                     : new SolidBrush(comboBox.ForeColor);
-                e.Graphics.DrawString(comboBox.Items[index].ToString(), Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
+                
+                e.Graphics.DrawString(comboBox.Items[index]?.ToString(), Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
             }
 
             // draw focus rectangle

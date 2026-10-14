@@ -15,7 +15,7 @@ namespace HASS.Agent.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="enumMemberValue"></param>
         /// <returns></returns>
-        internal static T EnumMemberToEnum<T>(this string enumMemberValue)
+        internal static T? EnumMemberToEnum<T>(this string enumMemberValue)
         {
             var enumType = typeof(T);
             foreach (var name in Enum.GetNames(enumType))

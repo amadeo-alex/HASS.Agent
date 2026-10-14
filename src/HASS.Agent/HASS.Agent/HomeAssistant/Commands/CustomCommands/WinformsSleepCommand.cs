@@ -13,7 +13,7 @@ public class WinformsSleepCommand : InternalCommand
 {
     private const string DefaultName = "switchdesktop";
 
-    public WinformsSleepCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(entityName ?? DefaultName, name ?? null, string.Empty, entityType, id)
+    public WinformsSleepCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(entityName ?? DefaultName, name, string.Empty, entityType, id)
     {
         State = "OFF";
     }

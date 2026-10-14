@@ -11,6 +11,6 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.KeyCommands
     {
         private const string DefaultName = "monitorwake";
 
-        public MonitorWakeCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(VirtualKeyShort.UP, entityName ?? DefaultName, name ?? null, entityType, id) { }
+        public MonitorWakeCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(VirtualKeyShort.UP, entityName ?? DefaultName, name, entityType, id) { }
     }
 }

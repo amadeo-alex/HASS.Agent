@@ -12,7 +12,7 @@ namespace HASS.Agent.HomeAssistant.Commands.InternalCommands
         private const string DefaultName = "webview";
         private readonly WebViewInfo _webViewInfo = new();
 
-        internal WebViewCommand(string entityName = DefaultName, string name = DefaultName, string webViewInfo = "", CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, webViewInfo, entityType, id)
+        internal WebViewCommand(string entityName = DefaultName, string? name = DefaultName, string webViewInfo = "", CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, webViewInfo, entityType, id)
         {
             CommandConfig = webViewInfo;
             State = "OFF";

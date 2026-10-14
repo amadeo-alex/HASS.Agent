@@ -15,7 +15,7 @@ namespace HASS.Agent.Models.Internal
             return this;
         }
 
-        public TestResult SetSuccesful(string returnValue)
+        public TestResult SetSuccesful(string? returnValue)
         {
             Succesful = true;
             ReturnValue = returnValue;
@@ -28,7 +28,7 @@ namespace HASS.Agent.Models.Internal
         }
 
         public bool Succesful { get; set; }
-        public string ReturnValue { get; set; }
-        public string ErrorReason { get; set; }
+        public string? ReturnValue { get; set; }
+        public string? ErrorReason { get; set; }
     }
 }

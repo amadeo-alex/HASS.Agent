@@ -60,13 +60,13 @@ namespace HASS.Agent.Functions
             uint nServiceType,
             uint nStartType,
             uint nErrorControl,
-            string lpBinaryPathName,
-            string lpLoadOrderGroup,
+            string? lpBinaryPathName,
+            string? lpLoadOrderGroup,
             IntPtr lpdwTagId,
-            [In] char[] lpDependencies,
-            string lpServiceStartName,
-            string lpPassword,
-            string lpDisplayName);
+            [In] char[]? lpDependencies,
+            string? lpServiceStartName,
+            string? lpPassword,
+            string? lpDisplayName);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct SERVICE_FAILURE_ACTIONS

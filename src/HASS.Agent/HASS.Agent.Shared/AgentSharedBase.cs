@@ -28,7 +28,7 @@ namespace HASS.Agent.Shared
         /// <param name="deviceName"></param>
         /// <param name="mqttManager"></param>
         /// <param name="customExecutorBinary"></param>
-        public static void Initialize(string deviceName, IMqttManager mqttManager, string customExecutorBinary)
+        public static void Initialize(string? deviceName, IMqttManager mqttManager, string customExecutorBinary)
         {
             Variables.DeviceName = deviceName;
             Variables.MqttManager = mqttManager;
@@ -82,7 +82,7 @@ namespace HASS.Agent.Shared
         /// (Re)sets the device name
         /// </summary>
         /// <param name="deviceName"></param>
-        public static void SetDeviceName(string deviceName) => Variables.DeviceName = deviceName;
+        public static void SetDeviceName(string? deviceName) => Variables.DeviceName = deviceName;
 
         /// <summary>
         /// (Re)sets the MQTT manager

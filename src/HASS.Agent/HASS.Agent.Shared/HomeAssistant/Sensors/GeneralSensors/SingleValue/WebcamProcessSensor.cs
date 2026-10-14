@@ -14,7 +14,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
     {
         private const string DefaultName = "webcamprocess";
 
-        public WebcamProcessSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, true, advancedSettings: advancedSettings)
+        public WebcamProcessSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, true, advancedSettings: advancedSettings)
         {
             //
         }
@@ -27,7 +27,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         public void SetAttributes(string value) => _attributes = string.IsNullOrWhiteSpace(value) ? "{}" : value;
         public override string GetAttributes() => _attributes;
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 
@@ -79,7 +79,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
             return _processes.Count.ToString();
         }
 
-        private void CheckRegForWebcamInUse(RegistryKey key)
+        private void CheckRegForWebcamInUse(RegistryKey? key)
         {
             if (key == null) return;
 

@@ -9,7 +9,7 @@ namespace HASS.Agent.Shared.Models.HomeAssistant
     {
         public string Domain { get; set; } = "switch";
         public string EntityName { get; set; } = string.Empty;
-        public string Name { get; set; } = null;
+        public string Name { get; set; } = string.Empty;
         public string TopicName { get; set; } = string.Empty;
 
         private string _objectId = string.Empty;
@@ -31,7 +31,7 @@ namespace HASS.Agent.Shared.Models.HomeAssistant
         public string Id { get; set; } = string.Empty;
         public bool UseAttributes { get; set; } = false;
 
-        public abstract DiscoveryConfigModel GetAutoDiscoveryConfig();
+        public abstract DiscoveryConfigModel? GetAutoDiscoveryConfig();
         public bool IgnoreAvailability { get; set; } = false;
         public abstract void ClearAutoDiscoveryConfig();
     }

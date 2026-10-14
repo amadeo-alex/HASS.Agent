@@ -225,7 +225,7 @@ namespace HASS.Agent.Shared.Functions
 
                 for (var i = 0; i < sessionCount; i++)
                 {
-                    var si = (WTS_SESSION_INFO)Marshal.PtrToStructure(current, typeof(WTS_SESSION_INFO));
+                    var si = Marshal.PtrToStructure<WTS_SESSION_INFO>(current);
                     current += arrayElementSize;
 
                     // we only want the active session

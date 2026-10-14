@@ -9,8 +9,8 @@ public class PublishSensorCommand : InternalCommand
 {
     private const string DefaultName = "publishallsensor";
 
-    internal PublishSensorCommand(string entityName = DefaultName, string name = DefaultName, string sensorName = "", CommandEntityType entityType = CommandEntityType.Switch,
-        string id = default) : base(entityName ?? DefaultName, name ?? null, sensorName, entityType, id)
+    internal PublishSensorCommand(string entityName = DefaultName, string? name = DefaultName, string sensorName = "", CommandEntityType entityType = CommandEntityType.Switch,
+        string? id = null) : base(entityName ?? DefaultName, name, sensorName, entityType, id)
     {
         State = "OFF";
     }

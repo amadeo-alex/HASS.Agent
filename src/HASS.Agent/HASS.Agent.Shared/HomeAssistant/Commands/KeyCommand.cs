@@ -22,13 +22,13 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands
 
         public VirtualKeyShort KeyCode { get; set; }
 
-        public KeyCommand(VirtualKeyShort keyCode, string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(entityName ?? DefaultName, name ?? null, entityType, id)
+        public KeyCommand(VirtualKeyShort keyCode, string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(entityName ?? DefaultName, name, entityType, id)
         {
             KeyCode = keyCode;
             State = "OFF";
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 

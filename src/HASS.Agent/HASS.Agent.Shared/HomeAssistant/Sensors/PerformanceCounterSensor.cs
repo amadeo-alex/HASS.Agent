@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using HASS.Agent.Shared.Functions;
 using HASS.Agent.Shared.Models.HomeAssistant;
+using Serilog;
 
 namespace HASS.Agent.Shared.HomeAssistant.Sensors
 {
@@ -13,7 +14,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
     {
         private const string DefaultName = "performancecountersensor";
 
-        protected PerformanceCounter Counter = null;
+        protected PerformanceCounter? Counter;
 
         public string CategoryName { get; private set; }
         public string CounterName { get; private set; }
@@ -22,7 +23,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
         public bool ApplyRounding { get; private set; }
         public int? Round { get; private set; }
 
-        public PerformanceCounterSensor(string categoryName, string counterName, string instanceName, bool applyRounding = false, int? round = null, int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, advancedSettings: advancedSettings)
+        public PerformanceCounterSensor(string categoryName, string counterName, string instanceName, bool applyRounding = false, int? round = null, int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, advancedSettings: advancedSettings)
         {
             CategoryName = categoryName;
             CounterName = counterName;
@@ -40,7 +41,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
 
         public void Dispose() => Counter?.Dispose();
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
             if (Variables.MqttManager == null) return null;
 
@@ -61,6 +62,12 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors
 
         public override string GetState()
         {
+            if (Counter == null)
+            {
+                Log.Error("[PERFCOUNTER] [{name}] Counter should not be null", EntityName);
+                return "0";
+            }
+            
             var nextVal = Counter.NextValue();
 
             // optionally apply rounding

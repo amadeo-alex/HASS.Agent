@@ -28,7 +28,7 @@ namespace HASS.Agent.Shared.Mqtt
         Task SubscribeNotificationsAsync();
         
         string MqttDiscoveryPrefix();
-        DeviceConfigModel GetDeviceConfigModel();
+        DeviceConfigModel? GetDeviceConfigModel();
         void ReloadConfiguration();
         bool UseRetainFlag();
         Task SubscribeMediaCommandsAsync();

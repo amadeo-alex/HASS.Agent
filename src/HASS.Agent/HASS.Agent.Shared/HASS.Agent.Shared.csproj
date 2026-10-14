@@ -19,7 +19,8 @@
     <RootNamespace>HASS.Agent.Shared</RootNamespace>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <DebugType>full</DebugType>
     <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>

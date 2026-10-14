@@ -17,16 +17,16 @@ namespace HASS.Agent.Shared.Models.HomeAssistant
         public string PreviousPublishedState { get; set; } = string.Empty;
         public CommandEntityType EntityType { get; set; }
 
-        protected AbstractCommand(string entityName, string name, CommandEntityType entityType = CommandEntityType.Switch, string id = default)
+        protected AbstractCommand(string entityName, string? name, CommandEntityType entityType = CommandEntityType.Switch, string? id = null)
         {
             Id = id == null || id == Guid.Empty.ToString() ? Guid.NewGuid().ToString() : id;
             EntityName = entityName;
-            Name = name;
+            Name = name ?? string.Empty;
             Domain = entityType.GetEnumMemberValue();
             EntityType = entityType;
         }
 
-        protected CommandDiscoveryConfigModel AutoDiscoveryConfigModel;
+        protected CommandDiscoveryConfigModel? AutoDiscoveryConfigModel;
         protected CommandDiscoveryConfigModel SetAutoDiscoveryConfigModel(CommandDiscoveryConfigModel config)
         {
             AutoDiscoveryConfigModel = config;

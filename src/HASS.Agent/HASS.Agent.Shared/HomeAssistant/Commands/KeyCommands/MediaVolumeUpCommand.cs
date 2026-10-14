@@ -10,6 +10,6 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.KeyCommands
     {
         private const string DefaultName = "volumeup";
 
-        public MediaVolumeUpCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string id = default) : base(VirtualKeyShort.VOLUME_UP, entityName ?? DefaultName, name ?? null, entityType, id) { }
+        public MediaVolumeUpCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Switch, string? id = null) : base(VirtualKeyShort.VOLUME_UP, entityName ?? DefaultName, name, entityType, id) { }
     }
 }

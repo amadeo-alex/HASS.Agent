@@ -17,7 +17,7 @@ public class MicrophoneProcessSensor : AbstractSingleValueSensor
     private const string _lastUsedTimeStop = "LastUsedTimeStop";
     private const string _regKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";
     
-    public MicrophoneProcessSensor(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 10, id, true, advancedSettings: advancedSettings)
+    public MicrophoneProcessSensor(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null, string? advancedSettings = null) : base(entityName ?? DefaultName, name, updateInterval ?? 10, id, true, advancedSettings: advancedSettings)
     {
         //
     }
@@ -26,7 +26,7 @@ public class MicrophoneProcessSensor : AbstractSingleValueSensor
 
     private string _attributes = string.Empty;
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
     {
         if (Variables.MqttManager == null)
         {
@@ -78,7 +78,7 @@ public class MicrophoneProcessSensor : AbstractSingleValueSensor
         return _processes.Count.ToString();
     }
 
-    private void CheckRegForMicrophoneInUse(RegistryKey key)
+    private void CheckRegForMicrophoneInUse(RegistryKey? key)
     {
         if (key == null)
         {

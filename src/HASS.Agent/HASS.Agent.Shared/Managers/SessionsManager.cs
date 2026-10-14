@@ -40,7 +40,7 @@ namespace HASS.Agent.Shared.Managers
 
                 for (var i = 0; i < sessionCount; i++)
                 {
-                    var sessionInfo = (Cassia.Impl.WTS_SESSION_INFO)Marshal.PtrToStructure(currentSession, typeof(Cassia.Impl.WTS_SESSION_INFO));
+                    var sessionInfo = Marshal.PtrToStructure<Cassia.Impl.WTS_SESSION_INFO>(currentSession);
                     currentSession += dataSize;
 
                     if (activeOnly)

@@ -36,12 +36,12 @@ namespace HASS.Agent.Functions
         [System.Runtime.InteropServices.DllImport("user32", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         internal static extern bool ShowScrollBar(IntPtr hwnd, int wBar, [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)] bool bShow);
-        
+
         private static readonly Color BackgroundColor = Color.FromArgb(63, 63, 70);
         private static readonly Color ForeColor = Color.FromArgb(241, 241, 241);
         private static readonly Color HeaderColor = Color.FromArgb(45, 45, 48);
 
-        internal static void DrawItem(object sender, DrawListViewItemEventArgs e)
+        internal static void DrawItem(object? sender, DrawListViewItemEventArgs e)
         {
             // only relevant for listviews in detail mode
             if (sender is not ListView listView) return;
@@ -78,12 +78,15 @@ namespace HASS.Agent.Functions
             // draw it
             TextRenderer.DrawText(e.Graphics, subItem.Text, subItem.Font, e.Bounds, ForeColor, flags);
         }
-        
-        internal static void DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+
+        internal static void DrawSubItem(object? sender, DrawListViewSubItemEventArgs e)
         {
             // only relevant for listviews
-            if (sender is not ListView listView) return;
-
+            if (sender is not ListView listView || e.Item == null)
+            {
+                return;
+            }
+            
             // get variables
             var flags = GetTextAlignment(listView, e.ColumnIndex);
             var itemColor = e.Item.ForeColor;
@@ -106,18 +109,22 @@ namespace HASS.Agent.Functions
             }
             else e.DrawBackground();
 
+            if (e.SubItem == null)
+            {
+                return;
+            }
             // draw the text
             TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, e.Bounds, itemColor, flags);
         }
 
-        internal static void DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        internal static void DrawColumnHeader(object? sender, DrawListViewColumnHeaderEventArgs e)
         {
             // set the header's background
             using (var backBrush = new SolidBrush(HeaderColor))
             {
                 e.Graphics.FillRectangle(backBrush, e.Bounds);
             }
-            
+
             // draw the text in the right color
             var tag = (string)e.Header.Tag ?? string.Empty;
             if (tag != "hide")

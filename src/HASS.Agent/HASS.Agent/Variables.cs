@@ -49,15 +49,15 @@ namespace HASS.Agent
         /// <summary>
         /// Internal references
         /// </summary>
-        internal static Main MainForm { get; set; }
+        internal static Main? MainForm { get; set; }
         internal static HttpClient HttpClient { get; set; } = new();
         internal static string QuickActionsHotKey { get; set; } = "Control, Alt + Q";
         internal static InternalHotKeyManager InternalHotKeyManager { get; } = new();
-        internal static HotkeyManager HotKeyListener { get; set; }
+        internal static HotkeyManager? HotKeyListener { get; set; }
         internal static Random Rnd { get; } = new();
         internal static Font DefaultFont { get; } = new("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-        internal static WebView TrayIconWebView { get; set; } = null;
-        internal static CoreWebView2Environment WebViewEnvironment { get; set; } = null;
+        internal static WebView? TrayIconWebView { get; set; } = null;
+        internal static CoreWebView2Environment? WebViewEnvironment { get; set; } = null;
 
         /// <summary>
         /// Localization
@@ -70,7 +70,7 @@ namespace HASS.Agent
         /// </summary>
         internal static IMqttManager MqttManager { get; } = new MqttManager();
         internal static MqttFactory MqttFactory { get; } = new();
-        internal static DeviceConfigModel DeviceConfig { get; set; } = null;
+        internal static DeviceConfigModel? DeviceConfig { get; set; } = null;
 
         /// <summary>
         /// RPC (satellite service)
@@ -97,7 +97,7 @@ namespace HASS.Agent
         /// <summary>
         /// Local IO
         /// </summary>
-        internal static string StartupPath { get; } = Path.GetDirectoryName(Application.ExecutablePath);
+        internal static string StartupPath { get; } = Path.GetDirectoryName(Application.ExecutablePath) ?? throw new NullReferenceException("cannot obtain executable directory");
         internal static string CachePath { get; } = Path.Combine(StartupPath, "cache");
         internal static string ImageCachePath { get; } = Path.Combine(CachePath, "images");
         internal static string AudioCachePath { get; } = Path.Combine(CachePath, "audio");
@@ -112,20 +112,21 @@ namespace HASS.Agent
         /// <summary>
         /// Local API
         /// </summary>
-        internal static IRestServer LocalApiServer { get; set; } = null;
+        internal static IRestServer? LocalApiServer { get; set; } = null;
 
         /// <summary>
         /// Media
         /// </summary>
-        internal static MediaPlayer MediaPlayer { get; set; }
+        internal static MediaPlayer? MediaPlayer { get; set; }
 
         /// <summary>
         /// Config
         /// </summary>
-        internal static AppSettings AppSettings { get; set; }
-        internal static List<QuickAction> QuickActions { get; set; }
-        internal static List<AbstractCommand> Commands { get; set; }
-        internal static List<AbstractSingleValueSensor> SingleValueSensors { get; set; }
-        internal static List<AbstractMultiValueSensor> MultiValueSensors { get; set; }
+        internal static  AppSettings AppSettings { get; set; } = new AppSettings();
+
+        internal static List<QuickAction> QuickActions { get; set; } = new List<QuickAction>();
+        internal static List<AbstractCommand> Commands { get; set; } = new List<AbstractCommand>();
+        internal static List<AbstractSingleValueSensor> SingleValueSensors { get; set; } = new List<AbstractSingleValueSensor>();
+        internal static List<AbstractMultiValueSensor> MultiValueSensors { get; set; } = new List<AbstractMultiValueSensor>();
     }
 }

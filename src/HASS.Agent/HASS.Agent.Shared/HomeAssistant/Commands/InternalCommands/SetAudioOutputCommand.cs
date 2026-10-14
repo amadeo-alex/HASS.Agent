@@ -19,7 +19,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.InternalCommands
 
         private string OutputDevice { get => CommandConfig; }
 
-        public SetAudioOutputCommand(string entityName = DefaultName, string name = DefaultName, string audioDevice = "", CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(entityName ?? DefaultName, name ?? null, audioDevice, entityType, id)
+        public SetAudioOutputCommand(string entityName = DefaultName, string? name = DefaultName, string audioDevice = "", CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(entityName ?? DefaultName, name, audioDevice, entityType, id)
         {
             State = "OFF";
         }

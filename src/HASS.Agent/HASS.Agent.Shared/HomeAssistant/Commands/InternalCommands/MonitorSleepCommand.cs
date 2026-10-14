@@ -16,7 +16,7 @@ namespace HASS.Agent.Shared.HomeAssistant.Commands.InternalCommands
     {
         private const string DefaultName = "monitorsleep";
 
-        public MonitorSleepCommand(string entityName = DefaultName, string name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string id = default) : base(entityName ?? DefaultName, name ?? null, string.Empty, entityType, id)
+        public MonitorSleepCommand(string entityName = DefaultName, string? name = DefaultName, CommandEntityType entityType = CommandEntityType.Button, string? id = null) : base(entityName ?? DefaultName, name, string.Empty, entityType, id)
         {
             State = "OFF";
         }
