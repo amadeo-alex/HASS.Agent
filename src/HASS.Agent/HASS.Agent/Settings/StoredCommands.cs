@@ -88,9 +88,9 @@ namespace HASS.Agent.Settings
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        internal static AbstractCommand ConvertConfiguredToAbstract(ConfiguredCommand command)
+        internal static AbstractCommand? ConvertConfiguredToAbstract(ConfiguredCommand command)
         {
-            AbstractCommand abstractCommand = null;
+            AbstractCommand? abstractCommand = null;
 
             switch (command.Type)
             {
@@ -206,7 +206,7 @@ namespace HASS.Agent.Settings
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        internal static ConfiguredCommand ConvertAbstractToConfigured(AbstractCommand command)
+        internal static ConfiguredCommand? ConvertAbstractToConfigured(AbstractCommand command)
         {
             switch (command)
             {

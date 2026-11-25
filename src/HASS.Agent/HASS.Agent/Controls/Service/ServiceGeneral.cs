@@ -366,7 +366,7 @@ namespace HASS.Agent.Controls.Service
         {
             try
             {
-                Label successLabel = null;
+                Label? successLabel = null;
 
                 switch (configSection)
                 {
@@ -387,7 +387,10 @@ namespace HASS.Agent.Controls.Service
                         break;
                 }
 
-                if (successLabel == null) return;
+                if (successLabel == null)
+                {
+                    return;
+                }
 
                 Invoke(new MethodInvoker(delegate { successLabel.Visible = true; }));
 

@@ -40,14 +40,17 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.SingleValue
             });
         }
 
-        public override string GetState()
+        public override string? GetState()
         {
             var devices = BluetoothManager.GetDevicesAsync().GetAwaiter().GetResult();
 
             // bluetooth stack didn't respond, skip this update
-            if (devices == null) return null;
+            if (devices == null)
+            {
+                return null;
+            }
 
-            if (!devices.Any())
+            if (devices.Count == 0)
             {
                 _attributes = "{}";
                 return "0";

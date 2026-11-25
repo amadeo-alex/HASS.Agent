@@ -22,7 +22,7 @@ public static class WebViewManager
 
         if (_webViews.TryGetValue(webViewInfo, out var oldWebView))
         {
-            Variables.MainForm.Invoke(new MethodInvoker(delegate
+            Variables.MainForm?.Invoke(new MethodInvoker(delegate
             {
                 oldWebView.ForceClose();
             }));
@@ -32,7 +32,7 @@ public static class WebViewManager
 
         var webView = new WebView(webViewInfo); //NOTE(Amadeo): do this better in v3...
         webView.Closed += WebViewOnClosed;
-        Variables.MainForm.Invoke(new MethodInvoker(delegate
+        Variables.MainForm?.Invoke(new MethodInvoker(delegate
         {
             webView.Opacity = 0;
             webView.Show();
@@ -41,10 +41,9 @@ public static class WebViewManager
         _webViews.Add(webViewInfo, webView);
     }
 
-    private static void WebViewOnClosed(object sender, EventArgs e)
+    private static void WebViewOnClosed(object? sender, EventArgs e)
     {
-        var webView = (WebView)sender;
-        if (webView == null)
+        if (sender is not WebView webView)
         {
             return;
         }
@@ -60,7 +59,7 @@ public static class WebViewManager
             return;
         }
 
-        Variables.MainForm.Invoke(new MethodInvoker(delegate
+        Variables.MainForm?.Invoke(new MethodInvoker(delegate
         {
             oldWebView.ForceClose();
         }));
@@ -94,7 +93,7 @@ public static class WebViewManager
         webViewInfo.IsTrayIconWebView = true;
 
         // prepare the webview
-        Variables.MainForm.Invoke(new MethodInvoker(delegate
+        Variables.MainForm?.Invoke(new MethodInvoker(delegate
         {
             // optionally close an existing one
             Variables.TrayIconWebView?.ForceClose();
@@ -154,7 +153,7 @@ public static class WebViewManager
 
     private static void LaunchTrayIconBackgroundLoadedWebView(int screenIndex)
     {
-        Variables.MainForm.Invoke(new MethodInvoker(delegate
+        Variables.MainForm?.Invoke(new MethodInvoker(delegate
         {
             // make sure it's ready
             if (Variables.TrayIconWebView == null || Variables.TrayIconWebView.IsDisposed)
@@ -180,7 +179,7 @@ public static class WebViewManager
             screenIndex = 0;
         }
 
-        Variables.MainForm.Invoke(new MethodInvoker(delegate
+        Variables.MainForm?.Invoke(new MethodInvoker(delegate
         {
             var targetScreen = Screen.AllScreens[screenIndex];
 
@@ -236,7 +235,7 @@ public static class WebViewManager
 
     public static void CloseTrayIconWebView()
     {
-        Variables.MainForm.Invoke(() =>
+        Variables.MainForm?.Invoke(() =>
         {
             if (Variables.TrayIconWebView == null)
             {

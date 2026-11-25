@@ -17,17 +17,23 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue
         // static, so the subscription is made once and isn't leaked when sensors are recreated
         static SerialPortsSensor() => SerialPortManager.PortsChanged += (_, _) => SensorChangeNotifier.NotifyChanged<SerialPortsSensor>();
 
-        public SerialPortsSensor(int? updateInterval = 300, string entityName = DefaultName, string name = DefaultName, string id = default, string advancedSettings = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 300, id, advancedSettings: advancedSettings)
+        public SerialPortsSensor(int? updateInterval = 300, string entityName = DefaultName, string name = DefaultName, string id = EmptyString, string? advancedSettings = EmptyString) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 300, id, advancedSettings: advancedSettings)
         {
             UseAttributes = true;
         }
 
-        public override DiscoveryConfigModel GetAutoDiscoveryConfig()
+        public override DiscoveryConfigModel? GetAutoDiscoveryConfig()
         {
-            if (Variables.MqttManager == null) return null;
+            if (Variables.MqttManager == null)
+            {
+                return null;
+            }
 
             var deviceConfig = Variables.MqttManager.GetDeviceConfigModel();
-            if (deviceConfig == null) return null;
+            if (deviceConfig == null)
+            {
+                return null;
+            }
 
             return AutoDiscoveryConfigModel ?? SetAutoDiscoveryConfigModel(new SensorDiscoveryConfigModel(Domain)
             {

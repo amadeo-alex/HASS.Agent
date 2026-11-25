@@ -65,7 +65,7 @@ namespace HASS.Agent.Service
         /// Returns the service's current active settings
         /// </summary>
         /// <returns></returns>
-        internal async Task<(bool result, ServiceSettings output, string error)> GetServiceSettingsAsync()
+        internal async Task<(bool result, ServiceSettings? output, string error)> GetServiceSettingsAsync()
         {
             try
             {
@@ -91,7 +91,7 @@ namespace HASS.Agent.Service
         /// Returns the service's current active MQTT settings
         /// </summary>
         /// <returns></returns>
-        internal async Task<(bool result, ServiceMqttSettings output, string error)> GetServiceMqttSettingsAsync()
+        internal async Task<(bool result, ServiceMqttSettings? output, string error)> GetServiceMqttSettingsAsync()
         {
             try
             {
@@ -117,7 +117,7 @@ namespace HASS.Agent.Service
         /// Returns the service's current active configured commands
         /// </summary>
         /// <returns></returns>
-        internal async Task<(bool result, List<ConfiguredCommand> output, string error)> GetConfiguredCommandsAsync()
+        internal async Task<(bool result, List<ConfiguredCommand>? output, string error)> GetConfiguredCommandsAsync()
         {
             try
             {
@@ -143,7 +143,7 @@ namespace HASS.Agent.Service
         /// Returns the service's current active sensors
         /// </summary>
         /// <returns></returns>
-        internal async Task<(bool result, List<ConfiguredSensor> output, string error)> GetConfiguredSensorsAsync()
+        internal async Task<(bool result, List<ConfiguredSensor>? output, string error)> GetConfiguredSensorsAsync()
         {
             try
             {

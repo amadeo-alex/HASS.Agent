@@ -54,7 +54,7 @@ namespace HASS.Agent.Forms
             KeyPreview = true;
 
             // suspend global hotkeys
-            Variables.HotKeyListener.IsEnabled = false;
+            Variables.HotKeyListener?.IsEnabled = false;
 
             // load controls
             TabGeneral.Controls.Add(_general);
@@ -83,7 +83,7 @@ namespace HASS.Agent.Forms
             // config quick actions hotkey selector
             _hotKey.TbQuickActionsHotkey.ReadOnly = true;
             _hotKey.TbQuickActionsHotkey.KeyDown += TbQuickActionsHotkey_KeyDown;
-            if (Variables.QuickActionsHotKey != null)
+            if (Variables.QuickActionsHotKey.Length != 0)
             {
                 _hotKey.TbQuickActionsHotkey.Text = Variables.QuickActionsHotKey;
             }
@@ -92,7 +92,7 @@ namespace HASS.Agent.Forms
         private void Configuration_FormClosing(object sender, FormClosingEventArgs e)
         {
             // resume global hotkeys
-            Variables.HotKeyListener.IsEnabled = true;
+            Variables.HotKeyListener?.IsEnabled = true;
 
             // clean hotkey selector
             _hotKey.TbQuickActionsHotkey.KeyDown -= TbQuickActionsHotkey_KeyDown;
@@ -115,7 +115,7 @@ namespace HASS.Agent.Forms
             _nfc.Dispose();
         }
 
-        private void TbQuickActionsHotkey_KeyDown(object sender, KeyEventArgs e)
+        private void TbQuickActionsHotkey_KeyDown(object? sender, KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
 
@@ -233,7 +233,7 @@ namespace HASS.Agent.Forms
                 await Task.Delay(250);
 
                 // mock new device name and publish new discovery messages
-                Variables.DeviceConfig.Name = Variables.AppSettings.DeviceName;
+                Variables.DeviceConfig!.Name = Variables.AppSettings.DeviceName;
                 await SensorsManager.ForcePublishAllSensors();
                 await CommandsManager.ForcePublishAllCommands();
 
@@ -556,7 +556,7 @@ namespace HASS.Agent.Forms
             else
             {
                 // hotkey disabled, remove and deactivate
-                Variables.QuickActionsHotKey = null;
+                Variables.QuickActionsHotKey = string.Empty;
                 Variables.AppSettings.QuickActionsHotKey = string.Empty;
                 Variables.InternalHotKeyManager.QuickActionsHotKeyChanged(_previousHotkey, false);
             }
@@ -625,9 +625,9 @@ namespace HASS.Agent.Forms
 
             // nfc
             Variables.AppSettings.NfcScanningEnabled = _nfc.CbEnableNfc.CheckState == CheckState.Checked;
-            Variables.AppSettings.NfcSelectedScanner = _nfc.CbNfcScanner.SelectedItem == null
+            Variables.AppSettings.NfcSelectedScanner = _nfc.CbNfcScanner?.SelectedItem == null
                 ? string.Empty
-                : _nfc.CbNfcScanner.SelectedItem.ToString();
+                : _nfc.CbNfcScanner?.SelectedItem.ToString() ?? string.Empty;
 
             // virtual desktop
             Variables.AppSettings.DisableVirtualDesktopInitialization = _startup.CbDisableVirtualDesktopInitalization.CheckState == CheckState.Checked;
@@ -686,13 +686,13 @@ namespace HASS.Agent.Forms
             }
         }
 
-        private void CbMqttTls_CheckedChanged(object sender, EventArgs e)
+        private void CbMqttTls_CheckedChanged(object? sender, EventArgs e)
         {
             if (_initializing) return;
             _mqtt.NumMqttPort.Value = _mqtt.CbMqttTls.Checked ? 8883 : 1883;
         }
 
-        private void CbHassAutoClientCertificate_CheckedChanged(object sender, EventArgs e)
+        private void CbHassAutoClientCertificate_CheckedChanged(object? sender, EventArgs e)
         {
             if (_initializing) return;
 
@@ -704,6 +704,6 @@ namespace HASS.Agent.Forms
             else _homeAssistantApi.TbHassClientCertificate.Enabled = true;
         }
 
-        private void BtnClose_Click(object sender, EventArgs e) => Close();
+        private void BtnClose_Click(object? sender, EventArgs e) => Close();
     }
 }

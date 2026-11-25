@@ -90,7 +90,7 @@ namespace HASS.Agent.Controls.Onboarding
             TbQuickActionsHotkey.Text = string.Empty;
         }
         
-        private void TbQuickActionsHotkey_KeyDown(object sender, KeyEventArgs e)
+        private void TbQuickActionsHotkey_KeyDown(object? sender, KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
 

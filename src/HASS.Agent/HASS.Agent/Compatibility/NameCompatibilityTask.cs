@@ -32,10 +32,14 @@ namespace HASS.Agent.Compatibility
 
             foreach (var sensor in sensors)
             {
-                var currentConfiguredSensor = sensor is AbstractSingleValueSensor
-                    ? StoredSensors.ConvertAbstractSingleValueToConfigured(sensor as AbstractSingleValueSensor)
-                    : StoredSensors.ConvertAbstractMultiValueToConfigured(sensor as AbstractMultiValueSensor);
-
+ 
+                var currentConfiguredSensor = AbstractToConfigured(sensor);
+                if (currentConfiguredSensor == null)
+                {
+                    Log.Warning("[COMPATTASK] Client: skipping {name}, cannot convert", sensor.Name);
+                    continue;
+                }
+                
                 if (!sensor.EntityName.Contains(SharedHelperFunctions.GetSafeConfiguredDeviceName())
                     && !sensor.Name.Contains(SharedHelperFunctions.GetSafeConfiguredDeviceName()))
                 {
@@ -48,10 +52,13 @@ namespace HASS.Agent.Compatibility
                 var objectId = $"{SharedHelperFunctions.GetSafeConfiguredDeviceName()}_{newName}";
                 if (objectId == sensor.EntityName)
                 {
-                    var newConfiguredSensor = sensor is AbstractSingleValueSensor
-                    ? StoredSensors.ConvertAbstractSingleValueToConfigured(sensor as AbstractSingleValueSensor)
-                    : StoredSensors.ConvertAbstractMultiValueToConfigured(sensor as AbstractMultiValueSensor);
-
+                    var newConfiguredSensor = AbstractToConfigured(sensor);
+                    if (newConfiguredSensor == null)
+                    {
+                        Log.Warning("[COMPATTASK] Client: skipping {name}, cannot convert in step 2", sensor.Name);
+                        continue;
+                    }
+                    
                     newConfiguredSensor.EntityName = newEntityName;
                     newConfiguredSensor.Name = newName;
                     configuredSensors.Add(newConfiguredSensor);
@@ -67,6 +74,16 @@ namespace HASS.Agent.Compatibility
             return (configuredSensors, toBeDeletedSensors);
         }
 
+        private ConfiguredSensor? AbstractToConfigured(AbstractDiscoverable sensor)
+        {
+            return sensor switch
+            {
+                AbstractSingleValueSensor valueSensor => StoredSensors.ConvertAbstractSingleValueToConfigured(valueSensor),
+                AbstractMultiValueSensor multiValueSensor => StoredSensors.ConvertAbstractMultiValueToConfigured(multiValueSensor),
+                _ => null
+            };
+        }
+        
         private (List<ConfiguredCommand>, List<ConfiguredCommand>) ConvertClientCommands(List<AbstractCommand> commands)
         {
             var configuredCommands = new List<ConfiguredCommand>();
@@ -75,7 +92,12 @@ namespace HASS.Agent.Compatibility
             foreach (var command in commands)
             {
                 var currentConfiguredCommand = StoredCommands.ConvertAbstractToConfigured(command);
-
+                if (currentConfiguredCommand == null)
+                {
+                    Log.Warning("[COMPATTASK] Client: skipping {name}, cannot convert", command.Name);
+                    continue;
+                }
+                
                 if (!command.EntityName.Contains(SharedHelperFunctions.GetSafeConfiguredDeviceName())
                     && !command.Name.Contains(SharedHelperFunctions.GetSafeConfiguredDeviceName()))
                 {
@@ -89,6 +111,12 @@ namespace HASS.Agent.Compatibility
                 if (objectId == command.EntityName)
                 {
                     var newConfiguredCommand = StoredCommands.ConvertAbstractToConfigured(command);
+                    if (newConfiguredCommand == null)
+                    {
+                        Log.Warning("[COMPATTASK] Client: skipping {name}, cannot convert in step 2", command.Name);
+                        continue;
+                    }
+                    
                     newConfiguredCommand.EntityName = newEntityName;
                     newConfiguredCommand.Name = newName;
                     configuredCommands.Add(newConfiguredCommand);

@@ -7,6 +7,8 @@ namespace HASS.Agent.Shared.Models.HomeAssistant
     /// </summary>
     public abstract class AbstractDiscoverable
     {
+        public const string EmptyString = "";
+        
         public string Domain { get; set; } = "switch";
         public string EntityName { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;

@@ -25,7 +25,7 @@ namespace HASS.Agent.HomeAssistant.Commands.InternalCommands
                 return;
             }
 
-            webViewPackage.Id = entityName;
+            webViewPackage.Id = entityName ?? DefaultName;
             _webViewInfo = webViewPackage;
         }
 

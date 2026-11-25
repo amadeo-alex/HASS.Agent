@@ -17,18 +17,18 @@ namespace HASS.Agent.Managers.DeviceSensors
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
-        private readonly Accelerometer _accelerometer;
+        private readonly Accelerometer? _accelerometer;
 
         public bool Available => _accelerometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Accelerometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _accelerometer.GetCurrentReading();
+                var sensorReading = _accelerometer?.GetCurrentReading();
                 if(sensorReading == null)
                     return null;
 
@@ -53,7 +53,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public AccelerometerSensor(Accelerometer accelerometer)
+        public AccelerometerSensor(Accelerometer? accelerometer)
         {
             _accelerometer = accelerometer;
             if (_accelerometer != null)

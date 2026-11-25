@@ -26,11 +26,11 @@ namespace HASS.Agent.HomeAssistant
     /// </summary>
     internal static class HassApiManager
     {
-        private static ConfigClient _configClient;
-        private static ServiceClient _serviceClient;
-        private static EntityClient _entityClient;
-        private static StatesClient _statesClient;
-        private static EventClient _eventClient;
+        private static ConfigClient? _configClient;
+        private static ServiceClient? _serviceClient;
+        private static EntityClient? _entityClient;
+        private static StatesClient? _statesClient;
+        private static EventClient? _eventClient;
 
         internal static HassManagerStatus ManagerStatus = HassManagerStatus.Initialising;
 
@@ -190,7 +190,7 @@ namespace HASS.Agent.HomeAssistant
         private static async Task<bool> GetConfig()
         {
             var runningTimer = Stopwatch.StartNew();
-            Exception err = null;
+            Exception? err = null;
 
             if (!ClientFactory.IsInitialized)
             {
@@ -297,7 +297,8 @@ namespace HASS.Agent.HomeAssistant
         /// <param name="allowUntrustedCertificates"></param>
         /// <param name="clientCertificate"></param>
         /// <returns></returns>
-        internal static async Task<(bool success, string message)> CheckHassConfigAsync(string uri, string apiKey, bool automaticClientCertificate = false, bool allowUntrustedCertificates = true, string clientCertificate = "")
+        internal static async Task<(bool success, string message)> CheckHassConfigAsync(string uri, string apiKey, bool automaticClientCertificate = false, bool allowUntrustedCertificates = true,
+            string clientCertificate = "")
         {
             try
             {
@@ -357,7 +358,7 @@ namespace HASS.Agent.HomeAssistant
         {
             // todo: check data values
             return !string.IsNullOrEmpty(Variables.AppSettings.HassUri)
-                && !string.IsNullOrEmpty(Variables.AppSettings.HassToken);
+                   && !string.IsNullOrEmpty(Variables.AppSettings.HassToken);
         }
 
         /// <summary>
@@ -368,6 +369,11 @@ namespace HASS.Agent.HomeAssistant
         /// <returns></returns>
         private static async Task LoadDomain(string domainName, List<string> entityList)
         {
+            if (_entityClient == null)
+            {
+                return;
+            }
+
             var entities = await _entityClient.GetEntities(domainName);
             foreach (var entity in entities)
             {
@@ -498,10 +504,14 @@ namespace HASS.Agent.HomeAssistant
                 }
 
                 var service = DetermineServiceForDomain(entity.Domain, action);
+                if (_serviceClient == null)
+                {
+                    return false;
+                }
+                
                 _ = await _serviceClient.CallService(service, $@"{{""entity_id"":""{fullEntity}""}}");
 
                 Log.Information("[HASS_API] [{domain}.{entity}] Action completed: {action}", domainVal, entityVal, actionVal);
-
                 return true;
             }
             catch (Exception ex)
@@ -563,7 +573,10 @@ namespace HASS.Agent.HomeAssistant
                         var entityVal = entity.Entity.ToLower();
                         var fullEntity = $"{domainVal}.{entityVal}";
 
-                        _ = await _statesClient.GetState(fullEntity);
+                        if (_statesClient != null)
+                        {
+                            _ = await _statesClient.GetState(fullEntity);
+                        }
 
                         if (Variables.ShuttingDown)
                             return;
@@ -590,7 +603,9 @@ namespace HASS.Agent.HomeAssistant
 
                             NotFoundEntities.Add(notFoundEntity);
 
-                            Log.Warning("[HASS_API] Server returned 404 (not found) while getting entity state. This can happen after a server reboot, or if you've deleted the entity. If the problem persists, please file a ticket on github.\r\nEntity: {entity}\r\nError message: {err}", notFoundEntity, ex.Message);
+                            Log.Warning(
+                                "[HASS_API] Server returned 404 (not found) while getting entity state. This can happen after a server reboot, or if you've deleted the entity. If the problem persists, please file a ticket on github.\r\nEntity: {entity}\r\nError message: {err}",
+                                notFoundEntity, ex.Message);
 
                             continue;
                         }
@@ -658,6 +673,11 @@ namespace HASS.Agent.HomeAssistant
         /// <param name="payload"></param>
         public static async Task FireEvent(string type, object payload)
         {
+            if (_eventClient == null)
+            {
+                return;
+            }
+
             await _eventClient.FireEvent(type, payload);
         }
     }

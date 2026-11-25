@@ -80,7 +80,7 @@ namespace HASS.Agent.Forms.QuickActions
             }
 
             // load in gui
-            CbAction.DataSource = new BindingSource(_hassActionEntityTypes, null);
+            CbAction.DataSource = new BindingSource(_hassActionEntityTypes, "");
             
             LvDomain.BeginUpdate();
             foreach (var domain in _hassDomainEntityTypes)
@@ -225,7 +225,7 @@ namespace HASS.Agent.Forms.QuickActions
         private void BtnStore_Click(object sender, EventArgs e)
         {
             // get and check entity
-            var entity = CbEntity.SelectedItem.ToString();
+            var entity = CbEntity.SelectedItem?.ToString();
             if (string.IsNullOrEmpty(entity))
             {
                 MessageBoxAdv.Show(this, Languages.QuickActionsMod_BtnStore_MessageBox1, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -245,7 +245,11 @@ namespace HASS.Agent.Forms.QuickActions
             var domain = (HassDomain)domainId;
 
             // get and check action
-            var actionItem = (KeyValuePair<int, string>)CbAction.SelectedItem;
+            if (CbAction.SelectedItem is not KeyValuePair<int, string> actionItem)
+            {
+                return;
+            }
+            
             var action = (HassAction)actionItem.Key;
 
             // get and check hotkey
@@ -477,7 +481,7 @@ namespace HASS.Agent.Forms.QuickActions
             ListViewTheme.ShowScrollBar(LvDomain.Handle, ListViewTheme.SB_HORZ, false);
         }
         
-        private void TbQuickActionsHotkey_KeyDown(object sender, KeyEventArgs e)
+        private void TbQuickActionsHotkey_KeyDown(object? sender, KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
 

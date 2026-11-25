@@ -82,20 +82,27 @@ namespace HASS.Agent.Forms.Commands
         /// </summary>
         private void ModifySelectedCommand()
         {
-            // are we currently storing them?
-            if (_storing) return;
-
-            // check for selected rows
-            if (LvCommands.SelectedItems.Count == 0) return;
+            // are we currently storing them? || check for selected rows
+            if (_storing || LvCommands.SelectedItems.Count == 0)
+            {
+                return;
+            }
 
             // we can just modify one, so the first
             var guid = Guid.Parse(LvCommands.SelectedItems[0].Text);
             var selectedCommand = (_commands).Find(x => x.Id == guid);
+            if (selectedCommand == null)
+            {
+                return;
+            }
 
             // show modding form
             using var command = new CommandsMod(selectedCommand);
             var res = command.ShowDialog();
-            if (res != DialogResult.OK) return;
+            if (res != DialogResult.OK)
+            {
+                return;
+            }
 
             // update in temp list
             _commands[_commands.FindIndex(x => x.Id == command.Command.Id)] = command.Command;
@@ -119,6 +126,10 @@ namespace HASS.Agent.Forms.Commands
                 // get object
                 var guid = Guid.Parse(row.Text);
                 var selectedCommand = _commands.Find(x => x.Id == guid);
+                if (selectedCommand == null)
+                {
+                    return;
+                }
 
                 // add to to-be-deleted list
                 _toBeDeletedCommands.Add(selectedCommand);

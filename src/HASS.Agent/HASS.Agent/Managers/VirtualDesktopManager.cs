@@ -89,7 +89,7 @@ internal static class VirtualDesktopManager
         }
     }
 
-    internal static VirtualDesktop GetCurrentDesktop()
+    internal static VirtualDesktop? GetCurrentDesktop()
     {
         if (!Initialized)
         {

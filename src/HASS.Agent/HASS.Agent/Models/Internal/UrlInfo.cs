@@ -2,12 +2,7 @@
 {
     public class UrlInfo
     {
-        public UrlInfo()
-        {
-            //
-        }
-
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
         public bool Incognito { get; set; }
     }
 }

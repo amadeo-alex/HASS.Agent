@@ -54,7 +54,10 @@ namespace HASS.Agent.Shared.HomeAssistant.Sensors.WmiSensors.SingleValue
                 }
             }
 
-            if (totalMemory == null) return string.Empty;
+            if (totalMemory == 0 || freeMemory == 0)
+            {
+                return string.Empty;
+            }
 
             decimal totalMemoryDec = totalMemory; //NOTE(Amadeo): no idea why, check at some point if this is even required
             decimal freeMemoryDec = freeMemory;

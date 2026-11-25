@@ -53,7 +53,7 @@ namespace HASS.Agent.Managers
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
         /// <exception cref="NotImplementedException"></exception>
-        internal static void CurrentDomainOnFirstChanceException(object sender, FirstChanceExceptionEventArgs eventArgs)
+        internal static void CurrentDomainOnFirstChanceException(object? sender, FirstChanceExceptionEventArgs eventArgs)
         {
             try
             {

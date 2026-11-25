@@ -11,11 +11,6 @@ namespace HASS.Agent.Models.Internal
 {
     public class SensorInfoCard
     {
-        public SensorInfoCard()
-        {
-            //
-        }
-
         public SensorInfoCard(SensorType sensorType, string description, int refreshTimer, bool multiValue, bool agentCompatible, bool satelliteCompatible)
         {
             var (key, name) = sensorType.GetLocalizedDescriptionAndKey();

@@ -84,7 +84,7 @@ namespace HASS.Agent.Functions
         private static extern IntPtr OpenService(IntPtr hSCManager, string lpServiceName, uint dwDesiredAccess);
 
         [DllImport("advapi32.dll", EntryPoint = "OpenSCManagerW", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr OpenSCManager(string machineName, string databaseName, uint dwAccess);
+        private static extern IntPtr OpenSCManager(string? machineName, string? databaseName, uint dwAccess);
 
         [DllImport("advapi32.dll", EntryPoint = "CloseServiceHandle")]
         private static extern int CloseServiceHandle(IntPtr hSCObject);

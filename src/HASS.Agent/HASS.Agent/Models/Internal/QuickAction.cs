@@ -15,24 +15,19 @@ namespace HASS.Agent.Models.Internal
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class QuickAction
     {
-        public QuickAction()
-        {
-            //
-        }
-
         public Guid Id { get; set; } = Guid.Empty;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public HassDomain Domain { get; set; }
 
-        public string Entity { get; set; }
+        public string Entity { get; set; } = string.Empty;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public HassAction Action { get; set; }
 
         public bool HotKeyEnabled { get; set; }
-        public string HotKey { get; set; }
+        public string HotKey { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

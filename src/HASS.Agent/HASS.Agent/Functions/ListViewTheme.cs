@@ -86,7 +86,7 @@ namespace HASS.Agent.Functions
             {
                 return;
             }
-            
+
             // get variables
             var flags = GetTextAlignment(listView, e.ColumnIndex);
             var itemColor = e.Item.ForeColor;
@@ -113,6 +113,7 @@ namespace HASS.Agent.Functions
             {
                 return;
             }
+
             // draw the text
             TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, e.Bounds, itemColor, flags);
         }
@@ -126,25 +127,35 @@ namespace HASS.Agent.Functions
             }
 
             // draw the text in the right color
-            var tag = (string)e.Header.Tag ?? string.Empty;
-            if (tag != "hide")
+            var tag = (e.Header?.Tag as string) ?? string.Empty;
+            if (tag != "hide" && e.Font != null)
             {
                 // regular
                 using var foreBrush = new SolidBrush(ForeColor);
-                e.Graphics.DrawString(e.Header.Text, e.Font, foreBrush, new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 2, e.Bounds.Width, e.Bounds.Height));
+                e.Graphics.DrawString(e.Header?.Text, e.Font, foreBrush, new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 2, e.Bounds.Width, e.Bounds.Height));
             }
-            else
+            else if (e.Font != null)
             {
                 // hidden (but written, for accessibility)
                 using var foreBrush = new SolidBrush(HeaderColor);
-                e.Graphics.DrawString(e.Header.Text, e.Font, foreBrush, new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 2, e.Bounds.Width, e.Bounds.Height));
+                e.Graphics.DrawString(e.Header?.Text, e.Font, foreBrush, new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 2, e.Bounds.Width, e.Bounds.Height));
             }
 
             // check if there's an image set
-            if (string.IsNullOrEmpty(e.Header.ImageKey) || e.Header.ImageKey == "(none)" || e.Header.ImageList == null) return;
+            if (string.IsNullOrEmpty(e.Header?.ImageKey) || e.Header.ImageKey == "(none)" || e.Header.ImageList == null) return;
 
             // yep, draw it
-            e.Graphics.DrawImage(e.Header.ImageList.Images[e.Header.ImageKey], new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 4, 16, 16), 0, 0, 16, 16, GraphicsUnit.Pixel);
+            var imageKey = e.Header?.ImageKey;
+            if (imageKey == null)
+            {
+                return;
+            }
+
+            var image = e.Header?.ImageList.Images[imageKey];
+            if (image != null)
+            {
+                e.Graphics.DrawImage(image, new Rectangle(e.Bounds.X + 6, e.Bounds.Y + 4, 16, 16), 0, 0, 16, 16, GraphicsUnit.Pixel);
+            }
         }
 
         /// <summary>

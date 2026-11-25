@@ -14,10 +14,17 @@ namespace HASS.Agent.Extensions
     {
         internal static MediaRequest ParseApiMediaRequest(this NameValueCollection queryString)
         {
-            if (queryString == null || queryString.Count == 0) return new MediaRequest();
+            if (queryString.Count == 0)
+            {
+                return new MediaRequest();
+            }
 
             // todo: we currently just use one key, might change in the future
             var key = queryString.Keys[0];
+            if (key == null)
+            {
+                return new MediaRequest();
+            }
 
             // get the request type
             var requestType = key.EnumMemberToEnum<MediaRequestType>();

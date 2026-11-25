@@ -12,7 +12,7 @@ namespace HASS.Agent.HomeAssistant.Commands.InternalCommands
     {
         private const string DefaultName = "radiocommand";
 
-        private Radio _radio;
+        private Radio? _radio;
 
         public string RadioName { get; set; }
 

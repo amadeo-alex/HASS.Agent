@@ -89,7 +89,7 @@ namespace HASS.Agent.Forms.Commands
 			foreach (var radioName in RadioManager.AvailableRadioNames)
 				_radioDevices[radioName] = radioName; //TODO: that's ugly
 
-			CbEntityType.DataSource = new BindingSource(_commandEntityTypes, null);
+			CbEntityType.DataSource = new BindingSource(_commandEntityTypes, "");
 
 			LvCommands.BeginUpdate();
 			foreach (var command in CommandsManager.CommandInfoCards.Select(x => x.Value))
@@ -620,7 +620,7 @@ namespace HASS.Agent.Forms.Commands
             }
 
 			TbSelectedType.Text = commandCard.CommandType.ToString();
-			TbDescription.Text = CommandsManager.GetCommandDefaultInfo(commandCard.CommandType).Description;
+			TbDescription.Text = CommandsManager.GetCommandDefaultInfo(commandCard.CommandType)!.Description;
 
 			switch (commandCard.CommandType)
 			{
@@ -670,7 +670,7 @@ namespace HASS.Agent.Forms.Commands
                     break;
 
 				case CommandType.RadioCommand:
-					CbConfigDropdown.DataSource = new BindingSource(_radioDevices, null);
+					CbConfigDropdown.DataSource = new BindingSource(_radioDevices, "");
 					SetRadioUi();
 					break;
                 
@@ -1129,7 +1129,7 @@ namespace HASS.Agent.Forms.Commands
 				return;
 			}
 
-			var topic = $"{Variables.MqttManager.MqttDiscoveryPrefix()}/{entityType.GetEnumMemberValue()}/{deviceConfig.Name}/{name}/action";
+			var topic = $"{Variables.MqttManager!.MqttDiscoveryPrefix()}/{entityType.GetEnumMemberValue()}/{deviceConfig.Name}/{name}/action";
 
 			var form = new CommandMqttTopic(topic);
 			form.FormClosed += delegate { form.Dispose(); };

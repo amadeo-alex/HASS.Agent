@@ -61,10 +61,12 @@ namespace HASS.Agent.Forms.Sensors
             BindComboBoxTheme();
         }
 
-        private void CbIgnoreAvailability_CheckedChanged(object sender, EventArgs e)
+        private void CbIgnoreAvailability_CheckedChanged(object? sender, EventArgs e)
         {
-            if ((sender as CheckBox).Checked)
+            if ((sender as CheckBox)?.Checked == true)
+            {
                 MessageBoxAdv.Show(this, Languages.SensorsMod_IgnoreAvailability_Info, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void SetCbIgnoreAvailability(bool check)
@@ -115,7 +117,7 @@ namespace HASS.Agent.Forms.Sensors
             CbIgnoreAvailability.CheckedChanged += CbIgnoreAvailability_CheckedChanged;
 
             // load in gui
-            CbNetworkCard.DataSource = new BindingSource(_networkCards, null);
+            CbNetworkCard.DataSource = new BindingSource(_networkCards, "");
 
             // load or set sensor
             if (Sensor.Id == Guid.Empty)
@@ -319,12 +321,12 @@ namespace HASS.Agent.Forms.Sensors
                     break;
 
                 case SensorType.NetworkSensors:
-                    CbNetworkCard.DataSource = new BindingSource(_networkCards, null);
+                    CbNetworkCard.DataSource = new BindingSource(_networkCards, "");
                     SetNetworkGui();
                     break;
 
                 case SensorType.InternalDeviceSensor:
-                    CbNetworkCard.DataSource = new BindingSource(_internalSensors, null);
+                    CbNetworkCard.DataSource = new BindingSource(_internalSensors, "");
                     SetInternalSensorGui();
                     break;
 

@@ -25,7 +25,7 @@ namespace HASS.Agent.Media
 
         private static string _lastError = string.Empty;
 
-        private static GlobalSystemMediaTransportControlsSessionManager _sessionManager;
+        private static GlobalSystemMediaTransportControlsSessionManager? _sessionManager;
 
         internal static MediaPlayerState State { get; private set; } = MediaPlayerState.Idle;
         internal static string Playing { get; private set; } = string.Empty;
@@ -148,7 +148,7 @@ namespace HASS.Agent.Media
                                 await using var stream = reference.AsStreamForRead();
 
                                 var haMessageBuilder = new MqttApplicationMessageBuilder()
-                                    .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig.Name}/thumbnail")
+                                    .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig!.Name}/thumbnail")
                                     .WithPayload(stream)
                                     .WithRetainFlag();
 
@@ -157,7 +157,7 @@ namespace HASS.Agent.Media
                             else
                             {
                                 var haMessageBuilder = new MqttApplicationMessageBuilder()
-                                    .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig.Name}/thumbnail")
+                                    .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig!.Name}/thumbnail")
                                     .WithPayload(Array.Empty<byte>())
                                     .WithRetainFlag();
 
@@ -224,7 +224,7 @@ namespace HASS.Agent.Media
                     if (Variables.AppSettings.MqttEnabled)
                     {
                         var haMessageBuilder = new MqttApplicationMessageBuilder()
-                            .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig.Name}/state")
+                            .WithTopic($"hass.agent/media_player/{Variables.DeviceConfig!.Name}/state")
                             .WithPayload(JsonConvert.SerializeObject(message, MqttManager.JsonSerializerSettings));
                         await Variables.MqttManager.PublishAsync(haMessageBuilder.Build());
                     }
@@ -235,7 +235,7 @@ namespace HASS.Agent.Media
             }
         }
 
-        private static GlobalSystemMediaTransportControlsSession GetCurrentMediaSession()
+        private static GlobalSystemMediaTransportControlsSession? GetCurrentMediaSession()
         {
             // get the current sessions
             var sessions = _sessionManager.GetSessions();
@@ -417,18 +417,18 @@ namespace HASS.Agent.Media
                 }
 
                 // pause if we're playing
-                if (Variables.MediaPlayer.CurrentState == Windows.Media.Playback.MediaPlayerState.Playing)
+                if (Variables.MediaPlayer?.CurrentState == Windows.Media.Playback.MediaPlayerState.Playing)
                 {
                     Variables.MediaPlayer.Pause();
                 }
 
                 // set the uri source
-                Variables.MediaPlayer.Source = MediaSource.CreateFromUri(new Uri(audioUri));
+                Variables.MediaPlayer?.Source = MediaSource.CreateFromUri(new Uri(audioUri));
 
                 if (Variables.ExtendedLogging) Log.Information("[MEDIA] Playing: {file}", Path.GetFileName(audioUri));
 
                 // play it
-                Variables.MediaPlayer.Play();
+                Variables.MediaPlayer?.Play();
             }
             catch (Exception ex)
             {
@@ -445,7 +445,7 @@ namespace HASS.Agent.Media
             try
             {
                 var session = GetCurrentMediaSession();
-                await session.TryChangePlaybackPositionAsync(position);
+                await session?.TryChangePlaybackPositionAsync(position);
             }
             catch (Exception ex)
             {

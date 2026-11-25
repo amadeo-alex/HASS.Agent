@@ -4,16 +4,16 @@ namespace HASS.Agent.Models.HomeAssistant
 {
     public class NotificationAction
     {
-        public string Action { get; set; }
-        public string Title { get; set; }
-        public string Uri { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Uri { get; set; } = string.Empty;
     }
 
     public class NotificationInput
     {
-        public string Id { get; set; }
-        public string Text { get; set; }
-        public string Title { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
     }
 
     public class NotificationData
@@ -38,9 +38,9 @@ namespace HASS.Agent.Models.HomeAssistant
 
     public class Notification
     {
-        public string Message { get; set; }
-        public string Title { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
-        public NotificationData Data { get; set; }
+        public NotificationData? Data { get; set; }
     }
 }

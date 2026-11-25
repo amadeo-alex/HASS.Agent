@@ -16,10 +16,10 @@ public static partial class CameraManager
     private static readonly object StartLock = new();
     private static bool _startAttempted;
     
-    private static ReportCallback _callback;
-    private static IMFSensorActivityMonitor _monitor;
+    private static ReportCallback? _callback;
+    private static IMFSensorActivityMonitor? _monitor;
     
-    private static volatile int[] _streamingProcessIds;
+    private static volatile int[]? _streamingProcessIds;
 
     private static void Start()
     {

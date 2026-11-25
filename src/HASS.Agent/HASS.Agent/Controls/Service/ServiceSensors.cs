@@ -102,8 +102,13 @@ namespace HASS.Agent.Controls.Service
             var guid = Guid.Parse(LvSensors.SelectedItems[0].Text);
             var selectedSensor = _sensors.Find(x => x.Id == guid);
 
+            if (selectedSensor == null)
+            {
+                return;
+            }
+            
             // show modding form
-            using var sensor = new SensorsMod(selectedSensor, true, _deviceName);
+            using var sensor = new SensorsMod(selectedSensor, true, _deviceName ?? string.Empty);
             var res = sensor.ShowDialog();
             if (res != DialogResult.OK) return;
 
@@ -144,7 +149,7 @@ namespace HASS.Agent.Controls.Service
         /// <param name="e"></param>
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            using var sensor = new SensorsMod(true, _deviceName);
+            using var sensor = new SensorsMod(true, _deviceName ?? string.Empty);
             var res = sensor.ShowDialog();
             if (res != DialogResult.OK) return;
 

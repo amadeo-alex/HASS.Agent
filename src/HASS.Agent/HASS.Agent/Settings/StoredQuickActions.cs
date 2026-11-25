@@ -43,17 +43,18 @@ namespace HASS.Agent.Settings
                 }
 
                 // deserialize
-                Variables.QuickActions = JsonConvert.DeserializeObject<List<QuickAction>>(quickActionsRaw);
+                var deserializedQuickActions = JsonConvert.DeserializeObject<List<QuickAction>>(quickActionsRaw);
 
                 // null-check
-                if (Variables.QuickActions == null)
+                if (deserializedQuickActions == null)
                 {
                     Log.Error("[SETTINGS_QUICKACTIONS] Error loading entities: returned null object");
                     Variables.MainForm?.SetQuickActionsStatus(ComponentStatus.Failed);
-                    Variables.QuickActions = new List<QuickAction>();
                     return false;
                 }
-
+                
+                Variables.QuickActions = deserializedQuickActions;
+                
                 // all good
                 Log.Information("[SETTINGS_QUICKACTIONS] Loaded {count} entities", Variables.QuickActions.Count);
                 Variables.MainForm?.SetQuickActionsStatus(ComponentStatus.Ok);

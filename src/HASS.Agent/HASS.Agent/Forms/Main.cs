@@ -173,7 +173,7 @@ namespace HASS.Agent.Forms
             }
         }
 
-        private void OnProcessExit(object sender, EventArgs e)
+        private void OnProcessExit(object? sender, EventArgs e)
         {
             AudioManager.Shutdown();
             NotificationManager.Exit();
@@ -317,7 +317,7 @@ namespace HASS.Agent.Forms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HotkeyListener_HotkeyPressed(object sender, HotkeyEventArgs e)
+        private void HotkeyListener_HotkeyPressed(object? sender, HotkeyEventArgs e)
         {
             if (e.Name == Variables.QuickActionsHotKey)
                 ShowQuickActions();

@@ -42,6 +42,6 @@ namespace HASS.Agent.Shared.Models.Internal
         /// <summary>
         /// The device interface ID, or the kernel device name for registry-only ports
         /// </summary>
-        public string Id { get; set; } = string.Empty;
+        public string? Id { get; set; } = string.Empty;
     }
 }

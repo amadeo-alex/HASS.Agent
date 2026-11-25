@@ -20,8 +20,11 @@ namespace HASS.Agent.Extensions
             var enumType = typeof(T);
             foreach (var name in Enum.GetNames(enumType))
             {
-                var enumMemberAttribute = (((EnumMemberAttribute[])enumType.GetField(name)?.GetCustomAttributes(typeof(EnumMemberAttribute), true)) ?? Array.Empty<EnumMemberAttribute>()).Single();
-                if (enumMemberAttribute.Value == enumMemberValue) return (T)Enum.Parse(enumType, name);
+                var enumMemberAttribute = ((enumType.GetField(name)?.GetCustomAttributes(typeof(EnumMemberAttribute), true) as EnumMemberAttribute[]) ?? Array.Empty<EnumMemberAttribute>()).Single();
+                if (enumMemberAttribute.Value == enumMemberValue)
+                {
+                    return (T)Enum.Parse(enumType, name);
+                }
             }
 
             return default;

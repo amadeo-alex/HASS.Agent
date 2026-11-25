@@ -165,9 +165,9 @@ namespace HASS.Agent
             User32.SetForegroundWindow(process.MainWindowHandle);
         }
 
-        private static void OnActivated(object sender, AppActivationArguments args)
+        private static void OnActivated(object? sender, AppActivationArguments args)
         {
-            Variables.MainForm.Invoke(new MethodInvoker(Variables.MainForm.Show)); //NOTE(Amadeo): potential place to handle any advanced or third-party activation
+            Variables.MainForm?.Invoke(new MethodInvoker(Variables.MainForm.Show)); //NOTE(Amadeo): potential place to handle any advanced or third-party activation
         }
 
         /// <summary>

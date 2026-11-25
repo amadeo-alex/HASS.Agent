@@ -12,7 +12,7 @@ namespace HASS.Agent.Forms.Commands.CommandConfig;
 public partial class AdvancedSensorSettings : MetroForm
 {
 
-    public SensorAdvancedSettings AdvancedSettings { get; private set; } = null;
+    public SensorAdvancedSettings? AdvancedSettings { get; private set; } = null;
 
     public AdvancedSensorSettings(string wmiAdvancedInfo = "")
     {

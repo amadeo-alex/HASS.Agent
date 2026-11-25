@@ -8,7 +8,7 @@ namespace HASS.Agent.Forms.Service
 {
     public partial class ServiceConfig : MetroForm
     {
-        private ServiceConnect _connect;
+        private ServiceConnect? _connect;
         private readonly ServiceGeneral _general = new();
         private readonly ServiceSensors _sensors = new();
         private readonly ServiceCommands _commands = new();

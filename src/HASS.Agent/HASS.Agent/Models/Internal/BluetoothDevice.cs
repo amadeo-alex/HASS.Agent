@@ -20,14 +20,9 @@ namespace HASS.Agent.Models.Internal
 
     public class BluetoothDevice
     {
-        public BluetoothDevice()
-        {
-            //
-        }
-
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Kind { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Kind { get; set; } = string.Empty;
         public bool Paired { get; set; }
         public bool Connected { get; set; }
         public DateTime LastSeenUtc { get; set; }

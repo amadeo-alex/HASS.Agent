@@ -10,7 +10,7 @@ namespace HASS.Agent.Controls.Service
 {
     public partial class ServiceCommands : UserControl
     {
-        private string _deviceName;
+        private string? _deviceName;
         private readonly List<ConfiguredCommand> _commands = new();
 
         private bool _storing = false;
@@ -94,18 +94,22 @@ namespace HASS.Agent.Controls.Service
         /// </summary>
         private void ModifySelectedCommand()
         {
-            // are we currently storing them?
-            if (_storing) return;
-
-            // check for selected rows
-            if (LvCommands.SelectedItems.Count == 0) return;
+            // are we currently storing them? || check for selected rows
+            if (_storing || LvCommands.SelectedItems.Count == 0)
+            {
+                return;
+            }
 
             // we can just modify one, so the first
             var guid = Guid.Parse(LvCommands.SelectedItems[0].Text);
             var selectedCommand = (_commands).Find(x => x.Id == guid);
+            if (selectedCommand == null)
+            {
+                return;
+            }
 
             // show modding form
-            using var command = new CommandsMod(selectedCommand, true, _deviceName);
+            using var command = new CommandsMod(selectedCommand, true, _deviceName ?? string.Empty);
             var res = command.ShowDialog();
             if (res != DialogResult.OK) return;
 
@@ -146,7 +150,7 @@ namespace HASS.Agent.Controls.Service
         /// <param name="e"></param>
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            using var command = new CommandsMod(true, _deviceName);
+            using var command = new CommandsMod(true, _deviceName ?? string.Empty);
             var res = command.ShowDialog();
             if (res != DialogResult.OK) return;
 

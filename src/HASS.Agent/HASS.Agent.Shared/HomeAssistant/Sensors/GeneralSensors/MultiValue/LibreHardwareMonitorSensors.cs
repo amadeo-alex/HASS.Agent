@@ -111,7 +111,7 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
 
     public override sealed Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public LibreHardwareMonitorSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string endpointUrl = DefaultEndpointUrl, string sensorTypes = "", string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id)
+    public LibreHardwareMonitorSensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string endpointUrl = DefaultEndpointUrl, string sensorTypes = EmptyString, string id = EmptyString) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id)
     {
         _updateInterval = updateInterval ?? 30;
 
@@ -132,11 +132,11 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
             Sensors[sensorId] = sensor;
     }
 
-    public override sealed void UpdateSensorValues()
+    public sealed override void UpdateSensorValues()
     {
         var parentSensorSafeName = SharedHelperFunctions.GetSafeValue(EntityName);
 
-        if (!HttpJsonManager.TryFetch(EndpointUrl, out var document, out var error))
+        if (!HttpJsonManager.TryFetch(EndpointUrl, out var document, out var error) || document == null)
         {
             // the existing sensors are kept, so their last known values stay available while the endpoint is down
             Log.Warning("[LIBREHARDWAREMONITOR] [{name}] Endpoint '{url}' unavailable: {err}", EntityName, EndpointUrl, error);
@@ -150,7 +150,7 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
             var newSensors = new List<AbstractSingleValueSensor>();
 
             var readings = new List<Reading>();
-            CollectReadings(document, new List<string>(), readings);
+            CollectReadings(document, [], readings);
 
             SetReadingNames(readings);
 
@@ -230,19 +230,23 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
         ancestors.RemoveAt(ancestors.Count - 1);
     }
 
-    private Reading CreateReading(JToken node, string sensorId, IReadOnlyList<string> ancestors)
+    private Reading? CreateReading(JToken node, string sensorId, IReadOnlyList<string> ancestors)
     {
         var sensorType = node.Value<string>("Type") ?? string.Empty;
 
         if (_typeFilter.Count > 0 && !_typeFilter.Contains(sensorType))
+        {
             return null;
+        }
 
         var text = node.Value<string>("Text") ?? string.Empty;
         var mapping = GetTypeMapping(sensorType, text);
 
         // skips the sensors reporting 'NaN' or '-', which have no value to publish
         if (!TryReadValue(node, mapping, out var value, out var unit))
+        {
             return null;
+        }
 
         return new Reading
         {
@@ -280,7 +284,7 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
         return TryReadNumber(node["RawValue"], mapping.RawNumberDivisor, out value);
     }
 
-    private static bool TryReadNumber(JToken token, double divisor, out double value)
+    private static bool TryReadNumber(JToken? token, double divisor, out double value)
     {
         value = 0d;
 
@@ -304,7 +308,7 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
         return TryParseValue(token.Value<string>(), out value, out _);
     }
 
-    private static bool TryParseValue(string rawValue, out double value, out string unit)
+    private static bool TryParseValue(string? rawValue, out double value, out string unit)
     {
         value = 0d;
         unit = string.Empty;
@@ -445,7 +449,7 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
         });
     }
 
-    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
 
     private sealed class SensorTypeMapping
     {
@@ -478,13 +482,13 @@ public class LibreHardwareMonitorSensors : AbstractMultiValueSensor
 
     private sealed class Reading
     {
-        internal string SensorId { get; init; }
-        internal string Hardware { get; init; }
-        internal string Text { get; init; }
-        internal string Type { get; init; }
-        internal SensorTypeMapping Mapping { get; init; }
+        internal string SensorId { get; init; } = string.Empty;
+        internal string Hardware { get; init; } = string.Empty;
+        internal string Text { get; init; } = string.Empty;
+        internal string Type { get; init; } = string.Empty;
+        internal SensorTypeMapping Mapping { get; init; } = UnknownTypeMapping;
         internal double Value { get; init; }
-        internal string Unit { get; init; }
-        internal string Name { get; set; }
+        internal string Unit { get; init; } = string.Empty;
+        internal string Name { get; set; } = string.Empty;
     }
 }

@@ -234,6 +234,11 @@ namespace HASS.Agent.Commands
                         .Select(StoredCommands.ConvertConfiguredToAbstract)
                         .Where(abstractCommand => abstractCommand != null))
                     {
+                        if (abstractCommand == null)
+                        {
+                            continue;
+                        }
+                        
                         var commandIndex = Variables.Commands.FindIndex(x => x.Id == abstractCommand.Id);
                         if (commandIndex != -1)
                         {
@@ -255,6 +260,11 @@ namespace HASS.Agent.Commands
                     .Select(StoredCommands.ConvertConfiguredToAbstract)
                     .Where(abstractCommand => abstractCommand != null))
                 {
+                    if (abstractCommand == null)
+                    {
+                        continue;
+                    }
+                    
                     // new, add and register
                     if (Variables.Commands.All(x => x.Id != abstractCommand.Id))
                     {
@@ -309,9 +319,9 @@ namespace HASS.Agent.Commands
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        internal static CommandInfoCard GetCommandDefaultInfo(CommandType type)
+        internal static CommandInfoCard? GetCommandDefaultInfo(CommandType type)
         {
-            return CommandInfoCards.ContainsKey(type) ? CommandInfoCards[type] : null;
+            return CommandInfoCards.GetValueOrDefault(type);
         }
 
         /// <summary>

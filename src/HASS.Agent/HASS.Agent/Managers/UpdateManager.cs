@@ -28,8 +28,10 @@ internal static class UpdateManager
         if (Variables.AppSettings.CheckForUpdates)
         {
             var (isAvailable, version) = await CheckIsUpdateAvailableAsync();
-            if (isAvailable)
+            if (isAvailable && version != null)
+            {
                 ProcessAvailableUpdate(version);
+            }
         }
 
         // start periodic check
@@ -52,7 +54,7 @@ internal static class UpdateManager
                 continue;
 
             var (isAvailable, version) = await CheckIsUpdateAvailableAsync();
-            if (!isAvailable)
+            if (!isAvailable || version == null)
                 continue;
 
             ProcessAvailableUpdate(version);
@@ -72,18 +74,20 @@ internal static class UpdateManager
         Variables.AppSettings.LastUpdateNotificationShown = pendingUpdate.Version;
         SettingsManager.StoreAppSettings();
 
-        Variables.MainForm.ShowUpdateInfo(pendingUpdate);
+        Variables.MainForm?.ShowUpdateInfo(pendingUpdate);
     }
 
     /// <summary>
     /// Queries the GitHub API to determine whether the latest release tag is greater than this version
     /// </summary>
     /// <returns></returns>
-    internal static async Task<(bool isAvailable, PendingUpdate pendingUpdate)> CheckIsUpdateAvailableAsync()
+    internal static async Task<(bool isAvailable, PendingUpdate? pendingUpdate)> CheckIsUpdateAvailableAsync()
     {
         // beta version handling
         if (Variables.AppSettings.ShowBetaUpdates)
+        {
             return await CheckIsBetaUpdateAvailableAsync();
+        }
 
         var pendingUpdate = new PendingUpdate();
 
@@ -119,7 +123,7 @@ internal static class UpdateManager
     /// Queries the GitHub API to determine whether there's a beta update available (or a regular one)
     /// </summary>
     /// <returns></returns>
-    private static async Task<(bool isAvailable, PendingUpdate pendingUpdate)> CheckIsBetaUpdateAvailableAsync()
+    private static async Task<(bool isAvailable, PendingUpdate? pendingUpdate)> CheckIsBetaUpdateAvailableAsync()
     {
         var pendingUpdate = new PendingUpdate();
 
@@ -127,7 +131,7 @@ internal static class UpdateManager
         {
             var client = new GitHubClient(new ProductHeaderValue("HASS.Agent"));
             var latestReleases = await client.Repository.Release.GetAll("hass-agent", "HASS.Agent");
-            Release latestRelease = null;
+            Release? latestRelease = null;
 
             foreach (var release in latestReleases)
             {
@@ -295,7 +299,7 @@ internal static class UpdateManager
                 return false;
             }
 
-            var versionComparison = (VersionComparisonResult)currentVersionClean.CompareTo(availableVersionClean);
+            var versionComparison = (VersionComparisonResult)currentVersionClean!.CompareTo(availableVersionClean);
             switch (versionComparison)
             {
                 // the available version is older, ignore

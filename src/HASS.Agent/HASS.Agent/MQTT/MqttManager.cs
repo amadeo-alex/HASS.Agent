@@ -34,7 +34,7 @@ namespace HASS.Agent.MQTT
     /// </summary>
     public class MqttManager : IMqttManager
     {
-        private IManagedMqttClient _mqttClient = null;
+        private IManagedMqttClient? _mqttClient = null;
 
         private bool _disconnectionNotified = false;
         private bool _connectingFailureNotified = false;
@@ -74,7 +74,7 @@ namespace HASS.Agent.MQTT
         /// Returns the device's config model
         /// </summary>
         /// <returns></returns>
-        public DeviceConfigModel GetDeviceConfigModel() => Variables.DeviceConfig;
+        public DeviceConfigModel? GetDeviceConfigModel() => Variables.DeviceConfig;
 
         /// <summary>
         /// Initialize the MQTT manager, establish a connection
@@ -467,7 +467,7 @@ namespace HASS.Agent.MQTT
                 if (string.IsNullOrEmpty(Variables.AppSettings.MqttDiscoveryPrefix))
                     Variables.AppSettings.MqttDiscoveryPrefix = "homeassistant";
 
-                var topic = $"{Variables.AppSettings.MqttDiscoveryPrefix}/{domain}/{Variables.DeviceConfig.Name}/{discoverable.ObjectId}/config";
+                var topic = $"{Variables.AppSettings.MqttDiscoveryPrefix}/{domain}/{Variables.DeviceConfig!.Name}/{discoverable.ObjectId}/config";
 
                 var messageBuilder = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
@@ -483,7 +483,7 @@ namespace HASS.Agent.MQTT
                     var payload = discoverable.GetAutoDiscoveryConfig();
                     if (discoverable.IgnoreAvailability)
                     {
-                        payload.Availability_topic = null;
+                        payload?.Availability_topic = null;
                     }
 
                     if (Variables.AppSettings.MqttDisableDefaultEntityId)
@@ -498,7 +498,7 @@ namespace HASS.Agent.MQTT
                         }
                     }
 
-                    messageBuilder.WithPayload(JsonConvert.SerializeObject(payload, payload.GetType(), JsonSerializerSettings));
+                    messageBuilder.WithPayload(JsonConvert.SerializeObject(payload, payload?.GetType(), JsonSerializerSettings));
                 }
 
                 await PublishAsync(messageBuilder.Build());
@@ -554,11 +554,11 @@ namespace HASS.Agent.MQTT
                         Variables.AppSettings.MqttDiscoveryPrefix = "homeassistant";
 
                     var messageBuilder = new MqttApplicationMessageBuilder()
-                        .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig.Name}/availability")
+                        .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig!.Name}/availability")
                         .WithPayload(offline ? "offline" : "online")
                         .WithRetainFlag(Variables.AppSettings.MqttUseRetainFlag);
 
-                    await _mqttClient.InternalClient.PublishAsync(messageBuilder.Build());
+                    await _mqttClient!.InternalClient.PublishAsync(messageBuilder.Build());
 
                     var integrationMsgBuilder = new MqttApplicationMessageBuilder()
                         .WithTopic($"hass.agent/devices/{Variables.DeviceConfig.Name}")
@@ -615,11 +615,11 @@ namespace HASS.Agent.MQTT
                     if (string.IsNullOrEmpty(Variables.AppSettings.MqttDiscoveryPrefix))
                         Variables.AppSettings.MqttDiscoveryPrefix = "homeassistant";
                     var messageBuilder = new MqttApplicationMessageBuilder()
-                        .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig.Name}/availability")
+                        .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig!.Name}/availability")
                         .WithPayload(Array.Empty<byte>())
                         .WithRetainFlag(true);
 
-                    await _mqttClient.InternalClient.PublishAsync(messageBuilder.Build());
+                    await _mqttClient!.InternalClient.PublishAsync(messageBuilder.Build());
 
                     messageBuilder = new MqttApplicationMessageBuilder()
                         .WithTopic($"hass.agent/devices/{Variables.DeviceConfig.Name}")
@@ -690,8 +690,8 @@ namespace HASS.Agent.MQTT
             while (!IsConnected())
                 await Task.Delay(250);
 
-            await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Command_topic);
-            await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Action_topic);
+            await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()!).Command_topic);
+            await _mqttClient.SubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()!).Action_topic);
         }
 
         /// <summary>
@@ -737,15 +737,15 @@ namespace HASS.Agent.MQTT
             while (!IsConnected())
                 await Task.Delay(250);
 
-            await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Command_topic);
-            await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()).Action_topic);
+            await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()!).Command_topic);
+            await _mqttClient.UnsubscribeAsync(((CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig()!).Action_topic);
         }
 
         /// <summary>
         /// Prepare the required settings for a MQTT client
         /// </summary>
         /// <returns></returns>
-        private static ManagedMqttClientOptions GetOptions()
+        private static ManagedMqttClientOptions? GetOptions()
         {
             if (string.IsNullOrEmpty(Variables.AppSettings.MqttAddress))
                 return null;
@@ -761,7 +761,7 @@ namespace HASS.Agent.MQTT
             var clientOptionsBuilder = new MqttClientOptionsBuilder()
                 .WithClientId(Variables.AppSettings.MqttClientId)
                 .WithCleanSession()
-                .WithWillTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig.Name}/availability")
+                .WithWillTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/sensor/{Variables.DeviceConfig!.Name}/availability")
                 .WithWillPayload("offline")
                 .WithWillRetain(Variables.AppSettings.MqttUseRetainFlag)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(15));

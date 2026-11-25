@@ -11,11 +11,6 @@ namespace HASS.Agent.Models.Internal
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SupportedUILanguage
     {
-        public SupportedUILanguage()
-        {
-            //
-        }
-
         public SupportedUILanguage(CultureInfo cultureInfo)
         {
             Culture = cultureInfo;

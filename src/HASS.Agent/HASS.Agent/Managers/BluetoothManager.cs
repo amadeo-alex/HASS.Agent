@@ -25,26 +25,28 @@ namespace HASS.Agent.Managers
         private static readonly Dictionary<ulong, BluetoothLeDevice> DetectedLeDevices = new();
         private static readonly Dictionary<ulong, LeLookup> LeLookups = new();
 
-        private static BluetoothLEAdvertisementWatcher _leWatcher;
+        private static BluetoothLEAdvertisementWatcher? _leWatcher;
         private static bool _isWatchingLeDevices;
 
-        private static Task<List<BluetoothDevice>> _devicesQuery;
+        private static Task<List<BluetoothDevice>>? _devicesQuery;
 
         /// <summary>
         /// Gets all known (connected) bluetooth devices, or null if the bluetooth stack didn't respond in time
         /// </summary>
         /// <returns></returns>
-        internal static async Task<List<BluetoothDevice>> GetDevicesAsync()
+        internal static async Task<List<BluetoothDevice>?> GetDevicesAsync()
         {
             try
             {
                 // reuse a query that's still running, so a hanging bluetooth stack doesn't pile up new ones
                 var query = _devicesQuery;
-                if (query == null || query.IsCompleted)
+                if (query != null && !query.IsCompleted)
                 {
-                    query = QueryDevicesAsync();
-                    _devicesQuery = query;
+                    return await query.WaitAsync(QueryTimeout);
                 }
+                
+                query = QueryDevicesAsync();
+                _devicesQuery = query;
 
                 return await query.WaitAsync(QueryTimeout);
             }
@@ -58,7 +60,7 @@ namespace HASS.Agent.Managers
             {
                 _devicesQuery = null;
                 Log.Fatal(ex, "[BLUETOOTH] Error getting devices: {err}", ex.Message);
-                return new List<BluetoothDevice>();
+                return [];
             }
         }
 
@@ -134,10 +136,10 @@ namespace HASS.Agent.Managers
 
             try
             {
-                _leWatcher.Received -= ScanOnReceived;
-                _leWatcher.Stopped -= ScanOnStopped;
+                _leWatcher?.Received -= ScanOnReceived;
+                _leWatcher?.Stopped -= ScanOnStopped;
                 _isWatchingLeDevices = false;
-                _leWatcher.Stop();
+                _leWatcher?.Stop();
                 _leWatcher = null;
             }
             catch (Exception ex)
@@ -203,7 +205,7 @@ namespace HASS.Agent.Managers
                     LeLookups[address] = new LeLookup { InProgress = true, Device = lookup?.Device, LastAttemptUtc = now };
                 }
 
-                BluetoothLeDevice leDevice = null;
+                BluetoothLeDevice? leDevice = null;
 
                 try
                 {
@@ -260,7 +262,7 @@ namespace HASS.Agent.Managers
         private class LeLookup
         {
             public bool InProgress { get; init; }
-            public BluetoothLeDevice Device { get; init; }
+            public BluetoothLeDevice? Device { get; init; }
             public DateTime LastAttemptUtc { get; init; }
         }
     }

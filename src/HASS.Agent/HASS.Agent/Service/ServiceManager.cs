@@ -98,7 +98,7 @@ namespace HASS.Agent.Service
                 if (!ignoreRegistry)
                 {
                     // should be in reg
-                    var installPath = (string)Registry.GetValue(Variables.SatelliteMachineRootRegKey, "InstallPath", string.Empty);
+                    var installPath = Registry.GetValue(Variables.SatelliteMachineRootRegKey, "InstallPath", string.Empty) as string ?? string.Empty;
                     if (!string.IsNullOrEmpty(installPath))
                     {
                         Log.Information("[SERVICE] Local install path: {path}", installPath);

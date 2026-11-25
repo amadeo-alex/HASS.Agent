@@ -84,7 +84,7 @@ public class ScreenshotSensor : AbstractSingleValueSensor
         return screenImage == null ? null : Convert.ToBase64String(screenImage);
     }
 
-    private byte[] CaptureScreen(Screen screen)
+    private byte[]? CaptureScreen(Screen screen)
     {
         try
         {

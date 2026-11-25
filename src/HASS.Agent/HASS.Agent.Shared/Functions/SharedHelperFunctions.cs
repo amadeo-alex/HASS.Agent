@@ -67,7 +67,7 @@ namespace HASS.Agent.Shared.Functions
             var shellWindow = NativeMethods.GetShellWindow();
             var windows = new Dictionary<IntPtr, string>();
 
-            NativeMethods.EnumWindows(delegate (IntPtr hWnd, int lParam)
+            NativeMethods.EnumWindows(delegate(IntPtr hWnd, int lParam)
             {
                 if (hWnd == shellWindow) return true;
                 if (!NativeMethods.IsWindowVisible(hWnd)) return true;
@@ -80,7 +80,6 @@ namespace HASS.Agent.Shared.Functions
 
                 windows[hWnd] = builder.ToString();
                 return true;
-
             }, 0);
 
             return windows;
@@ -199,7 +198,7 @@ namespace HASS.Agent.Shared.Functions
             {
                 // get the reg's keyname
                 subKeyName = subKeyName.Split('\\').Last();
-                
+
                 // create a lowercase variant
                 var subKeyLowerName = subKeyName.ToLower();
 
@@ -299,7 +298,9 @@ namespace HASS.Agent.Shared.Functions
             using (var processHandle = Kernel32.OpenProcess(ACCESS_MASK.FromEnum(Kernel32.ProcessAccess.PROCESS_QUERY_LIMITED_INFORMATION), false, (uint)processId))
             {
                 if (!processHandle.IsInvalid && Kernel32.GetPackageFamilyName(processHandle, out var packageFamilyName).Succeeded)
-                    return ParseRegWebcamMicApplicationName(packageFamilyName);
+                {
+                    return string.IsNullOrEmpty(packageFamilyName) ? string.Empty : ParseRegWebcamMicApplicationName(packageFamilyName);
+                }
             }
 
             try

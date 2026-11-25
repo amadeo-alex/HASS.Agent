@@ -29,7 +29,10 @@ namespace HASS.Agent.Forms
             var hide = CbHideDonateButton.CheckState == CheckState.Checked;
             SettingsManager.SetHideDonateButton(hide);
 
-            if (hide) Variables.MainForm.HideDonateButton();
+            if (hide)
+            {
+                Variables.MainForm?.HideDonateButton();
+            }
 
             Close();
         }

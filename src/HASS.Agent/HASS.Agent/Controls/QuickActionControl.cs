@@ -88,17 +88,17 @@ namespace HASS.Agent.Controls
             _quickActionsForm?.CloseWindow();
         }
 
-        private void QuickActionControl_Click(object sender, EventArgs e) => ExecuteCommand();
+        private void QuickActionControl_Click(object? sender, EventArgs e) => ExecuteCommand();
 
-        private void PbImage_Click(object sender, EventArgs e) => ExecuteCommand();
+        private void PbImage_Click(object? sender, EventArgs e) => ExecuteCommand();
 
-        private void LblAction_Click(object sender, EventArgs e) => ExecuteCommand();
+        private void LblAction_Click(object? sender, EventArgs e) => ExecuteCommand();
 
-        private void LblEntity_Click(object sender, EventArgs e) => ExecuteCommand();
+        private void LblEntity_Click(object? sender, EventArgs e) => ExecuteCommand();
         
-        private void QuickActionControl_MouseEnter(object sender, EventArgs e) => OnFocus();
+        private void QuickActionControl_MouseEnter(object? sender, EventArgs e) => OnFocus();
 
-        private void QuickActionControl_MouseLeave(object sender, EventArgs e) => FocusLost();
+        private void QuickActionControl_MouseLeave(object? sender, EventArgs e) => FocusLost();
 
         /// <summary>
         /// Set backcolor

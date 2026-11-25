@@ -11,7 +11,7 @@ namespace HASS.Agent.Forms.QuickActions
 {
     public partial class QuickActions : MetroForm
     {
-        public event EventHandler ClearFocus;
+        public event EventHandler? ClearFocus;
 
         private readonly List<QuickAction> _quickActions = new();
         private readonly List<QuickActionPanelControl> _quickActionPanelControls = new();
@@ -159,7 +159,7 @@ namespace HASS.Agent.Forms.QuickActions
             }
         }
 
-        private void QuickActionItemMouseEnter(object sender, EventArgs e)
+        private void QuickActionItemMouseEnter(object? sender, EventArgs e)
         {
             var position = PnlActions.GetPositionFromControl(sender as QuickActionControl);
             _selectedColumn = position.Column;

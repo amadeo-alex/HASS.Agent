@@ -6,13 +6,16 @@
     /// </summary>
     public class CustomApplicationContext : ApplicationContext
     {
-        private Form _mainForm;
-        
-        public CustomApplicationContext(Form mainForm)
+        private Form? _mainForm;
+
+        public CustomApplicationContext(Form? mainForm)
         {
             _mainForm = mainForm;
-            if (_mainForm == null) return;
-            
+            if (_mainForm == null)
+            {
+                return;
+            }
+
             // Wire up the destroy events similar to how the base ApplicationContext
             // does things when a form is provided.
             _mainForm.HandleDestroyed += OnFormDestroy;
@@ -30,9 +33,12 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-        private void OnFormDestroy(object sender, EventArgs e)
+        private void OnFormDestroy(object? sender, EventArgs e)
         {
-            if (sender is not Form form || form.RecreatingHandle) return;
+            if (sender is not Form form || form.RecreatingHandle)
+            {
+                return;
+            }
 
             form.HandleDestroyed -= OnFormDestroy;
             OnMainFormClosed(sender, e);

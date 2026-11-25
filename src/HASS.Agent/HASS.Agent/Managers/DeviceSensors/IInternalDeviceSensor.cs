@@ -35,7 +35,7 @@ namespace HASS.Agent.Managers.DeviceSensors
     {
         public bool Available { get; }
         public InternalDeviceSensorType Type { get; }
-        public string Measurement { get; }
+        public string? Measurement { get; }
         public string MeasurementType { get; }
         public string UnitOfMeasurement { get; }
         public bool IsNumeric { get; }

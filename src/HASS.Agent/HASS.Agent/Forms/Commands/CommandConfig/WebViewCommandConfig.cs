@@ -15,7 +15,7 @@ namespace HASS.Agent.Forms.Commands.CommandConfig
         private Point _dragCursorPoint;
         private Point _dragFormPoint;
         
-        public WebViewInfo WebViewInfo { get; private set; } = null;
+        public WebViewInfo? WebViewInfo { get; private set; } = null;
 
         public WebViewCommandConfig(string webViewInfo = "")
         {

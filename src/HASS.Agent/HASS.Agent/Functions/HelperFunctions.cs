@@ -365,7 +365,7 @@ namespace HASS.Agent.Functions
         /// <returns></returns>
         internal static bool CheckIfFormIsOpen(string formName) => System.Windows.Forms.Application.OpenForms.Cast<Form>().Any(form => form?.Name == formName);
 
-        internal static Form GetForm(string formName) => System.Windows.Forms.Application.OpenForms.Cast<Form>().FirstOrDefault(x => x.Name == formName);
+        internal static Form? GetForm(string formName) => System.Windows.Forms.Application.OpenForms.Cast<Form>().FirstOrDefault(x => x.Name == formName);
 
         internal static bool IsAbsoluteUrl(string url) => AbsoluteURLRegex().IsMatch(url);
 
@@ -467,11 +467,14 @@ namespace HASS.Agent.Functions
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        internal static async Task<bool> TryBringToFront(Form form)
+        internal static async Task<bool> TryBringToFront(Form? form)
         {
             try
             {
-                if (form == null) return false;
+                if (form == null)
+                {
+                    return false;
+                }
 
                 // yep, check if we need to undo minimized
                 if (form.WindowState == FormWindowState.Minimized) form.WindowState = FormWindowState.Normal;

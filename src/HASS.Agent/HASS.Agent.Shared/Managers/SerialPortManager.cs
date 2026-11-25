@@ -29,13 +29,13 @@ namespace HASS.Agent.Shared.Managers
 
         private static readonly ConcurrentDictionary<string, SerialPortInfo> WatchedPorts = new();
 
-        private static DeviceWatcher _watcher;
+        private static DeviceWatcher? _watcher;
 
         /// <summary>
         /// Raised when serial ports are added or removed, and after the initial enumeration.
         /// The serial ports sensor subscribes to this itself, to get published right away through <see cref="SensorChangeNotifier"/>
         /// </summary>
-        public static event EventHandler PortsChanged;
+        public static event EventHandler? PortsChanged;
 
         /// <summary>
         /// Starts watching for serial port arrivals and removals
@@ -218,10 +218,9 @@ namespace HASS.Agent.Shared.Managers
             };
         }
 
-        private static object GetProperty(DeviceInformation device, string property) =>
-            device.Properties.TryGetValue(property, out var value) ? value : null;
+        private static object? GetProperty(DeviceInformation device, string property) => device.Properties.GetValueOrDefault(property);
 
-        private static string FormatUsbId(object value) => value switch
+        private static string FormatUsbId(object? value) => value switch
         {
             ushort u => u.ToString("X4"),
             uint u => u.ToString("X4"),
@@ -229,7 +228,7 @@ namespace HASS.Agent.Shared.Managers
             _ => string.Empty
         };
 
-        private static int PortNumber(string port) =>
+        private static int PortNumber(string? port) =>
             port != null && port.StartsWith("COM", StringComparison.OrdinalIgnoreCase) && int.TryParse(port[3..], out var number)
                 ? number
                 : int.MaxValue;

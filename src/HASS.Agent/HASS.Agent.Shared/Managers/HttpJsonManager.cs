@@ -28,8 +28,8 @@ public static class HttpJsonManager
 
     private sealed class CachedDocument
     {
-        internal JObject Document { get; set; }
-        internal string Error { get; set; }
+        internal JObject? Document { get; set; }
+        internal string? Error { get; set; }
         internal DateTime FetchedAt { get; set; } = DateTime.MinValue;
     }
 
@@ -41,7 +41,7 @@ public static class HttpJsonManager
     /// <param name="document"></param>
     /// <param name="error"></param>
     /// <returns></returns>
-    public static bool TryFetch(string url, out JObject document, out string error)
+    public static bool TryFetch(string url, out JObject? document, out string? error)
     {
         var cached = Cache.GetOrAdd(url, _ => new CachedDocument());
 

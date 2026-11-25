@@ -30,7 +30,7 @@ namespace HASS.Agent.Settings
         internal static async Task<bool> LoadAsync(bool createInitialSettings = true)
         {
             Log.Information("[SETTINGS] Config storage path: {path}", Variables.ConfigPath);
-            
+
             // check config dir
             if (!Directory.Exists(Variables.ConfigPath))
             {
@@ -59,7 +59,7 @@ namespace HASS.Agent.Settings
             // load app settings
             var ok = await Task.Run(LoadAppSettings);
             if (!ok) allGood = false;
-            
+
             // done
             return allGood;
         }
@@ -127,7 +127,7 @@ namespace HASS.Agent.Settings
                 }
 
                 Variables.AppSettings = deserializedSettings;
-                
+
                 // fix onboarding status for backwards compat.
                 if (Variables.AppSettings.OnboardingStatus == OnboardingStatus.NeverDone)
                 {
@@ -257,8 +257,11 @@ namespace HASS.Agent.Settings
         {
             try
             {
-                var setting = (string)Registry.GetValue(Variables.RootRegKey, "ExtendedLogging", "0");
-                if (string.IsNullOrEmpty(setting)) return false;
+                var setting = Registry.GetValue(Variables.RootRegKey, "ExtendedLogging", "0") as string ?? "0";
+                if (string.IsNullOrEmpty(setting))
+                {
+                    return false;
+                }
 
                 return setting == "1";
             }
@@ -293,8 +296,11 @@ namespace HASS.Agent.Settings
         {
             try
             {
-                var setting = (string)Registry.GetValue(Variables.RootRegKey, "DpiWarningShown", "0");
-                if (string.IsNullOrEmpty(setting)) return false;
+                var setting = Registry.GetValue(Variables.RootRegKey, "DpiWarningShown", "0") as string ?? "0";
+                if (string.IsNullOrEmpty(setting))
+                {
+                    return false;
+                }
 
                 return setting == "1";
             }
@@ -320,7 +326,7 @@ namespace HASS.Agent.Settings
                 Log.Fatal(ex, "[SETTINGS] Error storing dpi-warning-shown setting: {err}", ex.Message);
             }
         }
-        
+
         /// <summary>
         /// Sends the current MQTT appsettings to the satellite service, optionally with a new client ID
         /// </summary>
@@ -369,7 +375,7 @@ namespace HASS.Agent.Settings
         /// <returns></returns>
         internal static string DeviceSerialNumber()
         {
-            var guid = (string)Registry.GetValue(Variables.RootRegKey, "DeviceSerialNumber", string.Empty);
+            var guid = Registry.GetValue(Variables.RootRegKey, "DeviceSerialNumber", string.Empty) as string ?? string.Empty;
             if (string.IsNullOrEmpty(guid))
             {
                 guid = Guid.NewGuid().ToString();
@@ -378,7 +384,7 @@ namespace HASS.Agent.Settings
 
             return guid;
         }
-        
+
         private static void StoreDeviceSerialNumber(string guid)
         {
             Registry.SetValue(Variables.RootRegKey, "DeviceSerialNumber", guid, RegistryValueKind.String);
@@ -392,8 +398,11 @@ namespace HASS.Agent.Settings
         {
             try
             {
-                var setting = (string)Registry.GetValue(Variables.RootRegKey, "HideDonateButton", "0");
-                if (string.IsNullOrEmpty(setting)) return false;
+                var setting = Registry.GetValue(Variables.RootRegKey, "HideDonateButton", "0") as string ?? "0";
+                if (string.IsNullOrEmpty(setting))
+                {
+                    return false;
+                }
 
                 return setting == "1";
             }

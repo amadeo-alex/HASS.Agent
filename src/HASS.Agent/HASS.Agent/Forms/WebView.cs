@@ -16,9 +16,9 @@ namespace HASS.Agent.Forms
     {
         private bool _forceClose = false;
         private bool _isTrayIcon = false;
-        
+
         public readonly WebViewInfo WebViewInfo;
-        
+
         public WebView(WebViewInfo webViewInfo)
         {
             WebViewInfo = webViewInfo;
@@ -132,7 +132,7 @@ namespace HASS.Agent.Forms
             }
         }
 
-        private void WebViewControlOnCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WebViewControlOnCoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             try
             {
@@ -154,13 +154,13 @@ namespace HASS.Agent.Forms
                 };
 
                 // bind keyup event
-                WebViewControl.KeyUp += delegate (object _, KeyEventArgs e)
+                WebViewControl.KeyUp += delegate(object? _, KeyEventArgs eUp)
                 {
-                    if (e.KeyCode != Keys.Escape)
+                    if (eUp.KeyCode != Keys.Escape)
                     {
                         return;
                     }
-                    
+
                     Close();
                 };
 
@@ -242,6 +242,12 @@ namespace HASS.Agent.Forms
 
         private Point GetDesiredWebViewPosition()
         {
+            if (Screen.PrimaryScreen == null)
+            {
+                Log.Fatal("[WEBVIEW] This should not happen but oh well, no primary screen detected, WebView position set to 0,0");
+                return new Point(0, 0);
+            }
+
             var taskBarLocation = HelperFunctions.GetTaskBarLocation();
 
             var x = Screen.PrimaryScreen.WorkingArea.Width - Width;
@@ -294,7 +300,7 @@ namespace HASS.Agent.Forms
             {
                 return;
             }
-            
+
             Close();
         }
 

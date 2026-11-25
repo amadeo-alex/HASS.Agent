@@ -16,12 +16,14 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public bool Available => _simpleOrientationSensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.SimpleOrientationSensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
+                {
                     return null;
+                }
 
                 return _simpleOrientationSensor.GetCurrentOrientation().ToString();
             }

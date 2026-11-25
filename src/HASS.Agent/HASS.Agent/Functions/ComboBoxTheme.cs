@@ -68,7 +68,7 @@ namespace HASS.Agent.Functions
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        internal static void DrawDictionaryIntStringItem(object sender, DrawItemEventArgs e)
+        internal static void DrawDictionaryIntStringItem(object? sender, DrawItemEventArgs e)
         {
             // only relevant for listviews in detail mode
             if (sender is not ComboBox comboBox)
@@ -89,16 +89,19 @@ namespace HASS.Agent.Functions
             {
                 // optionally set the item's background color as selected
                 if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+                {
                     e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(241, 241, 241)), e.Bounds);
+                }
 
                 // get the value
-                var value = (KeyValuePair<int, string>)comboBox.Items[index];
-
-                // draw the string
-                var brush = (e.State & DrawItemState.Selected) > 0
-                    ? new SolidBrush(Color.FromArgb(63, 63, 70))
-                    : new SolidBrush(comboBox.ForeColor);
-                e.Graphics.DrawString(value.Value, Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
+                if (comboBox.Items[index] is KeyValuePair<int, string> value)
+                {
+                    // draw the string
+                    var brush = (e.State & DrawItemState.Selected) > 0
+                        ? new SolidBrush(Color.FromArgb(63, 63, 70))
+                        : new SolidBrush(comboBox.ForeColor);
+                    e.Graphics.DrawString(value.Value, Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
+                }
             }
 
             // draw focus rectangle
@@ -110,7 +113,7 @@ namespace HASS.Agent.Functions
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        internal static void DrawDictionaryStringStringItem(object sender, DrawItemEventArgs e)
+        internal static void DrawDictionaryStringStringItem(object? sender, DrawItemEventArgs e)
         {
             // only relevant for listviews in detail mode
             if (sender is not ComboBox comboBox)
@@ -138,13 +141,14 @@ namespace HASS.Agent.Functions
                     e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(241, 241, 241)), e.Bounds);
 
                 // get the value
-                var value = (KeyValuePair<string, string>)comboBox.Items[index];
-
-                // draw the string
-                var brush = (e.State & DrawItemState.Selected) > 0
-                    ? new SolidBrush(Color.FromArgb(63, 63, 70))
-                    : new SolidBrush(comboBox.ForeColor);
-                e.Graphics.DrawString(value.Value, Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
+                if (comboBox.Items[index] is KeyValuePair<string, string> value)
+                {
+                    // draw the string
+                    var brush = (e.State & DrawItemState.Selected) > 0
+                        ? new SolidBrush(Color.FromArgb(63, 63, 70))
+                        : new SolidBrush(comboBox.ForeColor);
+                    e.Graphics.DrawString(value.Value, Variables.DefaultFont, brush, e.Bounds, StringFormat.GenericDefault);
+                }
             }
 
             // draw focus rectangle

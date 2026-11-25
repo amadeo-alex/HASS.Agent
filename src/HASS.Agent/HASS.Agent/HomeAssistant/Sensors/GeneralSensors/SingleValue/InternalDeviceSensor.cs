@@ -58,7 +58,7 @@ namespace HASS.Agent.HomeAssistant.Sensors.GeneralSensors.SingleValue
             return AutoDiscoveryConfigModel ?? SetAutoDiscoveryConfigModel(sensorDiscoveryConfigModel);
         }
 
-        public override string GetState() => _internalDeviceSensor.Measurement;
+        public override string? GetState() => _internalDeviceSensor?.Measurement;
 
         public override string GetAttributes() => JsonConvert.SerializeObject(_internalDeviceSensor.Attributes);
     }

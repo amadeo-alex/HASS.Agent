@@ -11,11 +11,6 @@ namespace HASS.Agent.Models.Internal
 {
     public class CommandInfoCard
     {
-        public CommandInfoCard()
-        {
-            //
-        }
-
         public CommandInfoCard(CommandType commandType, string description, bool agentCompatible, bool satelliteCompatible, bool actionCompatible)
         {
             var (key, name) = commandType.GetLocalizedDescriptionAndKey();

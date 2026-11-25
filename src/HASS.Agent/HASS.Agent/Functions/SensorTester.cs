@@ -117,10 +117,12 @@ namespace HASS.Agent.Functions
             {
                 // check the endpoint separately, so an unreachable one is reported with its reason
                 if (!HttpJsonManager.TryFetch(endpointUrl, out _, out var error))
-                    return new TestResult().SetFailed(error);
+                {
+                    return new TestResult().SetFailed(error ?? string.Empty);
+                }
 
                 // create a new sensor
-                var libreHardwareMonitorSensors = new LibreHardwareMonitorSensors(null, null, null, endpointUrl, sensorTypes);
+                var libreHardwareMonitorSensors = new LibreHardwareMonitorSensors(null, endpointUrl: endpointUrl, sensorTypes: sensorTypes);
 
                 // the status sensor is always present, so it's not one of the discovered sensors
                 var statusId = $"{libreHardwareMonitorSensors.Id}{LibreHardwareMonitorSensors.StatusEntitySuffix}";

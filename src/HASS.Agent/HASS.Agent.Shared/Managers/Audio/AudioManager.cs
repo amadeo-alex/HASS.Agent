@@ -53,7 +53,9 @@ public static class AudioManager
     private static void AddDevice(string deviceId)
     {
         if (_devices.ContainsKey(deviceId))
+        {
             return;
+        }
 
         using var device = _enumerator?.GetDevice(deviceId) ?? throw new ArgumentException("cannot get device");
         _devices[deviceId] = device.FriendlyName;
@@ -66,7 +68,9 @@ public static class AudioManager
         _devices.Remove(deviceId, out var removedDeviceName);
         _devicesType.Remove(deviceId, out var _);
         if (!string.IsNullOrWhiteSpace(removedDeviceName))
+        {
             Log.Debug($"[AUDIOMGR] removed device: {removedDeviceName}");
+        }
     }
 
     private static void DeviceRemoved(object? sender, DeviceNotificationEventArgs e)
@@ -114,13 +118,13 @@ public static class AudioManager
 
     private static bool CheckInitialization()
     {
-        if (!_initialized)
+        if (_initialized)
         {
-            Log.Warning("[AUDIOMGR] not yet initialized!");
-            return false;
+            return true;
         }
 
-        return true;
+        Log.Warning("[AUDIOMGR] not yet initialized!");
+        return false;
     }
 
     private static string GetSessionDisplayName(InternalAudioSession session)
@@ -128,10 +132,14 @@ public static class AudioManager
         var procId = session.ProcessId;
 
         if (procId <= 0)
+        {
             return session.DisplayName;
+        }
 
         if (_applicationNameCache.TryGetValue(procId, out var cachedName))
+        {
             return cachedName;
+        }
 
         try
         {
@@ -247,7 +255,9 @@ public static class AudioManager
         var audioDevices = new List<AudioDevice>();
 
         if (!CheckInitialization())
+        {
             return audioDevices;
+        }
 
         try
         {
@@ -314,7 +324,9 @@ public static class AudioManager
     public static string GetDefaultDeviceId(DeviceType deviceType, DeviceRole deviceRole)
     {
         if (!CheckInitialization())
+        {
             return string.Empty;
+        }
 
         var deviceId = string.Empty;
 
@@ -338,7 +350,9 @@ public static class AudioManager
     public static int GetDefaultDeviceVolume(DeviceType deviceType, DeviceRole deviceRole)
     {
         if (!CheckInitialization())
+        {
             return 0;
+        }
 
         var volume = 0;
 
@@ -347,7 +361,7 @@ public static class AudioManager
             var dataFlow = deviceType == DeviceType.Input ? DataFlow.Capture : DataFlow.Render;
             var role = (Role)deviceRole;
 
-            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role)  ?? throw new ArgumentException("cannot retrieve default device volume");
+            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role) ?? throw new ArgumentException("cannot retrieve default device volume");
 
             volume = Convert.ToInt32(Math.Round(defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100, 0));
         }
@@ -362,7 +376,9 @@ public static class AudioManager
     public static bool GetDefaultDeviceMute(DeviceType deviceType, DeviceRole deviceRole)
     {
         if (!CheckInitialization())
+        {
             return false;
+        }
 
         var mute = false;
 
@@ -371,7 +387,7 @@ public static class AudioManager
             var dataFlow = deviceType == DeviceType.Input ? DataFlow.Capture : DataFlow.Render;
             var role = (Role)deviceRole;
 
-            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role)  ?? throw new ArgumentException("cannot retrieve default device mute");
+            using var defaultDevice = _enumerator?.GetDefaultAudioEndpoint(dataFlow, role) ?? throw new ArgumentException("cannot retrieve default device mute");
 
             mute = defaultDevice.AudioEndpointVolume.Mute;
         }
@@ -386,7 +402,9 @@ public static class AudioManager
     public static void ActivateDevice(string deviceName, DeviceType? deviceType = null)
     {
         if (!CheckInitialization())
+        {
             return;
+        }
 
         try
         {
@@ -395,7 +413,9 @@ public static class AudioManager
                 : _devices.FirstOrDefault(v => v.Value == deviceName && _devicesType[v.Key] == deviceType).Key;
 
             if (string.IsNullOrWhiteSpace(deviceId))
+            {
                 return;
+            }
 
             using var configClient = new CPolicyConfigVistaClient();
             configClient.SetDefaultDevice(deviceId);
@@ -411,15 +431,19 @@ public static class AudioManager
     public static void SetDeviceProperties(string deviceName, int volume, bool? mute)
     {
         if (!CheckInitialization())
+        {
             return;
+        }
 
         try
         {
             var deviceId = _devices.FirstOrDefault(v => v.Value == deviceName).Key;
             if (string.IsNullOrWhiteSpace(deviceId))
+            {
                 return;
+            }
 
-            using var device = _enumerator?.GetDevice(deviceId)  ?? throw new ArgumentException("cannot get device");
+            using var device = _enumerator?.GetDevice(deviceId) ?? throw new ArgumentException("cannot get device");
             SetDeviceProperties(device, volume, mute);
         }
         catch (Exception ex)
@@ -450,7 +474,7 @@ public static class AudioManager
         {
             var flow = type == DeviceType.Output ? DataFlow.Render : DataFlow.Capture;
             var role = (Role)deviceRole;
-            using var device = _enumerator?.GetDefaultAudioEndpoint(flow, role)  ?? throw new ArgumentException("cannot retrieve default device endpoint");
+            using var device = _enumerator?.GetDefaultAudioEndpoint(flow, role) ?? throw new ArgumentException("cannot retrieve default device endpoint");
             SetDeviceProperties(device, volume, mute);
         }
         catch (Exception ex)
@@ -462,13 +486,20 @@ public static class AudioManager
     public static void SetApplicationProperties(string deviceName, string applicationName, string sessionId, int volume, bool mute)
     {
         if (!CheckInitialization())
+        {
             return;
+        }
 
         try
         {
             var deviceId = _devices.FirstOrDefault(v => v.Value == deviceName).Key;
 
-            using var device = string.IsNullOrWhiteSpace(deviceId) ? GetDefaultMultimediaDevice(DataFlow.Render) : _enumerator?.GetDevice(deviceId)  ?? throw new ArgumentException("cannot get device");
+            using var device = string.IsNullOrWhiteSpace(deviceId) ? GetDefaultMultimediaDevice(DataFlow.Render) : _enumerator?.GetDevice(deviceId) ?? throw new ArgumentException("cannot get device");
+            if (device == null)
+            {
+                throw new ArgumentException("cannot get device or default device");
+            }
+
             using var sessionManager = new InternalAudioSessionManager(device.AudioSessionManager);
             var sessions = GetDeviceSessions(deviceName, sessionManager);
 
@@ -481,7 +512,9 @@ public static class AudioManager
                 foreach (var session in applicationAudioSessions)
                 {
                     if (!sessionManager.Sessions.TryGetValue(session.Id, out var internalSession))
+                    {
                         return;
+                    }
 
                     SetSessionProperties(internalSession, volume, mute);
                 }
@@ -511,7 +544,9 @@ public static class AudioManager
         Log.Debug("[AUDIOMGR] mute for '{sessionName}' ({sessionId}) set to '{mute}'", displayName, internalAudioSession.Control.GetSessionInstanceIdentifier, mute);
 
         if (volume == -1)
+        {
             return;
+        }
 
         var volumeScalar = Math.Clamp(volume / 100f, 0, 1);
         internalAudioSession.Volume.Volume = volumeScalar;
@@ -523,8 +558,10 @@ public static class AudioManager
     {
         var applications = new List<string>();
 
-        if (!CheckInitialization())
+        if (!CheckInitialization() || _enumerator == null)
+        {
             return applications;
+        }
 
         try
         {
