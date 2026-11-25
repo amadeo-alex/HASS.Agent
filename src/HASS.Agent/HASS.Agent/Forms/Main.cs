@@ -97,6 +97,7 @@ namespace HASS.Agent.Forms
                 // core components initialization - required for loading the entities
                 await RadioManager.Initialize();
                 await InternalDeviceSensorsManager.Initialize();
+                SerialPortManager.Initialize();
                 InitializeVirtualDesktopManager();
                 await Task.Run(InitializeAudioManager);
 
@@ -275,7 +276,7 @@ namespace HASS.Agent.Forms
             }
 
             // prepare the tray icon's webview
-            HelperFunctions.PrepareTrayIconWebView();
+            WebViewManager.PrepareTrayIconWebView();
         }
 
         /// <summary>
@@ -979,7 +980,7 @@ namespace HASS.Agent.Forms
                 return;
             }
 
-            HelperFunctions.LaunchTrayIconWebView();
+            WebViewManager.LaunchTrayIconWebView();
         }
 
         private async void PbDonate_Click(object sender, EventArgs e)

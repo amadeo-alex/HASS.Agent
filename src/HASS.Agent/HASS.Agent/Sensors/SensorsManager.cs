@@ -5,6 +5,8 @@ using HASS.Agent.Resources.Localization;
 using HASS.Agent.Settings;
 using HASS.Agent.Shared.Enums;
 using HASS.Agent.Shared.Extensions;
+using HASS.Agent.Shared.Managers;
+using HASS.Agent.Shared.HomeAssistant.Sensors.GeneralSensors.SingleValue;
 using HASS.Agent.Shared.Models.Config;
 using HASS.Agent.Shared.Models.HomeAssistant;
 using MQTTnet;
@@ -189,6 +191,9 @@ namespace HASS.Agent.Sensors
                     if (_pause) continue;
 
                     // publish sensor states (they have their own time-based scheduling)
+                    // sensors that reported a change (eg. serial ports added or removed) get published right away
+                    SensorChangeNotifier.ResetPending(Variables.SingleValueSensors, Variables.MultiValueSensors);
+
                     if (SingleValueSensorsPresent())
                     {
                         foreach (var sensor in Variables.SingleValueSensors.TakeWhile(_ => !_pause).TakeWhile(_ => _active))
@@ -311,34 +316,32 @@ namespace HASS.Agent.Sensors
                     {
                         if (sensor.IsSingleValue())
                         {
-                            var abstractSensor = StoredSensors.ConvertConfiguredToAbstractSingleValue(sensor);
-                            var sensorIndex = Variables.SingleValueSensors.FindIndex(x => x.Id == abstractSensor.Id);
+                            var sensorIndex = Variables.SingleValueSensors.FindIndex(x => x.Id == sensor.Id.ToString());
                             if (sensorIndex != -1)
                             {
-                                await abstractSensor.UnPublishAutoDiscoveryConfigAsync();
+                                await Variables.SingleValueSensors[sensorIndex].UnPublishAutoDiscoveryConfigAsync();
                                 Variables.SingleValueSensors.RemoveAt(sensorIndex);
 
-                                Log.Information("[SENSORS] Removed single-value sensor: {sensor}", abstractSensor.EntityName);
+                                Log.Information("[SENSORS] Removed single-value sensor: {sensor}", sensor.EntityName);
                             }
                             else
                             {
-                                Log.Information("[SENSORS] Single-value sensor not removed, not activated: {sensor}", abstractSensor.EntityName);
+                                Log.Information("[SENSORS] Single-value sensor not removed, not activated: {sensor}", sensor.EntityName);
                             }
                         }
                         else
                         {
-                            var abstractSensor = StoredSensors.ConvertConfiguredToAbstractMultiValue(sensor);
-                            var sensorIndex = Variables.MultiValueSensors.FindIndex(x => x.Id == abstractSensor.Id);
+                            var sensorIndex = Variables.MultiValueSensors.FindIndex(x => x.Id == sensor.Id.ToString());
                             if (sensorIndex != -1)
                             {
-                                await abstractSensor.UnPublishAutoDiscoveryConfigAsync();
+                                await Variables.MultiValueSensors[sensorIndex].UnPublishAutoDiscoveryConfigAsync();
                                 Variables.MultiValueSensors.RemoveAt(sensorIndex);
 
-                                Log.Information("[SENSORS] Removed multi-value sensor: {sensor}", abstractSensor.EntityName);
+                                Log.Information("[SENSORS] Removed multi-value sensor: {sensor}", sensor.EntityName);
                             }
                             else
                             {
-                                Log.Information("[SENSORS] Multi-value sensor not removed, not activated: {sensor}", abstractSensor.EntityName);
+                                Log.Information("[SENSORS] Multi-value sensor not removed, not activated: {sensor}", sensor.EntityName);
                             }
                         }
                     }
@@ -600,6 +603,14 @@ namespace HASS.Agent.Sensors
 
             // =================================
 
+            sensorInfoCard = new SensorInfoCard(SensorType.LibreHardwareMonitorSensors,
+                Languages.SensorsManager_LibreHardwareMonitorSensorsDescription,
+                30, true, true, true);
+
+            SensorInfoCards.Add(sensorInfoCard.SensorType, sensorInfoCard);
+
+            // =================================
+
             sensorInfoCard = new SensorInfoCard(SensorType.LoggedUserSensor,
                 Languages.SensorsManager_LoggedUserSensorDescription,
                 10, false, true, true);
@@ -707,6 +718,14 @@ namespace HASS.Agent.Sensors
             sensorInfoCard = new SensorInfoCard(SensorType.ScreenshotSensor,
                 Languages.SensorsManager_ScreenshotSensorDescription,
                 10, false, true, false);
+
+            SensorInfoCards.Add(sensorInfoCard.SensorType, sensorInfoCard);
+
+            // =================================
+
+            sensorInfoCard = new SensorInfoCard(SensorType.SerialPortsSensor,
+                Languages.SensorsManager_SerialPortsSensorDescription,
+                300, false, true, true);
 
             SensorInfoCards.Add(sensorInfoCard.SensorType, sensorInfoCard);
 

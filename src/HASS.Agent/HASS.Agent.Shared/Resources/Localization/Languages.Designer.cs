@@ -6788,6 +6788,15 @@ namespace HASS.Agent.Shared.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to LibreHardwareMonitor.
+        /// </summary>
+        internal static string SensorType_LibreHardwareMonitorSensors {
+            get {
+                return ResourceManager.GetString("SensorType_LibreHardwareMonitorSensors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LoggedUser.
         /// </summary>
         internal static string SensorType_LoggedUserSensor {
@@ -6910,6 +6919,15 @@ namespace HASS.Agent.Shared.Resources.Localization {
         internal static string SensorType_ScreenshotSensor {
             get {
                 return ResourceManager.GetString("SensorType_ScreenshotSensor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SerialPorts.
+        /// </summary>
+        internal static string SensorType_SerialPortsSensor {
+            get {
+                return ResourceManager.GetString("SensorType_SerialPortsSensor", resourceCulture);
             }
         }
         

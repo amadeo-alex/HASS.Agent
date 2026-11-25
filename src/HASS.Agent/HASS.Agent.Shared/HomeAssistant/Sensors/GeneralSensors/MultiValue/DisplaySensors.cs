@@ -19,7 +19,7 @@ public class DisplaySensors : AbstractMultiValueSensor
 
     public sealed override Dictionary<string, AbstractSingleValueSensor> Sensors { get; protected set; } = new Dictionary<string, AbstractSingleValueSensor>();
 
-    public DisplaySensors(int? updateInterval = null, string entityName = DefaultName, string? name = DefaultName, string? id = null) : base(entityName ?? DefaultName, name, updateInterval ?? 30, id)
+    public DisplaySensors(int? updateInterval = null, string entityName = DefaultName, string name = DefaultName, string id = default) : base(entityName ?? DefaultName, name ?? null, updateInterval ?? 30, id)
     {
         _updateInterval = updateInterval ?? 30;
 
@@ -78,17 +78,16 @@ public class DisplaySensors : AbstractMultiValueSensor
             var height = display.Bounds.Height;
             var virtualHeight = display.Bounds.Height;
             var rotated = 0;
+            var refreshRate = 0;
 
-            if (monitors.Any(x => x.Name == name))
+            var monitor = monitors.FirstOrDefault(x => x.Name == name);
+            if (monitor != null)
             {
-                var monitor = monitors.Find(x => x.Name == name);
-                if (monitor != null)
-                {
-                    resolution = $"{monitor.PhysicalBounds.Width}x{monitor.PhysicalBounds.Height}";
-                    width = monitor.PhysicalBounds.Width;
-                    height = monitor.PhysicalBounds.Height;
-                    rotated = monitor.RotatedDegrees;
-                }
+                resolution = $"{monitor.PhysicalBounds.Width}x{monitor.PhysicalBounds.Height}";
+                width = monitor.PhysicalBounds.Width;
+                height = monitor.PhysicalBounds.Height;
+                rotated = monitor.RotatedDegrees;
+                refreshRate = monitor.RefreshRate;
             }
 
             var displayInfo = new DisplayInfo
@@ -105,7 +104,8 @@ public class DisplaySensors : AbstractMultiValueSensor
                 WorkingArea = $"{display.WorkingArea.Width}x{display.WorkingArea.Height}",
                 WorkingAreaWidth = display.WorkingArea.Width,
                 WorkingAreaHeight = display.WorkingArea.Height,
-                RotatedDegrees = rotated
+                RotatedDegrees = rotated,
+                RefreshRate = refreshRate,
             };
 
             var info = JsonConvert.SerializeObject(displayInfo, Formatting.Indented);
@@ -118,5 +118,5 @@ public class DisplaySensors : AbstractMultiValueSensor
         }
     }
 
-    public override DiscoveryConfigModel? GetAutoDiscoveryConfig() => null;
+    public override DiscoveryConfigModel GetAutoDiscoveryConfig() => null;
 }
