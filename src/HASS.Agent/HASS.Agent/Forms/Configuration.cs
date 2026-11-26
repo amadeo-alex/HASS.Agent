@@ -665,12 +665,12 @@ namespace HASS.Agent.Forms
             Close();
         }
 
-        private void BtnClearHotKey_Click(object sender, EventArgs e)
+        private void BtnClearHotKey_Click(object? sender, EventArgs e)
         {
             _hotKey.TbQuickActionsHotkey.Text = string.Empty;
         }
 
-        private void Configuration_ResizeEnd(object sender, EventArgs e)
+        private void Configuration_ResizeEnd(object? sender, EventArgs e)
         {
             if (Variables.ShuttingDown) return;
             if (!IsHandleCreated) return;

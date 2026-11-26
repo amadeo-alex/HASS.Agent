@@ -20,8 +20,8 @@ namespace HASS.Agent.Controls.Service
             CustomExecutor
         }
 
-        private ServiceConfig _serviceConfig;
-        private ServiceSettings _serviceSettings = null;
+        private ServiceConfig? _serviceConfig;
+        private ServiceSettings? _serviceSettings = null;
         
         public ServiceGeneral()
         {
@@ -77,8 +77,8 @@ namespace HASS.Agent.Controls.Service
                 }
             }
 
-            var previousId = _serviceSettings.AuthId;
-            _serviceSettings.AuthId = authId;
+            var previousId = _serviceSettings?.AuthId ?? string.Empty;
+            _serviceSettings?.AuthId = authId;
 
             // lock ui
             LockUi(ConfigSection.AuthId);
@@ -91,7 +91,7 @@ namespace HASS.Agent.Controls.Service
                 MessageBoxAdv.Show(this, Languages.ServiceGeneral_SavingFailedMessageBox, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 // restore previous ID
-                _serviceSettings.AuthId = previousId;
+                _serviceSettings?.AuthId = previousId;
 
                 // unlock ui
                 UnlockUi(ConfigSection.AuthId);
@@ -121,8 +121,8 @@ namespace HASS.Agent.Controls.Service
                 return;
             }
 
-            var previousName = _serviceSettings.DeviceName;
-            _serviceSettings.DeviceName = deviceName;
+            var previousName = _serviceSettings?.DeviceName ?? string.Empty;
+            _serviceSettings?.DeviceName = deviceName;
 
             // lock ui
             LockUi(ConfigSection.DeviceName);
@@ -135,7 +135,7 @@ namespace HASS.Agent.Controls.Service
                 MessageBoxAdv.Show(this, Languages.ServiceGeneral_SavingFailedMessageBox, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 // restore previous ID
-                _serviceSettings.DeviceName = previousName;
+                _serviceSettings?.DeviceName = previousName;
 
                 // unlock ui
                 UnlockUi(ConfigSection.DeviceName);
@@ -158,8 +158,8 @@ namespace HASS.Agent.Controls.Service
         {
             var grace = (int)NumDisconnectGrace.Value;
 
-            var previousValue = _serviceSettings.DisconnectedGracePeriodSeconds;
-            _serviceSettings.DisconnectedGracePeriodSeconds = grace;
+            var previousValue = _serviceSettings?.DisconnectedGracePeriodSeconds ?? 10;
+            _serviceSettings?.DisconnectedGracePeriodSeconds = grace;
 
             // lock ui
             LockUi(ConfigSection.DisconnectedGracePeriod);
@@ -172,7 +172,7 @@ namespace HASS.Agent.Controls.Service
                 MessageBoxAdv.Show(this, Languages.ServiceGeneral_SavingFailedMessageBox, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 // restore previous ID
-                _serviceSettings.DisconnectedGracePeriodSeconds = previousValue;
+                _serviceSettings?.DisconnectedGracePeriodSeconds = previousValue;
 
                 // unlock ui
                 UnlockUi(ConfigSection.DisconnectedGracePeriod);
@@ -215,10 +215,10 @@ namespace HASS.Agent.Controls.Service
                 TbExternalExecutorName.Text = executorName;
             }
 
-            var previousExecutorBinary = _serviceSettings.CustomExecutorBinary;
-            var previousExeutorName = _serviceSettings.CustomExecutorName;
-            _serviceSettings.CustomExecutorBinary = executorBinary;
-            _serviceSettings.CustomExecutorName = executorName;
+            var previousExecutorBinary = _serviceSettings?.CustomExecutorBinary ?? string.Empty;
+            var previousExecutorName = _serviceSettings?.CustomExecutorName ?? string.Empty;
+            _serviceSettings?.CustomExecutorBinary = executorBinary;
+            _serviceSettings?.CustomExecutorName = executorName;
 
             // lock ui
             LockUi(ConfigSection.CustomExecutor);
@@ -231,8 +231,8 @@ namespace HASS.Agent.Controls.Service
                 MessageBoxAdv.Show(this, Languages.ServiceGeneral_SavingFailedMessageBox, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 // restore previous ID
-                _serviceSettings.CustomExecutorBinary = previousExecutorBinary;
-                _serviceSettings.CustomExecutorName = previousExeutorName;
+                _serviceSettings?.CustomExecutorBinary = previousExecutorBinary;
+                _serviceSettings?.CustomExecutorName = previousExecutorName;
 
                 // unlock ui
                 UnlockUi(ConfigSection.CustomExecutor);

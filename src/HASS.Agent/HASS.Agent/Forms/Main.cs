@@ -145,7 +145,7 @@ namespace HASS.Agent.Forms
                     var mediaTask = Task.Run(MediaManager.InitializeAsync);
 
                     await Task.WhenAll(hassApiTask, sensorTask, commandsTask, serviceTask,
-                            upateTask, systemStateTask, cacheTask, notificationTask, mediaTask);
+                        upateTask, systemStateTask, cacheTask, notificationTask, mediaTask);
                 });
 
                 // handle activation from a previously generated notification
@@ -260,7 +260,7 @@ namespace HASS.Agent.Forms
         private void ProcessTrayIcon()
         {
             RefreshTrayIcon();
-            
+
             // are we set to show the webview and keep it loaded?
             if (!Variables.AppSettings.TrayIconShowWebView)
                 return;
@@ -399,8 +399,7 @@ namespace HASS.Agent.Forms
         internal void RefreshTrayIcon()
         {
             var iconResourceName = Variables.AppSettings.TrayIconUseModern ? "ModernNotifyIcon" : "NotifyIcon.Icon";
-            var icon = (Icon)new System.Resources.ResourceManager(typeof(Main)).GetObject(iconResourceName);
-            if (icon != null)
+            if (new System.Resources.ResourceManager(typeof(Main)).GetObject(iconResourceName) is Icon icon)
             {
                 Invoke(new MethodInvoker(delegate
                 {
@@ -460,14 +459,15 @@ namespace HASS.Agent.Forms
         /// </summary>
         private async void ShowQuickActions()
         {
-
             // check if quickactions aren't already open, and if there are any actions
             if (HelperFunctions.CheckIfFormIsOpen("QuickActions"))
             {
                 var quickActionsForm = HelperFunctions.GetForm("QuickActions") as QuickActions.QuickActions;
                 var result = await HelperFunctions.TryBringToFront(quickActionsForm);
                 if (result)
-                    quickActionsForm.SelectNextQuickActionItem();
+                {
+                    quickActionsForm?.SelectNextQuickActionItem();
+                }
 
                 return;
             }
@@ -685,6 +685,7 @@ namespace HASS.Agent.Forms
                                     BtnSensorsManager.Text = Languages.Main_BtnSensorsManage_Ready;
                                     BtnSensorsManager.Enabled = true;
                                 }
+
                                 LblStatusSensors.Text = status.GetLocalizedDescription().ToLower();
                                 LblStatusSensors.ForeColor = status.GetColor();
                                 break;
@@ -700,6 +701,7 @@ namespace HASS.Agent.Forms
                                     BtnCommandsManager.Text = Languages.Main_BtnCommandsManager_Ready;
                                     BtnCommandsManager.Enabled = true;
                                 }
+
                                 LblStatusCommands.Text = status.GetLocalizedDescription().ToLower();
                                 LblStatusCommands.ForeColor = status.GetColor();
                                 break;
@@ -847,10 +849,11 @@ namespace HASS.Agent.Forms
                 if (!isAvailable && version != null)
                 {
                     var beta = Variables.Beta ? " [BETA]" : string.Empty;
-                    MessageBoxAdv.Show(this, string.Format(Languages.Main_CheckForUpdate_MessageBox1, Variables.Version, beta), Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxAdv.Show(this, string.Format(Languages.Main_CheckForUpdate_MessageBox1, Variables.Version, beta), Variables.MessageBoxTitle, MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     return;
                 }
-                else if(!isAvailable)
+                else if (!isAvailable)
                 {
                     MessageBoxAdv.Show(this, Languages.Main_CheckForUpdateFailed_MessageBox1, Variables.MessageBoxTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -860,7 +863,10 @@ namespace HASS.Agent.Forms
                 Hide();
 
                 // show info
-                ShowUpdateInfo(version);
+                if (version != null)
+                {
+                    ShowUpdateInfo(version);
+                }
             }
             catch (Exception ex)
             {

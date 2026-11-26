@@ -13,21 +13,21 @@ namespace HASS.Agent.Managers.DeviceSensors
         public const string AttributeMagneticFieldY = "MagneticFieldY";
         public const string AttributeMagneticFieldZ = "MagneticFieldZ";
 
-        private readonly Magnetometer _magnetometer;
+        private readonly Magnetometer? _magnetometer;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _magnetometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Magnetometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _magnetometer.GetCurrentReading();
+                var sensorReading = _magnetometer?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -52,7 +52,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public MagnetometerSensor(Magnetometer magnetometer)
+        public MagnetometerSensor(Magnetometer? magnetometer)
         {
             _magnetometer = magnetometer;
         }

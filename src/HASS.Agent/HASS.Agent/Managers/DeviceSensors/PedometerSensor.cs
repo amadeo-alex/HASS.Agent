@@ -9,14 +9,14 @@ namespace HASS.Agent.Managers.DeviceSensors
 {
     internal class PedometerSensor : IInternalDeviceSensor
     {
-        private readonly Pedometer _pedometer;
+        private readonly Pedometer? _pedometer;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _pedometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Pedometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
@@ -25,7 +25,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 
                 var totalStepCount = 0;
 
-                var sensorReadings = _pedometer.GetCurrentReadings();
+                var sensorReadings = _pedometer?.GetCurrentReadings();
                 if (sensorReadings == null)
                     return null;
 
@@ -48,7 +48,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public PedometerSensor(Pedometer pedometer)
+        public PedometerSensor(Pedometer? pedometer)
         {
             _pedometer = pedometer;
         }

@@ -13,21 +13,21 @@ namespace HASS.Agent.Managers.DeviceSensors
         public const string AttributeRotationMatrix = "RotationMatrix";
         public const string AttributeYawAccuracy = "YawAccuracy";
 
-        private readonly Windows.Devices.Sensors.OrientationSensor _orientationSensor;
+        private readonly Windows.Devices.Sensors.OrientationSensor? _orientationSensor;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _orientationSensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.OrientationSensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _orientationSensor.GetCurrentReading();
+                var sensorReading = _orientationSensor?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -43,7 +43,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public OrientationSensor(Windows.Devices.Sensors.OrientationSensor orientationSensor)
+        public OrientationSensor(Windows.Devices.Sensors.OrientationSensor? orientationSensor)
         {
             _orientationSensor = orientationSensor;
         }

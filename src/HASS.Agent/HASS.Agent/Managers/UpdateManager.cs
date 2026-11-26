@@ -180,16 +180,16 @@ internal static class UpdateManager
             var installerAssetUrl = string.Empty;
             var installerVersionSuffix = IntPtr.Size == 8 ? "installer.exe" : "installer.x86.exe";
 
-            var installerAsset = pendingUpdate.GitHubRelease.Assets.Select(x => x).FirstOrDefault(y => y.BrowserDownloadUrl.ToLower().EndsWith(installerVersionSuffix));
+            var installerAsset = pendingUpdate.GitHubRelease?.Assets.Select(x => x).FirstOrDefault(y => y.BrowserDownloadUrl.ToLower().EndsWith(installerVersionSuffix));
             if (installerAsset == null)
-                Log.Error("[UPDATER] No installer asset found for release: {v}", pendingUpdate.GitHubRelease.TagName);
+                Log.Error("[UPDATER] No installer asset found for release: {v}", pendingUpdate.GitHubRelease?.TagName);
             else
                 installerAssetUrl = installerAsset.BrowserDownloadUrl;
 
 
             pendingUpdate.InstallerUrl = installerAssetUrl;
-            pendingUpdate.ReleaseUrl = pendingUpdate.GitHubRelease.HtmlUrl;
-            pendingUpdate.ReleaseNotes = pendingUpdate.GitHubRelease.Body;
+            pendingUpdate.ReleaseUrl = pendingUpdate.GitHubRelease?.HtmlUrl ?? string.Empty;
+            pendingUpdate.ReleaseNotes = pendingUpdate.GitHubRelease?.Body ?? string.Empty;
 
             return pendingUpdate;
         }

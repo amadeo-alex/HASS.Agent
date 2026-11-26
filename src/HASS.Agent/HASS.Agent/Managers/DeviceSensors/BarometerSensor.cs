@@ -9,21 +9,21 @@ namespace HASS.Agent.Managers.DeviceSensors
 {
     internal class BarometerSensor : IInternalDeviceSensor
     {
-        private readonly Barometer _barometer;
+        private readonly Barometer? _barometer;
 
         public string MeasurementType { get; } = "pressure";
         public string UnitOfMeasurement { get; } = "hPa";
 
         public bool Available => _barometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Barometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _barometer.GetCurrentReading();
+                var sensorReading = _barometer?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -35,7 +35,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public Dictionary<string, string> Attributes => InternalDeviceSensor.NoAttributes;
 
-        public BarometerSensor(Barometer barometer)
+        public BarometerSensor(Barometer? barometer)
         {
             _barometer = barometer;
         }

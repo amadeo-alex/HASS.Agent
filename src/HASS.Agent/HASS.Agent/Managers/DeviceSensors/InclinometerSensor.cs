@@ -15,21 +15,21 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public const string AttributeYawAccuracy = "YawAccuracy";
 
-        private readonly Inclinometer _inclinometer;
+        private readonly Inclinometer? _inclinometer;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _inclinometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Inclinometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _inclinometer.GetCurrentReading();
+                var sensorReading = _inclinometer?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -48,7 +48,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public InclinometerSensor(Inclinometer inclinometer)
+        public InclinometerSensor(Inclinometer? inclinometer)
         {
             _inclinometer = inclinometer;
         }

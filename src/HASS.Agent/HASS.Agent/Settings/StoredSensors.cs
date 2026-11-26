@@ -643,7 +643,7 @@ namespace HASS.Agent.Settings
                 var configuredSensors = Variables.SingleValueSensors.Select(ConvertAbstractSingleValueToConfigured).Where(configuredSensor => configuredSensor != null).ToList();
 
                 // convert multi-value sensors
-                var configuredMultiValueSensors = Variables.MultiValueSensors.Select(ConvertAbstractMultiValueToConfigured).Where(configuredSensor => configuredSensor != null).ToList();
+                var configuredMultiValueSensors = Variables.MultiValueSensors.Select(ConvertAbstractMultiValueToConfigured).Where(configuredSensor => configuredSensor != null).Select(c => c!).ToList();
                 configuredSensors = configuredSensors.Concat(configuredMultiValueSensors).ToList();
 
                 // serialize to file

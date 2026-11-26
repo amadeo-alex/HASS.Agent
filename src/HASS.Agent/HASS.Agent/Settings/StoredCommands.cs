@@ -62,7 +62,7 @@ namespace HASS.Agent.Settings
                 // convert to abstract commands
                 await Task.Run(delegate
                 {
-                    foreach (var abstractCommand in configuredCommands.Select(ConvertConfiguredToAbstract).Where(abstractCommand => abstractCommand != null))
+                    foreach (var abstractCommand in configuredCommands.Select(ConvertConfiguredToAbstract).Where(abstractCommand => abstractCommand != null).Select(c => c!))
                     {
                         Variables.Commands.Add(abstractCommand);
                     }
@@ -211,75 +211,75 @@ namespace HASS.Agent.Settings
             switch (command)
             {
                 case CustomCommand customCommand:
+                {
+                    _ = Enum.TryParse<CommandType>(customCommand.GetType().Name, out var type);
+                    return new ConfiguredCommand()
                     {
-                        _ = Enum.TryParse<CommandType>(customCommand.GetType().Name, out var type);
-                        return new ConfiguredCommand()
-                        {
-                            Id = Guid.Parse(customCommand.Id),
-                            EntityName = customCommand.EntityName,
-                            Name = customCommand.Name,
-                            Type = type,
-                            EntityType = command.EntityType,
-                            Command = customCommand.Command,
-                            RunAsLowIntegrity = customCommand.RunAsLowIntegrity
-                        };
-                    }
+                        Id = Guid.Parse(customCommand.Id),
+                        EntityName = customCommand.EntityName,
+                        Name = customCommand.Name,
+                        Type = type,
+                        EntityType = command.EntityType,
+                        Command = customCommand.Command,
+                        RunAsLowIntegrity = customCommand.RunAsLowIntegrity
+                    };
+                }
 
                 case PowershellCommand powershellCommand:
+                {
+                    _ = Enum.TryParse<CommandType>(powershellCommand.GetType().Name, out var type);
+                    return new ConfiguredCommand()
                     {
-                        _ = Enum.TryParse<CommandType>(powershellCommand.GetType().Name, out var type);
-                        return new ConfiguredCommand()
-                        {
-                            Id = Guid.Parse(powershellCommand.Id),
-                            EntityName = powershellCommand.EntityName,
-                            Name = powershellCommand.Name,
-                            Type = type,
-                            EntityType = command.EntityType,
-                            Command = powershellCommand.Command
-                        };
-                    }
+                        Id = Guid.Parse(powershellCommand.Id),
+                        EntityName = powershellCommand.EntityName,
+                        Name = powershellCommand.Name,
+                        Type = type,
+                        EntityType = command.EntityType,
+                        Command = powershellCommand.Command
+                    };
+                }
 
                 case KeyCommand customKeyCommand:
+                {
+                    _ = Enum.TryParse<CommandType>(customKeyCommand.GetType().Name, out var type);
+                    return new ConfiguredCommand()
                     {
-                        _ = Enum.TryParse<CommandType>(customKeyCommand.GetType().Name, out var type);
-                        return new ConfiguredCommand()
-                        {
-                            Id = Guid.Parse(customKeyCommand.Id),
-                            EntityName = customKeyCommand.EntityName,
-                            Name = customKeyCommand.Name,
-                            Type = type,
-                            EntityType = command.EntityType,
-                            KeyCode = customKeyCommand.KeyCode
-                        };
-                    }
+                        Id = Guid.Parse(customKeyCommand.Id),
+                        EntityName = customKeyCommand.EntityName,
+                        Name = customKeyCommand.Name,
+                        Type = type,
+                        EntityType = command.EntityType,
+                        KeyCode = customKeyCommand.KeyCode
+                    };
+                }
 
                 case InternalCommand internalCommand:
+                {
+                    _ = Enum.TryParse<CommandType>(internalCommand.GetType().Name, out var type);
+                    return new ConfiguredCommand()
                     {
-                        _ = Enum.TryParse<CommandType>(internalCommand.GetType().Name, out var type);
-                        return new ConfiguredCommand()
-                        {
-                            Id = Guid.Parse(internalCommand.Id),
-                            EntityName = internalCommand.EntityName,
-                            Name = internalCommand.Name,
-                            Command = internalCommand.CommandConfig ?? string.Empty,
-                            Type = type,
-                            EntityType = command.EntityType,
-                        };
-                    }
+                        Id = Guid.Parse(internalCommand.Id),
+                        EntityName = internalCommand.EntityName,
+                        Name = internalCommand.Name,
+                        Command = internalCommand.CommandConfig ?? string.Empty,
+                        Type = type,
+                        EntityType = command.EntityType,
+                    };
+                }
 
                 case MultipleKeysCommand multipleKeysCommand:
+                {
+                    _ = Enum.TryParse<CommandType>(multipleKeysCommand.GetType().Name, out var type);
+                    return new ConfiguredCommand()
                     {
-                        _ = Enum.TryParse<CommandType>(multipleKeysCommand.GetType().Name, out var type);
-                        return new ConfiguredCommand()
-                        {
-                            Id = Guid.Parse(multipleKeysCommand.Id),
-                            EntityName = multipleKeysCommand.EntityName,
-                            Name = multipleKeysCommand.Name,
-                            Keys = multipleKeysCommand.Keys ?? new List<string>(),
-                            Type = type,
-                            EntityType = command.EntityType,
-                        };
-                    }
+                        Id = Guid.Parse(multipleKeysCommand.Id),
+                        EntityName = multipleKeysCommand.EntityName,
+                        Name = multipleKeysCommand.Name,
+                        Keys = multipleKeysCommand.Keys ?? new List<string>(),
+                        Type = type,
+                        EntityType = command.EntityType,
+                    };
+                }
             }
 
             return null;

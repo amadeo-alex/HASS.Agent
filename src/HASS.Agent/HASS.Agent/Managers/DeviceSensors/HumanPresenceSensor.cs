@@ -12,29 +12,26 @@ namespace HASS.Agent.Managers.DeviceSensors
         public const string AttributeDistanceInMilimeters = "DistanceInMilimeters";
         public const string AttributeEngagement = "Engagement";
 
-        private Windows.Devices.Sensors.HumanPresenceSensor _humanPresenceSensor;
+        private Windows.Devices.Sensors.HumanPresenceSensor? _humanPresenceSensor;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _humanPresenceSensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.ProximitySensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _humanPresenceSensor.GetCurrentReading();
+                var sensorReading = _humanPresenceSensor?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
-                Attributes = new Dictionary<string, string>()
-                {
-                    [AttributeDistanceInMilimeters] = sensorReading.DistanceInMillimeters.ToString(),
-                    [AttributeEngagement] = sensorReading.Engagement.ToString(),
-                };
+                _attributes[AttributeDistanceInMilimeters] = sensorReading.DistanceInMillimeters.ToString() ?? string.Empty;
+                _attributes[AttributeEngagement] = sensorReading.Engagement.ToString();
 
                 return (sensorReading.Presence == HumanPresence.Present).ToString();
             }
@@ -42,14 +39,15 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public bool IsNumeric { get; } = false;
 
-        public Dictionary<string, string> Attributes { get; private set; }
+        private readonly Dictionary<string, string> _attributes = new();
+        public Dictionary<string, string> Attributes => _attributes;
 
-        public HumanPresenceSensor(Windows.Devices.Sensors.HumanPresenceSensor humanPresenceSensor)
+        public HumanPresenceSensor(Windows.Devices.Sensors.HumanPresenceSensor? humanPresenceSensor)
         {
             _humanPresenceSensor = humanPresenceSensor;
         }
 
-        public void UpdateInternalSensor(Windows.Devices.Sensors.HumanPresenceSensor humanPresenceSensor)
+        public void UpdateInternalSensor(Windows.Devices.Sensors.HumanPresenceSensor? humanPresenceSensor)
         {
             _humanPresenceSensor = humanPresenceSensor;
         }

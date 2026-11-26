@@ -8,7 +8,7 @@ namespace HASS.Agent.Managers
 {
     internal class InternalHotKeyManager
     {
-        internal event EventHandler<HotkeyEventArgs> HotkeyActivated;
+        internal event EventHandler<HotkeyEventArgs>? HotkeyActivated;
 
         /// <summary>
         /// Initializes the quickaction hotkeys
@@ -165,7 +165,7 @@ namespace HASS.Agent.Managers
             }));
         }
 
-        private void OnHotkeyActivated(object sender, HotkeyEventArgs e)
+        private void OnHotkeyActivated(object? sender, HotkeyEventArgs e)
         {
             HotkeyActivated?.Invoke(sender, e);
         }

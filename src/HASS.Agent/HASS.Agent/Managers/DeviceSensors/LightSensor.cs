@@ -9,21 +9,21 @@ namespace HASS.Agent.Managers.DeviceSensors
 {
     internal class LightSensor : IInternalDeviceSensor
     {
-        private readonly Windows.Devices.Sensors.LightSensor _lightSensor;
+        private readonly Windows.Devices.Sensors.LightSensor? _lightSensor;
 
         public string MeasurementType { get; } = "illuminance";
         public string UnitOfMeasurement { get; } = "lx";
 
         public bool Available => _lightSensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.LightSensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
                 
-                var sensorReading = _lightSensor.GetCurrentReading();
+                var sensorReading = _lightSensor?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -35,7 +35,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public Dictionary<string, string> Attributes => InternalDeviceSensor.NoAttributes;
 
-        public LightSensor(Windows.Devices.Sensors.LightSensor lightSensor)
+        public LightSensor(Windows.Devices.Sensors.LightSensor? lightSensor)
         {
             _lightSensor = lightSensor;
         }

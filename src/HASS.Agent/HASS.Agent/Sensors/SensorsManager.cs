@@ -170,7 +170,7 @@ namespace HASS.Agent.Sensors
                             if (true)
                             {
                                 var tagScannerConfigMesage = new MqttApplicationMessageBuilder()
-                                    .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/tag/{Variables.DeviceConfig.Name}/config")
+                                    .WithTopic($"{Variables.AppSettings.MqttDiscoveryPrefix}/tag/{Variables.DeviceConfig!.Name}/config")
                                     .WithPayload(JsonConvert.SerializeObject(new
                                     {
                                         topic = $"hass.agent/devices/{Variables.DeviceConfig.Name}/tag_scanned",
@@ -348,11 +348,16 @@ namespace HASS.Agent.Sensors
                 }
 
                 // copy our list to the main one
-                foreach (var sensor in sensors.Where(sensor => sensor != null))
+                foreach (var sensor in sensors)
                 {
                     if (sensor.IsSingleValue())
                     {
                         var abstractSensor = StoredSensors.ConvertConfiguredToAbstractSingleValue(sensor);
+                        if (abstractSensor == null)
+                        {
+                            continue;
+                        }
+                        
                         if (Variables.SingleValueSensors.All(x => x.Id != abstractSensor.Id))
                         {
                             // new, add and register
@@ -384,6 +389,11 @@ namespace HASS.Agent.Sensors
                     else
                     {
                         var abstractSensor = StoredSensors.ConvertConfiguredToAbstractMultiValue(sensor);
+                        if (abstractSensor == null)
+                        {
+                            continue;
+                        }
+                        
                         if (Variables.MultiValueSensors.All(x => x.Id != abstractSensor.Id))
                         {
                             // new, add and register
@@ -443,7 +453,7 @@ namespace HASS.Agent.Sensors
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        internal static SensorInfoCard GetSensorDefaultInfo(SensorType type) => SensorInfoCards.ContainsKey(type) ? SensorInfoCards[type] : null;
+        internal static SensorInfoCard? GetSensorDefaultInfo(SensorType type) => SensorInfoCards.GetValueOrDefault(type);
 
         /// <summary>
         /// Loads info regarding the various sensor types

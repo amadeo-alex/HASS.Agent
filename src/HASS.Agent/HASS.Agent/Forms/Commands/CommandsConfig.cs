@@ -45,7 +45,7 @@ namespace HASS.Agent.Forms.Commands
         private void PrepareCommandsList()
         {
             // make a copy of the current commands
-            _commands = Variables.Commands.Select(StoredCommands.ConvertAbstractToConfigured).Where(configuredCommand => configuredCommand != null).ToList();
+            _commands = Variables.Commands.Select(StoredCommands.ConvertAbstractToConfigured).Where(configuredCommand => configuredCommand != null).Select(c=>c!).ToList();
 
             // show them
             UpdateCommandsList();

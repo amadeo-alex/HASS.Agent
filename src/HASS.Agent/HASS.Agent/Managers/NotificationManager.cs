@@ -113,9 +113,9 @@ namespace HASS.Agent.Managers
 
                 if (notification.Message == SpecialClear)
                 {
-                    if (!string.IsNullOrWhiteSpace(notification.Data.Tag) && !string.IsNullOrWhiteSpace(notification.Data.Group))
+                    if (!string.IsNullOrWhiteSpace(notification.Data?.Tag) && !string.IsNullOrWhiteSpace(notification.Data.Group))
                         await _notificationManager.RemoveByTagAndGroupAsync(notification.Data.Tag, notification.Data.Group);
-                    else if (!string.IsNullOrWhiteSpace(notification.Data.Tag))
+                    else if (!string.IsNullOrWhiteSpace(notification.Data?.Tag))
                         await _notificationManager.RemoveByTagAsync(notification.Data.Tag);
 
                     return;
@@ -125,7 +125,7 @@ namespace HASS.Agent.Managers
                     .AddText(notification.Title)
                     .AddText(notification.Message);
 
-                if (notification.Data.ClickAction != Models.HomeAssistant.NotificationData.NoAction)
+                if (!string.IsNullOrWhiteSpace(notification.Data?.ClickAction) && notification.Data.ClickAction != Models.HomeAssistant.NotificationData.NoAction)
                     toastBuilder.AddArgument(ClickActionKey, EncodeNotificationParameter(notification.Data.ClickAction));
 
                 if (!string.IsNullOrWhiteSpace(notification.Data?.Image))
@@ -147,7 +147,7 @@ namespace HASS.Agent.Managers
                         var button = new AppNotificationButton(action.Title)
                             .AddArgument(ActionKey, EncodeNotificationParameter(action.Action));
 
-                        if (action.Uri != null)
+                        if (!string.IsNullOrWhiteSpace(action.Uri))
                             button.AddArgument(UriKey, EncodeNotificationParameter(action.Uri));
 
                         toastBuilder.AddButton(button);
@@ -165,26 +165,26 @@ namespace HASS.Agent.Managers
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(notification.Data.Group))
+                if (!string.IsNullOrWhiteSpace(notification.Data?.Group))
                     toastBuilder.SetGroup(notification.Data.Group);
-                if (!string.IsNullOrWhiteSpace(notification.Data.Tag))
+                if (!string.IsNullOrWhiteSpace(notification.Data?.Tag))
                     toastBuilder.SetTag(notification.Data.Tag);
 
-                if (notification.Data.Sticky)
+                if (notification.Data?.Sticky == true)
                 {
                     toastBuilder.SetScenario(AppNotificationScenario.Reminder);
                     if (notification.Data.Actions.Count == 0)
                         toastBuilder.AddButton(new AppNotificationButton(Languages.Notification_Dismiss)); //Note(Amadeo): required for reminder scenario
                 }
 
-                if (AppNotificationBuilder.IsUrgentScenarioSupported() && notification.Data.Importance == Models.HomeAssistant.NotificationData.ImportanceHigh)
+                if (AppNotificationBuilder.IsUrgentScenarioSupported() && notification.Data?.Importance == Models.HomeAssistant.NotificationData.ImportanceHigh)
                 {
                     toastBuilder.SetScenario(AppNotificationScenario.Urgent);
                     if (notification.Data.Sticky)
                         Log.Warning("[NOTIFIER] Notification importance overrides sticky", notification.Title);
                 }
 
-                if (!string.IsNullOrWhiteSpace(notification.Data.IconUrl))
+                if (!string.IsNullOrWhiteSpace(notification.Data?.IconUrl))
                     toastBuilder.SetAppLogoOverride(new Uri(notification.Data.IconUrl));
 
                 var toast = toastBuilder.BuildNotification();
@@ -212,7 +212,7 @@ namespace HASS.Agent.Managers
             }
         }
 
-        private static string GetValueFromEventArgs(AppNotificationActivatedEventArgs e, string startText)
+        private static string? GetValueFromEventArgs(AppNotificationActivatedEventArgs e, string startText)
         {
             var start = e.Argument.IndexOf(startText) + startText.Length;
             if (start < startText.Length)
@@ -223,7 +223,7 @@ namespace HASS.Agent.Managers
             return DecodeNotificationParameter(e.Argument[start..end]);
         }
 
-        private static IDictionary<string, string> GetInputFromEventArgs(AppNotificationActivatedEventArgs e) => e.UserInput.Count > 0 ? e.UserInput : null;
+        private static IDictionary<string, string>? GetInputFromEventArgs(AppNotificationActivatedEventArgs e) => e.UserInput.Count > 0 ? e.UserInput : null;
 
         private static async void OnNotificationInvoked(AppNotificationManager _, AppNotificationActivatedEventArgs e) => await HandleAppNotificationActivation(e);
 
@@ -252,7 +252,7 @@ namespace HASS.Agent.Managers
                 if (Variables.AppSettings.MqttEnabled)
                 {
                     var haMessageBuilder = new MqttApplicationMessageBuilder()
-                        .WithTopic($"hass.agent/notifications/{Variables.DeviceConfig.Name}/actions")
+                        .WithTopic($"hass.agent/notifications/{Variables.DeviceConfig!.Name}/actions")
                         .WithPayload(JsonConvert.SerializeObject(new
                         {
                             action,
@@ -287,7 +287,7 @@ namespace HASS.Agent.Managers
                 return;
 
             var appNotificationArgs = args.Data as AppNotificationActivatedEventArgs;
-            if (appNotificationArgs.Argument == null)
+            if (appNotificationArgs?.Argument == null)
                 return;
 
             await HandleAppNotificationActivation(appNotificationArgs);

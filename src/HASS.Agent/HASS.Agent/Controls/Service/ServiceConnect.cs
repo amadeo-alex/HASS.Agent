@@ -189,6 +189,11 @@ namespace HASS.Agent.Controls.Service
             await Task.Delay(300);
 
             // switch interface
+            if (serviceSettings == null || mqttSettings == null || configuredCommands == null || configuredSensors == null)
+            {
+                return;
+            }
+            
             _serviceConfig.LaunchInterface(version, deviceName, serviceSettings, mqttSettings, configuredCommands, configuredSensors);
         }
 

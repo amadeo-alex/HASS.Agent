@@ -238,14 +238,20 @@ namespace HASS.Agent.Media
         private static GlobalSystemMediaTransportControlsSession? GetCurrentMediaSession()
         {
             // get the current sessions
-            var sessions = _sessionManager.GetSessions();
-            if (!sessions.Any()) return null;
+            var sessions = _sessionManager?.GetSessions();
+            if (sessions == null || !sessions.Any())
+            {
+                return null;
+            }
 
             // if there's one session: pick that one
             // if there are multiple: pick the first playing
             // if none are playing: pick the first
 
-            if (sessions.Count == 1) return sessions[0];
+            if (sessions.Count == 1)
+            {
+                return sessions[0];
+            }
 
             return sessions.Any(x => x.GetPlaybackInfo().PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
                 ? sessions.First(x => x.GetPlaybackInfo().PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)

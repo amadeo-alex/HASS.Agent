@@ -9,21 +9,21 @@ namespace HASS.Agent.Managers.DeviceSensors
 {
     internal class HingeAngleSensor : IInternalDeviceSensor
     {
-        private readonly Windows.Devices.Sensors.HingeAngleSensor _hingeAngelSensor;
+        private readonly Windows.Devices.Sensors.HingeAngleSensor? _hingeAngelSensor;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _hingeAngelSensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.HingeAngleSensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _hingeAngelSensor.GetCurrentReadingAsync().AsTask().Result;
+                var sensorReading = _hingeAngelSensor?.GetCurrentReadingAsync().AsTask().Result;
                 if (sensorReading == null)
                     return null;
 
@@ -35,7 +35,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public Dictionary<string, string> Attributes => InternalDeviceSensor.NoAttributes;
 
-        public HingeAngleSensor(Windows.Devices.Sensors.HingeAngleSensor hingeAngleSensor)
+        public HingeAngleSensor(Windows.Devices.Sensors.HingeAngleSensor? hingeAngleSensor)
         {
             _hingeAngelSensor = hingeAngleSensor;
         }

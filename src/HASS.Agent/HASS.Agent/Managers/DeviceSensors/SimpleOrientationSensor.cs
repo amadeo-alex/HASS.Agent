@@ -9,7 +9,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 {
     internal class SimpleOrientationSensor : IInternalDeviceSensor
     {
-        private readonly Windows.Devices.Sensors.SimpleOrientationSensor _simpleOrientationSensor;
+        private readonly Windows.Devices.Sensors.SimpleOrientationSensor? _simpleOrientationSensor;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
@@ -25,7 +25,7 @@ namespace HASS.Agent.Managers.DeviceSensors
                     return null;
                 }
 
-                return _simpleOrientationSensor.GetCurrentOrientation().ToString();
+                return _simpleOrientationSensor?.GetCurrentOrientation().ToString();
             }
         }
 
@@ -33,7 +33,7 @@ namespace HASS.Agent.Managers.DeviceSensors
 
         public Dictionary<string, string> Attributes => InternalDeviceSensor.NoAttributes;
 
-        public SimpleOrientationSensor(Windows.Devices.Sensors.SimpleOrientationSensor simpleOrientationSensor)
+        public SimpleOrientationSensor(Windows.Devices.Sensors.SimpleOrientationSensor? simpleOrientationSensor)
         {
             _simpleOrientationSensor = simpleOrientationSensor;
         }

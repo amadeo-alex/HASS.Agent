@@ -81,20 +81,27 @@ namespace HASS.Agent.Forms.QuickActions
         /// </summary>
         private void ModifySelectedAction()
         {
-            // are we currently storing them?
-            if (_storing) return;
-
-            // check for selected rows
-            if (LvQuickActions.SelectedItems.Count == 0) return;
-
+            // are we currently storing them? || check for selected rows
+            if (_storing || LvQuickActions.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            
             // we can just modify one, so the first
             var guid = Guid.Parse(LvQuickActions.SelectedItems[0].Text);
             var selectedQuickAction = _quickActions.Find(x => x.Id == guid);
+            if (selectedQuickAction == null)
+            {
+                return;
+            }
 
             // show modding form
             using var quickAction = new QuickActionsMod(selectedQuickAction);
             var res = quickAction.ShowDialog();
-            if (res != DialogResult.OK) return;
+            if (res != DialogResult.OK)
+            {
+                return;
+            }
 
             // update in temp list
             _quickActions[_quickActions.FindIndex(x => x.Id == quickAction.QuickAction.Id)] = quickAction.QuickAction;

@@ -4,12 +4,7 @@ namespace HASS.Agent.Models.Internal
 {
     public class Action
     {
-        public Action()
-        {
-            //
-        }
-
-        public string Description { get; set; }
-        public HassEntity Entity { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public HassEntity? Entity { get; set; }
     }
 }

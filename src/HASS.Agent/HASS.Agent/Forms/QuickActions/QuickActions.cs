@@ -273,7 +273,7 @@ namespace HASS.Agent.Forms.QuickActions
             if (control == null)
                 return false;
 
-            control.QuickActionControl.OnFocus();
+            control.QuickActionControl?.OnFocus();
             _selectedColumn = column;
             _selectedRow = row;
 

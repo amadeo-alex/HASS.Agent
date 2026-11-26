@@ -15,18 +15,18 @@ namespace HASS.Agent.Managers.DeviceSensors
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
-        private readonly Windows.Devices.Sensors.ActivitySensor _activitySensor;
+        private readonly Windows.Devices.Sensors.ActivitySensor? _activitySensor;
 
         public bool Available => _activitySensor != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.ActivitySensor;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _activitySensor.GetCurrentReadingAsync().AsTask().Result;
+                var sensorReading = _activitySensor?.GetCurrentReadingAsync().AsTask().Result;
                 if (sensorReading == null)
                     return null;
 
@@ -42,7 +42,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public ActivitySensor(Windows.Devices.Sensors.ActivitySensor activitySensor)
+        public ActivitySensor(Windows.Devices.Sensors.ActivitySensor? activitySensor)
         {
             _activitySensor = activitySensor;
         }

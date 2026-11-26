@@ -49,8 +49,14 @@ namespace HASS.Agent.Service
         /// </summary>
         /// <param name="serviceSettings"></param>
         /// <returns></returns>
-        internal async Task<(bool result, string error)> SetServiceSettingsAsync(ServiceSettings serviceSettings)
+        internal async Task<(bool result, string error)> SetServiceSettingsAsync(ServiceSettings? serviceSettings)
         {
+            if (serviceSettings == null) //NOTE(Amadeo): should not happen
+            {
+                Log.Error("[SERVICE] SetServiceSettings received null as service settings");
+                return (false, "settings can't be null");
+            }
+            
             try
             {
                 var setServiceSettingsRequest = new SetServiceSettingsRequest

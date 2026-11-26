@@ -5,11 +5,6 @@ namespace HASS.Agent.Models.HomeAssistant
 {
     public class HassEntity
     {
-        public HassEntity()
-        {
-            //
-        }
-
         public HassEntity(HassDomain domain, string entity)
         {
             Domain = domain;

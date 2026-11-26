@@ -40,9 +40,9 @@ public partial class AdvancedSensorSettings : MetroForm
 
     private void SetStoredVariables()
     {
-        TbDeviceClass.Text = AdvancedSettings.DeviceClass;
-        TbUnitOfMeasurement.Text = AdvancedSettings.UnitOfMeasurement;
-        TbStateClass.Text = AdvancedSettings.StateClass;
+        TbDeviceClass.Text = AdvancedSettings?.DeviceClass ?? string.Empty;
+        TbUnitOfMeasurement.Text = AdvancedSettings?.UnitOfMeasurement ?? string.Empty;;
+        TbStateClass.Text = AdvancedSettings?.StateClass ?? string.Empty;
     }
 
     private void BtnSave_Click(object sender, EventArgs e)

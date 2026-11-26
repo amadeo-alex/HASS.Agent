@@ -422,7 +422,7 @@ namespace HASS.Agent.MQTT
 
                 // publish away
                 //TODO(Amadeo): rethink usage of managed client/internal client since new version of MQTTnet doesn't return status of enqueued message
-                var published = await _mqttClient.InternalClient.PublishAsync(message);
+                var published = await _mqttClient!.InternalClient.PublishAsync(message);
                 if (published.ReasonCode == MqttClientPublishReasonCode.Success)
                     return true;
 
@@ -850,13 +850,28 @@ namespace HASS.Agent.MQTT
                     switch (command.Command)
                     {
                         case MediaPlayerCommand.PlayMedia:
-                            MediaManager.ProcessMedia(command.Data.ToObject<string>());
+                            var playMediaData = command.Data?.ToObject<string>();
+                            if (playMediaData != null)
+                            {
+                                MediaManager.ProcessMedia(playMediaData);
+                            }
                             break;
+                        
                         case MediaPlayerCommand.Seek:
-                            MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds(command.Data.ToObject<double>()).Ticks);
+                            var seekData = command.Data?.ToObject<double>();
+                            if (seekData != null)
+                            {
+                                MediaManager.ProcessSeekCommand(TimeSpan.FromSeconds((double)seekData).Ticks);
+                            }
                             break;
+                        
                         case MediaPlayerCommand.SetVolume:
-                            MediaManagerCommands.SetVolume(command.Data.ToObject<int>());
+                            var setVolumeData = command.Data?.ToObject<int>();
+                            if (setVolumeData != null)
+                            {
+                                MediaManagerCommands.SetVolume((int)setVolumeData);
+                            }
+
                             break;
                         case MediaPlayerCommand.Mute:
                             //Note(Amadeo): tech debt :)
@@ -881,12 +896,19 @@ namespace HASS.Agent.MQTT
 
                 foreach (var command in Variables.Commands)
                 {
-                    var commandConfig = (CommandDiscoveryConfigModel)command.GetAutoDiscoveryConfig();
+                    if(command.GetAutoDiscoveryConfig() is not CommandDiscoveryConfigModel commandConfig)
+                    {
+                        return Task.CompletedTask;
+                    }
 
                     if (commandConfig.Command_topic == applicationMessage.Topic)
+                    {
                         HandleCommandReceived(applicationMessage, command);
+                    }
                     else if (commandConfig.Action_topic == applicationMessage.Topic)
+                    {
                         HandleActionReceived(applicationMessage, command);
+                    }
                 }
             }
             catch (Exception ex)
@@ -935,8 +957,8 @@ namespace HASS.Agent.MQTT
         /// <param name="command"></param>
         private static void HandleActionReceived(MqttApplicationMessage applicationMessage, AbstractCommand command)
         {
-            if (applicationMessage.PayloadSegment == null)
-                return;
+            /*if (applicationMessage.PayloadSegment == null)
+                return;*/
 
             var payload = Encoding.UTF8.GetString(applicationMessage.PayloadSegment);
             if (string.IsNullOrWhiteSpace(payload))

@@ -55,6 +55,11 @@ namespace HASS.Agent.Forms.Commands.CommandConfig
 
         private void SetStoredVariables()
         {
+            if (WebViewInfo == null)
+            {
+                return;
+            }
+            
             try
             {
                 TbUrl.Text = WebViewInfo.Url;

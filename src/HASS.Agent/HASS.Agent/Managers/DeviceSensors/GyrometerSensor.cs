@@ -13,21 +13,21 @@ namespace HASS.Agent.Managers.DeviceSensors
         public const string AttributeAngularVelocityY = "AngularVelocityY";
         public const string AttributeAngularVelocityZ = "AngularVelocityZ";
 
-        private readonly Gyrometer _gyrometer;
+        private readonly Gyrometer? _gyrometer;
 
         public string MeasurementType { get; } = string.Empty;
         public string UnitOfMeasurement { get; } = string.Empty;
 
         public bool Available => _gyrometer != null;
         public InternalDeviceSensorType Type => InternalDeviceSensorType.Gyrometer;
-        public string Measurement
+        public string? Measurement
         {
             get
             {
                 if (!Available)
                     return null;
 
-                var sensorReading = _gyrometer.GetCurrentReading();
+                var sensorReading = _gyrometer?.GetCurrentReading();
                 if (sensorReading == null)
                     return null;
 
@@ -52,7 +52,7 @@ namespace HASS.Agent.Managers.DeviceSensors
         private readonly Dictionary<string, string> _attributes = new();
         public Dictionary<string, string> Attributes => _attributes;
 
-        public GyrometerSensor(Gyrometer gyrometer)
+        public GyrometerSensor(Gyrometer? gyrometer)
         {
             _gyrometer = gyrometer;
         }

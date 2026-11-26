@@ -20,14 +20,9 @@ namespace HASS.Agent.Managers
                 return url;
             }
 
-            Uri uri;
+            Uri? uri;
             Uri.TryCreate(url, UriKind.Absolute, out uri);
             uri ??= new Uri(new Uri("https://www.home-assistant.io"), url);
-
-            if (uri == null)
-            {
-                return url;
-            }
 
             var builder = new UriBuilder(Variables.AppSettings.HassUri);
             if (!string.IsNullOrWhiteSpace(uri.LocalPath))

@@ -17,7 +17,7 @@ namespace HASS.Agent.Forms.Sensors
         private readonly List<ConfiguredSensor> _toBeDeletedSensors = new();
 
         private bool _storing = false;
-        
+
         public SensorsConfig()
         {
             InitializeComponent();
@@ -51,7 +51,8 @@ namespace HASS.Agent.Forms.Sensors
         {
             // make a copy of the current sensors
             _sensors = Variables.SingleValueSensors.Select(StoredSensors.ConvertAbstractSingleValueToConfigured).Where(configuredSensor => configuredSensor != null).ToList();
-            _sensors = _sensors.Concat(Variables.MultiValueSensors.Select(StoredSensors.ConvertAbstractMultiValueToConfigured).Where(configuredSensor => configuredSensor != null)).ToList();
+            _sensors = _sensors.Concat(Variables.MultiValueSensors.Select(StoredSensors.ConvertAbstractMultiValueToConfigured).Where(configuredSensor => configuredSensor != null).Select(s => s!))
+                .ToList();
 
             // show them
             UpdateSensorsList();
@@ -88,20 +89,27 @@ namespace HASS.Agent.Forms.Sensors
         /// </summary>
         private void ModifySelectedSensor()
         {
-            // are we currently storing them?
-            if (_storing) return;
-
-            // check for selected rows
-            if (LvSensors.SelectedItems.Count == 0) return;
+            // are we currently storing them? || check for selected rows
+            if (_storing || LvSensors.SelectedItems.Count == 0)
+            {
+                return;
+            }
 
             // we can just modify one, so the first
             var guid = Guid.Parse(LvSensors.SelectedItems[0].Text);
             var selectedSensor = _sensors.Find(x => x.Id == guid);
+            if (selectedSensor == null)
+            {
+                return;
+            }
 
             // show modding form
             using var sensor = new SensorsMod(selectedSensor);
             var res = sensor.ShowDialog();
-            if (res != DialogResult.OK) return;
+            if (res != DialogResult.OK)
+            {
+                return;
+            }
 
             // update in temp list
             _sensors[_sensors.FindIndex(x => x.Id == sensor.Sensor.Id)] = sensor.Sensor;
@@ -125,6 +133,10 @@ namespace HASS.Agent.Forms.Sensors
                 // get object
                 var guid = Guid.Parse(row.Text);
                 var selectedSensor = _sensors.Find(x => x.Id == guid);
+                if (selectedSensor == null)
+                {
+                    continue;
+                }
 
                 // add to to-be-deleted list
                 _toBeDeletedSensors.Add(selectedSensor);
@@ -194,7 +206,7 @@ namespace HASS.Agent.Forms.Sensors
                     }
                 }));
             }
-            catch 
+            catch
             {
                 // best effort
             }

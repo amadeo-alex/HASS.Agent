@@ -267,23 +267,38 @@ namespace HASS.Agent.Compatibility
             var safeServiceDeviceName = SharedHelperFunctions.GetSafeValue(serviceDeviceName);
 
             Log.Information("[COMPATTASK] Service: modifying stored sensors");
-            var newServiceConfiguredSensors = ConvertServiceSensors(serviceConfiguredSensors, safeServiceDeviceName);
-            var (storedServiceSensorsOk, storedServiceSensorsError) = await Variables.RpcClient.SetConfiguredSensorsAsync(newServiceConfiguredSensors).WaitAsync(Variables.RpcConnectionTimeout);
-            if (!storedServiceSensorsOk)
+            if (serviceConfiguredSensors != null)
             {
-                Log.Error("[COMPATTASK] Service: error modifying stored sensors: {msg}", storedServiceSensorsError);
-                errorMessage += Languages.Compat_NameTask_Error_SingleValueSensors;
-                return errorMessage;
+                var newServiceConfiguredSensors = ConvertServiceSensors(serviceConfiguredSensors, safeServiceDeviceName);
+                var (storedServiceSensorsOk, storedServiceSensorsError) = await Variables.RpcClient.SetConfiguredSensorsAsync(newServiceConfiguredSensors).WaitAsync(Variables.RpcConnectionTimeout);
+                if (!storedServiceSensorsOk)
+                {
+                    Log.Error("[COMPATTASK] Service: error modifying stored sensors: {msg}", storedServiceSensorsError);
+                    errorMessage += Languages.Compat_NameTask_Error_SingleValueSensors;
+                    return errorMessage;
+                }
+            }
+            else
+            {
+                Log.Warning("[COMPATTASK] Service: sensors not modified, no sensors retrieved");
             }
 
             Log.Information("[COMPATTASK] Service: modifying stored commands");
-            var newServiceConfiguredCommands = ConvertServiceCommands(serviceConfiguredCommands, safeServiceDeviceName);
-            var (storedServiceCommandsOk, storedServiceCommandsError) = await Variables.RpcClient.SetConfiguredCommandsAsync(newServiceConfiguredCommands).WaitAsync(Variables.RpcConnectionTimeout);
-            if (!storedServiceCommandsOk)
+            if (serviceConfiguredCommands != null)
             {
-                Log.Error("[COMPATTASK] Service: error modifying stored commands: {msg}", storedServiceCommandsError);
-                errorMessage += Languages.Compat_NameTask_Error_Commands;
-                return errorMessage;
+                var newServiceConfiguredCommands = ConvertServiceCommands(serviceConfiguredCommands, safeServiceDeviceName);
+                var (storedServiceCommandsOk, storedServiceCommandsError) =
+                    await Variables.RpcClient.SetConfiguredCommandsAsync(newServiceConfiguredCommands).WaitAsync(Variables.RpcConnectionTimeout);
+                if (!storedServiceCommandsOk)
+                {
+                    Log.Error("[COMPATTASK] Service: error modifying stored commands: {msg}", storedServiceCommandsError);
+                    errorMessage += Languages.Compat_NameTask_Error_Commands;
+                    return errorMessage;
+                }
+            }
+            else
+            {
+                Log.Warning("[COMPATTASK] Service: commands not modified, no commands retrieved");
             }
 
             return errorMessage;

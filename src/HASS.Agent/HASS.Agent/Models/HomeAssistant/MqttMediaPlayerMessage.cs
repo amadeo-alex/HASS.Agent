@@ -4,10 +4,10 @@ namespace HASS.Agent.Models.HomeAssistant;
 
 public class MqttMediaPlayerMessage
 {
-    public string Title { get; set; }
-    public string Artist { get; set; }
-    public string AlbumTitle { get; set; }
-    public string AlbumArtist { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Artist { get; set; } = string.Empty;
+    public string AlbumTitle { get; set; } = string.Empty;
+    public string AlbumArtist { get; set; } = string.Empty;
 
     public double Duration { get; set; }
     public double CurrentPosition { get; set; }

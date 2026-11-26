@@ -905,7 +905,7 @@ namespace HASS.Agent.Forms.Sensors
         /// <param name="e"></param>
         private void BtnAdvSettings_Click(object sender, EventArgs e)
         {
-            using var advancedSensorSettingsDialog = new AdvancedSensorSettings(Sensor.AdvancedSettings);
+            using var advancedSensorSettingsDialog = new AdvancedSensorSettings(Sensor.AdvancedSettings ?? string.Empty);
             advancedSensorSettingsDialog.Opacity = 0;
 
             var ret = advancedSensorSettingsDialog.ShowDialog();

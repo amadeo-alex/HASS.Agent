@@ -24,8 +24,8 @@ namespace HASS.Agent.Managers
         public static List<string> AvailableNFCReaderNames => AvailableNFCReader.Keys.ToList();
 
         private static long s_subscriptionId = -1;
-        private static ProximityDevice s_selectedNFCReader = null;
-        public static ProximityDevice SelectedNFCReader
+        private static ProximityDevice? s_selectedNFCReader = null;
+        public static ProximityDevice? SelectedNFCReader
         {
             get => s_selectedNFCReader;
             set
@@ -39,7 +39,7 @@ namespace HASS.Agent.Managers
                 }
 
                 s_selectedNFCReader = value;
-                s_subscriptionId = s_selectedNFCReader.SubscribeForMessage("NDEF", MessageReceivedHandler);
+                s_subscriptionId = s_selectedNFCReader?.SubscribeForMessage("NDEF", MessageReceivedHandler) ?? -1;
             }
         }
 
@@ -118,7 +118,7 @@ namespace HASS.Agent.Managers
                                 return;
 
                             var tagScannedMessage = new MqttApplicationMessageBuilder()
-                                .WithTopic($"hass.agent/devices/{Variables.DeviceConfig.Name}/tag_scanned")
+                                .WithTopic($"hass.agent/devices/{Variables.DeviceConfig!.Name}/tag_scanned")
                                 .WithPayload(JsonConvert.SerializeObject(new
                                 {
                                     Time = DateTime.UtcNow.ToString("s"),

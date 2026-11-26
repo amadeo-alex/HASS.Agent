@@ -18,10 +18,9 @@ namespace HASS.Agent.Managers
             {
                 using var localKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegView);
                 using var key = localKey.OpenSubKey(RunKey, false);
-                var val = (string)key?.GetValue(Variables.ApplicationName, string.Empty);
-                if (string.IsNullOrWhiteSpace(val)) return false;
-
-                return val.Contains(Variables.ApplicationExecutable);
+                var val = key?.GetValue(Variables.ApplicationName, string.Empty) as string;
+                
+                return !string.IsNullOrWhiteSpace(val) && val.Contains(Variables.ApplicationExecutable);
             }
             catch (Exception ex)
             {

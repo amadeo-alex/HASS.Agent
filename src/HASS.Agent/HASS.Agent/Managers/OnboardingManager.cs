@@ -14,7 +14,7 @@ namespace HASS.Agent.Managers
     internal class OnboardingManager
     {
         private readonly Onboarding _onboarding;
-        private Control _currentControl;
+        private Control? _currentControl;
 
         private const int TOTAL_ONBOARDING_STEPS = 8;
 
@@ -38,7 +38,7 @@ namespace HASS.Agent.Managers
                 case OnboardingStatus.Startup:
                     ShowStartup();
                     break;
-                    
+
                 case OnboardingStatus.API:
                     ShowAPI();
                     break;
@@ -89,7 +89,7 @@ namespace HASS.Agent.Managers
                 case OnboardingStatus.Startup:
                     ShowWelcome();
                     break;
-                    
+
                 case OnboardingStatus.API:
                     ShowStartup();
                     break;
@@ -173,47 +173,58 @@ namespace HASS.Agent.Managers
             switch (Variables.AppSettings.OnboardingStatus)
             {
                 case OnboardingStatus.NeverDone:
+                {
+                    var obj = _currentControl as OnboardingWelcome;
+                    if (obj == null)
                     {
-                        var obj = (OnboardingWelcome)_currentControl;
-                        var stored = obj.Store(out var languageChanged);
-                        if (!stored) return false;
-
-                        // reload ui?
-                        if (languageChanged)  _onboarding.ReloadControlLanguage();
-
-                        // done
-                        return true;
+                        return false;
                     }
+
+                    var stored = obj.Store(out var languageChanged);
+                    if (!stored)
+                    {
+                        return false;
+                    }
+
+                    // reload ui?
+                    if (languageChanged)
+                    {
+                        _onboarding.ReloadControlLanguage();
+                    }
+
+                    // done
+                    return true;
+                }
 
                 case OnboardingStatus.API:
-                    {
-                        var obj = (OnboardingApi)_currentControl;
-                        return obj.Store();
-                    }
+                {
+                    var obj = _currentControl as OnboardingApi;
+                    return obj?.Store() == true;
+                }
 
                 case OnboardingStatus.MQTT:
-                    {
-                        var obj = (OnboardingMqtt)_currentControl;
-                        return obj.Store();
-                    }
+                {
+                    var obj = _currentControl as OnboardingMqtt;
+                    return obj?.Store() == true;
+                }
 
                 case OnboardingStatus.Integrations:
                 {
-                    var obj = (OnboardingIntegrations)_currentControl;
-                    return obj.Store();
+                    var obj = _currentControl as OnboardingIntegrations;
+                    return obj?.Store() == true;
                 }
 
                 case OnboardingStatus.HotKey:
-                    {
-                        var obj = (OnboardingHotKey)_currentControl;
-                        return obj.Store();
-                    }
+                {
+                    var obj = _currentControl as OnboardingHotKey;
+                    return obj?.Store() == true;
+                }
 
                 case OnboardingStatus.Updates:
-                    {
-                        var obj = (OnboardingUpdates)_currentControl;
-                        return obj.Store();
-                    }
+                {
+                    var obj = _currentControl as OnboardingUpdates;
+                    return obj?.Store() == true;
+                }
             }
 
             // default ok
@@ -285,7 +296,7 @@ namespace HASS.Agent.Managers
             LoadCurrentControl();
         }
 
-       /// <summary>
+        /// <summary>
         /// Show API page
         /// </summary>
         // ReSharper disable once InconsistentNaming
@@ -459,7 +470,7 @@ namespace HASS.Agent.Managers
 
             // send mqtt config to the service
             await SettingsManager.SendMqttSettingsToServiceAsync(true);
-            
+
             // done, restart
             HelperFunctions.Restart(true);
         }

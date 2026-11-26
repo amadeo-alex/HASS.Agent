@@ -7,9 +7,9 @@ namespace HASS.Agent.Managers.DeviceSensors
     internal static class InternalDeviceSensorsManager
     {
         private static readonly List<IInternalDeviceSensor> deviceSensors = new();
-        private static DeviceWatcher deviceWatcher;
+        private static DeviceWatcher? deviceWatcher;
 
-        private static Windows.Devices.Sensors.ProximitySensor _internalProximitySensor;
+        private static Windows.Devices.Sensors.ProximitySensor? _internalProximitySensor;
 
         public static List<IInternalDeviceSensor> AvailableSensors => deviceSensors.FindAll(s => s.Available);
 
@@ -80,7 +80,7 @@ namespace HASS.Agent.Managers.DeviceSensors
                 _internalProximitySensor = Windows.Devices.Sensors.ProximitySensor.FromId(args.Id);
         }
 
-        private static async Task<Windows.Devices.Sensors.ProximitySensor> GetDefaultProximitySensorAsync()
+        private static async Task<Windows.Devices.Sensors.ProximitySensor?> GetDefaultProximitySensorAsync()
         {
             // allow 2 seconds for the sensor to load
             await Task.Delay(2000);
