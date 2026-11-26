@@ -35,20 +35,20 @@
     <PackageReference Include="ByteSize" Version="2.1.2" />
     <PackageReference Include="Cassia.NetStandard" Version="1.0.0" />
     <PackageReference Include="CliWrap" Version="3.10.5" />
-    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="11.0.0" />
     <PackageReference Include="MQTTnet" Version="4.3.3.952" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Serilog" Version="4.4.0" />
-    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="10.0.12" />
-    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="10.0.12" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
-    <PackageReference Include="System.Management" Version="10.0.12" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="11.0.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="11.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="11.0.0" />
+    <PackageReference Include="System.Management" Version="11.0.0" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.12" />
-    <PackageReference Include="Vanara.PInvoke.NetListMgr" Version="5.0.7" />
-    <PackageReference Include="Vanara.PInvoke.PowrProf" Version="5.0.7" />
-    <PackageReference Include="Vanara.PInvoke.Kernel32" Version="5.0.7" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="11.0.0" />
+    <PackageReference Include="Vanara.PInvoke.NetListMgr" Version="5.0.8" />
+    <PackageReference Include="Vanara.PInvoke.PowrProf" Version="5.0.8" />
+    <PackageReference Include="Vanara.PInvoke.Kernel32" Version="5.0.8" />
   </ItemGroup>
 
   <ItemGroup>
